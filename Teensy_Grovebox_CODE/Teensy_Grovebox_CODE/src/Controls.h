@@ -1,29 +1,28 @@
 #ifndef CONTROLS_H
 #define CONTROLS_H
 
-// Controls
-// Provides an abstraction from hardware to software controls with callbacks
-
 #include "Hardware.h"
 
-class Controls
-{
-private:
-    /* data */
-public:
-    Controls(/* args */);
-    ~Controls();
-};
+#define JOY_THRES 3
 
-Controls::Controls(/* args */)
-{
-}
+// Controls
+// Conntect common control callbacks to the callbacks in current page
+// Piano key number convertion
 
+// Common button callback function
+void BtnPressCallback(pinid_t pin, bool isHeld);
+void BtnReleaseCallback(pinid_t pin, bool isHeld);
+void Enc0Callback(int value);
+void Enc1Callback(int value);
+void Enc2Callback(int value);
+void Enc3Callback(int value);
 
-void BtnCallback(pinid_t pin, bool isHeld);
+// MIDI callbacks
+void onControlChange(byte channel, byte control, byte value);
 
-void OnBtnPressed(uint8_t pin);
-void OnBtnHold(uint8_t pin);
-void OnBtnReleased(uint8_t pin);
+// Joystick polling
+void UpdateJoystick();
+
+uint8_t PinToKeyNum(uint8_t pin);
 
 #endif

@@ -3,56 +3,72 @@
 #include "font_Arial.h"
 #include "Test.h"
 #include "Controls.h"
+#include "Pages/Pages.h"
+#include "AudioSystem.h"
 
-
+void update_gslc()
+{
+    gslc_Update(&m_gui);
+    PageManager.PageArr[PageManager.getCurPage()]->update();
+    PageManager.PageArr[PageManager.getCurPage()]->draw();
+}
 
 void setup()
 {
-    HardwareSetup();
-
-    //tft.fillScreen(ILI9341_BLACK);
-    //tft.setTextColor(ILI9341_YELLOW);
-    //tft.setCursor(0, 0);
-    //tft.setTextSize(2);
-    //tft.println("Waiting for Arduino Serial Monitor...");
+    // mute amp
+    pinMode(0, OUTPUT);
+    digitalWrite(0, LOW); 
 
     Serial.begin(9600);
-    while (!Serial)
-        ; // wait for Arduino Serial Monitor
-    Serial.println("ILI9341 Test!");
+    // while (!Serial)
+    //     ; // wait for Arduino Serial Monitor
+    Serial.println("Setup begin!");
 
     digitalWrite(BAR_MODE, HIGH);
     bar_test = 10;
 
     batt_level = analogRead(BATT_LVL);
 
-    gslc_InitDebug(&DebugOut);
+    //gslc_InitDebug(&DebugOut);
+    // Initializes GUI (must call this before taskManager starts)
     InitGUIslice_gen();
+    PageManager.Init();
+    // Initial hardware
+    HardwareSetup();
+    // Schedule regular tasks
+    taskManager.scheduleFixedRate(20, update_gslc);
+    taskManager.scheduleFixedRate(15, UpdateJoystick);
+    // Setup encoders for the first page
+    PageManager.PageArr[PageManager.getCurPage()]->configureEncoders();
+
+    // Audio connections require memory to work.  For more
+    // detailed information, see the MemoryAndCpuUsage example
+    AudioMemory(12);
+
+    // Enable the audio shield, select input, and enable output
+    sgtl5000_1.enable();
+    sgtl5000_1.inputSelect(AUDIO_INPUT_LINEIN);
+    sgtl5000_1.unmuteLineout();
+    sgtl5000_1.volume(0.6);
+    // unmute amp
+    digitalWrite(0, HIGH);
+    // Change BAR PWM frequencey
+    analogWriteFrequency(BAR1_OUT, 10000);
+    analogWriteFrequency(BAR2_OUT, 10000);
 }
 
 void loop(void)
 {
     unsigned long curTime = millis();
-    if(curTime - lastScreenUpdate > 50)
-    {
-        int joyX, joyY;
-        joyX = analogRead(40);
-        joyY = analogRead(41);
-        //tft.fillRect(0, 150, 160, 14, ILI9341_BLACK);
-        //tft.setCursor(0, 150);
-        //tft.println(String(joyX) + ", " + String(joyY));
-        lastScreenUpdate = curTime;
-    }
-    if(curTime - lastBarUpdate > 1000)
+    if (curTime - lastBarUpdate > 1000)
     {
         batt_level = analogRead(BATT_LVL);
         bar_test += 20;
-        if(bar_test > 210)
+        if (bar_test > 210)
             bar_test = 10;
         analogWrite(BAR1_OUT, bar_test);
         analogWrite(BAR2_OUT, bar_test);
         lastBarUpdate = curTime;
     }
     taskManager.runLoop();
-    gslc_Update(&m_gui);
 }

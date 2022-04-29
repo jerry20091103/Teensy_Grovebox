@@ -17,17 +17,17 @@
 #define E2GPA(a) (EXPANDER2_PIN + a)
 #define E2GPB(b) (EXPANDER2_PIN + b + 8)
 // Rotray Encoders
-#define ENC1A 25
-#define ENC1B 26
+#define ENC1A 26
+#define ENC1B 25
 #define BTN_ENC1 24
-#define ENC2A 28
-#define ENC2B 29
+#define ENC2A 29
+#define ENC2B 28
 #define BTN_ENC2 27
-#define ENC3A 31
-#define ENC3B 32
+#define ENC3A 32
+#define ENC3B 31
 #define BTN_ENC3 30
-#define ENC4A 34
-#define ENC4B 35
+#define ENC4A 35
+#define ENC4B 34
 #define BTN_ENC4 33
 // Joysitck
 #define JOY_X 41
@@ -43,7 +43,7 @@
 #define HP_DETECT E2GPA(5)
 #define BTN_PWR E2GPA(6)
 #define PWR_HOLD E2GPA(7)
-// Piano Keys
+// FN Keys
 #define BTN_FN0 E2GPA(1)
 #define BTN_FN1 E2GPA(2)
 #define BTN_FN2 E2GPA(3)
@@ -52,7 +52,7 @@
 #define BTN_FN5 38
 #define BTN_FN6 37
 #define BTN_FN7 36
-
+// Piano Keys
 #define BTN_K1 E1GPB(0)
 #define BTN_K2 E1GPB(1)
 #define BTN_K3 E1GPB(2)
