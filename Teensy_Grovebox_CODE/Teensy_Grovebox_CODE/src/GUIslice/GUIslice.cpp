@@ -31,6 +31,8 @@ gslc_tsElem                     m_asBasePage1Elem[MAX_ELEM_PG_BASE_RAM];
 gslc_tsElemRef                  m_asBasePage1ElemRef[MAX_ELEM_PG_BASE];
 gslc_tsElem                     m_asPage1Elem[MAX_ELEM_PG_MIDI_RAM];
 gslc_tsElemRef                  m_asPage1ElemRef[MAX_ELEM_PG_MIDI];
+gslc_tsElem                     m_asPopup1Elem[MAX_ELEM_PG_POPUP_POWER_RAM];
+gslc_tsElemRef                  m_asPopup1ElemRef[MAX_ELEM_PG_POPUP_POWER];
 gslc_tsXRingGauge               m_sXRingGauge1;
 gslc_tsXRingGauge               m_sXRingGauge2;
 gslc_tsXRingGauge               m_sXRingGauge3;
@@ -95,6 +97,8 @@ void InitGUIslice_gen()
   // Load Fonts
   // ------------------------------------------------
 //<Load_Fonts !Start!>
+    if (!gslc_FontSet(&m_gui,E_ARIAL_10,GSLC_FONTREF_PTR,&Arial_10,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_ARIAL_10, GSLC_FONTREF_MODE_1);	
     if (!gslc_FontSet(&m_gui,E_ARIAL_12,GSLC_FONTREF_PTR,&Arial_12,1)) { return; }
     gslc_FontSetMode(&m_gui, E_ARIAL_12, GSLC_FONTREF_MODE_1);	
     if (!gslc_FontSet(&m_gui,E_ARIAL_12_BOLD,GSLC_FONTREF_PTR,&Arial_12_Bold,1)) { return; }
@@ -105,13 +109,14 @@ void InitGUIslice_gen()
     gslc_FontSetMode(&m_gui, E_ARIAL_14, GSLC_FONTREF_MODE_1);	
     if (!gslc_FontSet(&m_gui,E_AWESOMEF000_10,GSLC_FONTREF_PTR,&AwesomeF000_10,1)) { return; }
     gslc_FontSetMode(&m_gui, E_AWESOMEF000_10, GSLC_FONTREF_MODE_1);	
-    if (!gslc_FontSet(&m_gui,E_AWESOMEF200_12,GSLC_FONTREF_PTR,&AwesomeF200_12,1)) { return; }
-    gslc_FontSetMode(&m_gui, E_AWESOMEF200_12, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_AWESOMEF200_14,GSLC_FONTREF_PTR,&AwesomeF200_14,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_AWESOMEF200_14, GSLC_FONTREF_MODE_1);	
 //<Load_Fonts !End!>
 
 //<InitGUI !Start!>
   gslc_PageAdd(&m_gui,E_PG_BASE,m_asBasePage1Elem,MAX_ELEM_PG_BASE_RAM,m_asBasePage1ElemRef,MAX_ELEM_PG_BASE);
   gslc_PageAdd(&m_gui,E_PG_MIDI,m_asPage1Elem,MAX_ELEM_PG_MIDI_RAM,m_asPage1ElemRef,MAX_ELEM_PG_MIDI);
+  gslc_PageAdd(&m_gui,E_PG_POPUP_POWER,m_asPopup1Elem,MAX_ELEM_PG_POPUP_POWER_RAM,m_asPopup1ElemRef,MAX_ELEM_PG_POPUP_POWER);
 
   // Now mark E_PG_BASE as a "base" page which means that it's elements
   // are always visible. This is useful for common page elements.
@@ -138,8 +143,9 @@ void InitGUIslice_gen()
   
   // Create E_ELEM_TEXT_BATT runtime modifiable text
   static char m_sDisplayText6[3] = "@";
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT_BATT,E_PG_BASE,(gslc_tsRect){280,10,20,11},
-    (char*)m_sDisplayText6,3,E_AWESOMEF200_12);
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT_BATT,E_PG_BASE,(gslc_tsRect){285,4,26,20},
+    (char*)m_sDisplayText6,3,E_AWESOMEF200_14);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_GRAY_LT3);
   gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
   m_pElemTxtBatt = pElemRef;
@@ -262,24 +268,24 @@ void InitGUIslice_gen()
   m_pElemMidiRingGreen = pElemRef;
   
   // Create E_ELEM_MIDI_TEXT12 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT12,E_PG_MIDI,(gslc_tsRect){24,36,24,13},
-    (char*)"CC",0,E_ARIAL_12);
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT12,E_PG_MIDI,(gslc_tsRect){27,40,20,11},
+    (char*)"CC",0,E_ARIAL_10);
   gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
   // Create E_ELEM_MIDI_TEXT13 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT13,E_PG_MIDI,(gslc_tsRect){106,36,26,14},
-    (char*)"CC",0,E_ARIAL_13);
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT13,E_PG_MIDI,(gslc_tsRect){110,40,20,11},
+    (char*)"CC",0,E_ARIAL_10);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
   // Create E_ELEM_MIDI_TEXT14 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT14,E_PG_MIDI,(gslc_tsRect){186,36,26,14},
-    (char*)"CC",0,E_ARIAL_13);
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT14,E_PG_MIDI,(gslc_tsRect){190,40,20,11},
+    (char*)"CC",0,E_ARIAL_10);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
   // Create E_ELEM_MIDI_TEXT15 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT15,E_PG_MIDI,(gslc_tsRect){266,36,26,14},
-    (char*)"CC",0,E_ARIAL_13);
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT15,E_PG_MIDI,(gslc_tsRect){270,40,20,11},
+    (char*)"CC",0,E_ARIAL_10);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
    
   // Create E_ELEM_MIDI_RED_BOX1 box
@@ -364,6 +370,41 @@ void InitGUIslice_gen()
   pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT26,E_PG_MIDI,(gslc_tsRect){291,219,18,13},
     (char*)"23",0,E_ARIAL_12);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+
+  // -----------------------------------
+  // PAGE: E_PG_POPUP_POWER
+  
+   
+  // Create E_ELEM_BOX10 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX10,E_PG_POPUP_POWER,(gslc_tsRect){25,25,270,190});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_BLACK);
+  
+  // Create E_ELEM_TEXT27 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT27,E_PG_POPUP_POWER,(gslc_tsRect){40,37,102,16},
+    (char*)"Power Off ?",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT28 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT28,E_PG_POPUP_POWER,(gslc_tsRect){70,80,169,14},
+    (char*)"Changes will not be saved.",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+
+  // Create E_DRAW_LINE2 line 
+  pElemRef = gslc_ElemCreateLine(&m_gui,E_DRAW_LINE2,E_PG_POPUP_POWER,30,60,290,60);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_WHITE,GSLC_COL_WHITE);
+  
+  // create E_ELEM_POWER_BTN_YES button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_POWER_BTN_YES,E_PG_POPUP_POWER,
+    (gslc_tsRect){50,160,80,30},(char*)"Yes",0,E_ARIAL_13,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_RED_DK1,GSLC_COL_RED_DK1,GSLC_COL_RED_DK4);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  
+  // create E_ELEM_POWER_BTN_CALCEL button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_POWER_BTN_CALCEL,E_PG_POPUP_POWER,
+    (gslc_tsRect){190,160,80,30},(char*)"Cancel",0,E_ARIAL_13,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_RED_DK1,GSLC_COL_BLACK,GSLC_COL_RED_DK4);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
 //<InitGUI !End!>
 
 //<Startup !Start!>

@@ -85,6 +85,11 @@
 extern ILI9341_t3 tft;
 extern MultiIoAbstractionRef multiIo;
 
+extern HardwareRotaryEncoder* enc0;
+extern HardwareRotaryEncoder* enc1;
+extern HardwareRotaryEncoder* enc2;
+extern HardwareRotaryEncoder* enc3;
+
 void HardwareSetup();
 
 #endif

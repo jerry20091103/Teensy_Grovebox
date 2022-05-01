@@ -5,6 +5,11 @@
 ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC);
 MultiIoAbstractionRef multiIo = multiIoExpander(EXPANDER_PIN);
 
+HardwareRotaryEncoder* enc0;
+HardwareRotaryEncoder* enc1;
+HardwareRotaryEncoder* enc2;
+HardwareRotaryEncoder* enc3;
+
 void HardwareSetup()
 {
     // Setup LCD
@@ -20,7 +25,6 @@ void HardwareSetup()
     Wire.setClock(400000);
     multiIoAddExpander(multiIo, ioFrom23017(0x20, ACTIVE_LOW_OPEN, 17), 16);
     multiIoAddExpander(multiIo, ioFrom23017(0x21, ACTIVE_LOW_OPEN, 17), 16);
-    delay(1000);
 
     // setup buttons
     switches.initialiseInterrupt(multiIo, true);
@@ -70,10 +74,10 @@ void HardwareSetup()
     switches.onRelease(BTN_PWR, BtnReleaseCallback);
 
     // setup rotray encoders
-    HardwareRotaryEncoder* enc0 = new HardwareRotaryEncoder(ENC1A, ENC1B, Enc0Callback, HWACCEL_SLOWER);
-    HardwareRotaryEncoder* enc1 = new HardwareRotaryEncoder(ENC2A, ENC2B, Enc1Callback, HWACCEL_SLOWER);
-    HardwareRotaryEncoder* enc2 = new HardwareRotaryEncoder(ENC3A, ENC3B, Enc2Callback, HWACCEL_SLOWER);
-    HardwareRotaryEncoder* enc3 = new HardwareRotaryEncoder(ENC4A, ENC4B, Enc3Callback, HWACCEL_SLOWER);
+    enc0 = new HardwareRotaryEncoder(ENC1A, ENC1B, Enc0Callback, HWACCEL_SLOWER);
+    enc1 = new HardwareRotaryEncoder(ENC2A, ENC2B, Enc1Callback, HWACCEL_SLOWER);
+    enc2 = new HardwareRotaryEncoder(ENC3A, ENC3B, Enc2Callback, HWACCEL_SLOWER);
+    enc3 = new HardwareRotaryEncoder(ENC4A, ENC4B, Enc3Callback, HWACCEL_SLOWER);
     switches.setEncoder(0, enc0);
     switches.setEncoder(1, enc1);
     switches.setEncoder(2, enc2);
@@ -97,7 +101,7 @@ void HardwareSetup()
 
     // LCD brightness control
     pinMode(LCD_PWM, OUTPUT);
-    analogWrite(LCD_PWM, 250);
+    analogWrite(LCD_PWM, 200);
 
     // Battery level
     pinMode(BATT_LVL, INPUT);
@@ -107,6 +111,9 @@ void HardwareSetup()
     ioDevicePinMode(multiIo, AMP_SHDN, OUTPUT);
     ioDeviceDigitalWriteS(multiIo, PWR_HOLD, HIGH);
     ioDeviceDigitalWriteS(multiIo, AMP_SHDN, LOW);
+
+    // wait until power button released
+    while (!ioDeviceDigitalReadS(multiIo, BTN_PWR)) {}
 
     // Setup midi callbacks
     usbMIDI.setHandleControlChange(onControlChange);

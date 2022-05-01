@@ -3,6 +3,8 @@
 
 #include "GUIslice/GUIslice_GSLC.h"
 
+#define MAX_PAGE_NAME 16
+
 // Pages class
 // A virtual class for other pages to inherit from
 class Pages
@@ -32,6 +34,7 @@ public:
     virtual void init() = 0;
 
     int pageID;
+    char pageName[MAX_PAGE_NAME];
 };
 
 // PagesManager class
@@ -46,7 +49,16 @@ public:
     int getCurPage();
     // Initial all pages at program start
     void Init();
+    // Switch to a page, will auto hide popup when in a popup.
+    void switchPage(int pageID);
+    // Switch to a popup page
+    void showPopup(int pageID);
+    // Hide a popup page
+    void hidePopup();
 private:
+    bool inPopup = false;   // true if a popup is active
+    int curPopupID;         // stores current acitve popup ID
+
     PageManager_() {}
 };
 

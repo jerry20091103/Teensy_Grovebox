@@ -33,13 +33,13 @@ void setup()
     // Initializes GUI (must call this before taskManager starts)
     InitGUIslice_gen();
     PageManager.Init();
-    // Initial hardware
+    // Initialize hardware
     HardwareSetup();
     // Schedule regular tasks
     taskManager.scheduleFixedRate(20, update_gslc);
     taskManager.scheduleFixedRate(15, UpdateJoystick);
-    // Setup encoders for the first page
-    PageManager.PageArr[PageManager.getCurPage()]->configureEncoders();
+    // switch to the first page
+    PageManager.switchPage(E_PG_MIDI);
 
     // Audio connections require memory to work.  For more
     // detailed information, see the MemoryAndCpuUsage example

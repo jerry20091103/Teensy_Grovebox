@@ -50,16 +50,16 @@ void MidiPage::onBtnPressed(uint8_t pin)
                 gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingRed, GSLC_COL_GRAY);
                 gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingRed, GSLC_COL_WHITE);
                 gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingRed, 127);
-                switches.changeEncoderPrecision(0, CC_MAX - CC_MIN, curCC[0], false);
+                switches.changeEncoderPrecision(0, CC_MAX - CC_MIN, curCC[0]-CC_MIN, true);
             }
             else
             {
                 // exit configure state
                 encConfigure[0] = false;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingRed, GSLC_COL_RED_DK4);
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingRed, GSLC_COL_RED_DK1);
+                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingRed, gslc_tsColor{79, 0, 0});
+                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingRed, GSLC_COL_RED);
                 gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingRed, storeCC[curCC[0]-CC_MIN]);
-                switches.changeEncoderPrecision(0, 127, storeCC[curCC[0]], false);
+                switches.changeEncoderPrecision(0, 127, storeCC[curCC[0]-CC_MIN], false);
             }
             break;
         case BTN_ENC2:
@@ -70,16 +70,16 @@ void MidiPage::onBtnPressed(uint8_t pin)
                 gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingYellow, GSLC_COL_GRAY);
                 gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingYellow, GSLC_COL_WHITE);
                 gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingYellow, 127);
-                switches.changeEncoderPrecision(1, CC_MAX - CC_MIN, curCC[1], false);
+                switches.changeEncoderPrecision(1, CC_MAX - CC_MIN, curCC[1]-CC_MIN, true);
             }
             else
             {
                 // exit configure state
                 encConfigure[1] = false;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingYellow, gslc_tsColor{105, 103, 0});
+                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingYellow, gslc_tsColor{75, 68, 0});
                 gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingYellow, gslc_tsColor{250, 230, 0});
                 gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingYellow, storeCC[curCC[1]-CC_MIN]);
-                switches.changeEncoderPrecision(1, 127, storeCC[curCC[1]], false);
+                switches.changeEncoderPrecision(1, 127, storeCC[curCC[1]-CC_MIN], false);
             }
             break;
         case BTN_ENC3:
@@ -90,16 +90,16 @@ void MidiPage::onBtnPressed(uint8_t pin)
                 gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingBlue, GSLC_COL_GRAY);
                 gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingBlue, GSLC_COL_WHITE);
                 gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingBlue, 127);
-                switches.changeEncoderPrecision(2, CC_MAX - CC_MIN, curCC[2], false);
+                switches.changeEncoderPrecision(2, CC_MAX - CC_MIN, curCC[2]-CC_MIN, true);
             }
             else
             {
                 // exit configure state
                 encConfigure[2] = false;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingBlue, GSLC_COL_BLUE_DK4);
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingBlue, gslc_tsColor{30, 30, 255});
+                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingBlue, gslc_tsColor{0, 0, 58});
+                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingBlue, gslc_tsColor{20, 20, 255});
                 gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingBlue, storeCC[curCC[2]-CC_MIN]);
-                switches.changeEncoderPrecision(2, 127, storeCC[curCC[2]], false);
+                switches.changeEncoderPrecision(2, 127, storeCC[curCC[2]-CC_MIN], false);
             }
             break;
         case BTN_ENC4:
@@ -110,16 +110,16 @@ void MidiPage::onBtnPressed(uint8_t pin)
                 gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingGreen, GSLC_COL_GRAY);
                 gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingGreen, GSLC_COL_WHITE);
                 gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingGreen, 127);
-                switches.changeEncoderPrecision(3, CC_MAX - CC_MIN, curCC[3], false);
+                switches.changeEncoderPrecision(3, CC_MAX - CC_MIN, curCC[3]-CC_MIN, true);
             }
             else
             {
                 // exit configure state
                 encConfigure[3] = false;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingGreen, gslc_tsColor{0, 101, 0});
+                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingGreen, gslc_tsColor{0, 61, 0});
                 gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingGreen, GSLC_COL_GREEN_DK2);
                 gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingGreen, storeCC[curCC[3]-CC_MIN]);
-                switches.changeEncoderPrecision(3, 127, storeCC[curCC[3]], false);
+                switches.changeEncoderPrecision(3, 127, storeCC[curCC[3]-CC_MIN], false);
             }
             break;
         default:
@@ -130,6 +130,15 @@ void MidiPage::onBtnPressed(uint8_t pin)
 
 void MidiPage::onBtnHold(uint8_t pin)
 {
+    switch (pin)
+    {
+    case BTN_PWR:
+        PageManager.showPopup(E_PG_POPUP_POWER);
+        break;
+    
+    default:
+        break;
+    }
 }
 
 void MidiPage::onBtnReleased(uint8_t pin)
@@ -257,6 +266,7 @@ void MidiPage::draw()
 void MidiPage::init()
 {
     pageID = E_PG_MIDI;
+    strcpy(pageName, "MIDI");
     gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtChannel, String(midiChannel).c_str());
     gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtOctave, String(octave).c_str());
 
@@ -282,18 +292,22 @@ void MidiPage::updateCC(uint8_t control, uint8_t value)
     if(control == curCC[0])
     {
         gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingRed, value);
+        enc0->setCurrentReading(value);
     }
     if(control == curCC[1])
     {
         gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingYellow, value);
+        enc1->setCurrentReading(value);
     }
     if(control == curCC[2])
     {
         gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingBlue, value);
+        enc2->setCurrentReading(value);
     }
     if(control == curCC[3])
     {
         gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingGreen, value);
+        enc3->setCurrentReading(value);
     }
 }
 
@@ -303,11 +317,11 @@ void MidiPage::configureEncoders()
     {
         if(encConfigure[i])
         {
-            switches.changeEncoderPrecision(i, CC_MAX - CC_MIN, curCC[i], false);
+            switches.changeEncoderPrecision(i, CC_MAX - CC_MIN, curCC[i]-CC_MIN, false);
         }
         else
         {
-            switches.changeEncoderPrecision(i, 127, storeCC[curCC[i]], false);
+            switches.changeEncoderPrecision(i, 127, storeCC[curCC[i]-CC_MIN], false);
         }
     }
 }

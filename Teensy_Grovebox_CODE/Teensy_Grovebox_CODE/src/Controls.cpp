@@ -28,9 +28,6 @@ void BtnPressCallback(pinid_t pin, bool isHeld)
 void BtnReleaseCallback(pinid_t pin, bool isHeld)
 {
     PageManager.PageArr[PageManager.getCurPage()]->onBtnReleased(pin);
-
-    if(pin == BTN_PWR && isHeld)
-        ioDeviceDigitalWriteS(multiIo, PWR_HOLD, LOW);
 }
 
 void Enc0Callback(int value)
