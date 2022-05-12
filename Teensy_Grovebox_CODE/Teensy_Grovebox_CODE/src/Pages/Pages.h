@@ -3,7 +3,7 @@
 
 #include "GUIslice/GUIslice_GSLC.h"
 
-#define MAX_PAGE_NAME 16
+#define MAX_PAGE_NAME 20
 
 // Pages class
 // A virtual class for other pages to inherit from
@@ -24,8 +24,8 @@ public:
     virtual void onTouch(int ref) = 0;
     // Page MIDI control change signal received callback
     virtual void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value) = 0;
-    // Sets encoder for a Page. Since precision and value is handled by library, need to update encoders when entering the page
-    virtual void configureEncoders() = 0;
+    // Configure a page before swithcing to it. Sets encoders and prepare variables.
+    virtual void configurePage() = 0;
 
     // this handles custom graphics that are not built with GUIslice builder
     virtual void update() = 0;
@@ -35,6 +35,10 @@ public:
 
     int pageID;
     char pageName[MAX_PAGE_NAME];
+
+protected:
+    // some common graphic functions for all pages
+    void toggleButton(gslc_tsElemRef *ref, bool state);
 };
 
 // PagesManager class
@@ -44,6 +48,7 @@ class PageManager_
 public:
     static PageManager_ &getInstance();
     Pages *PageArr[MAX_PAGE];
+    int lastPage = E_PG_MIDI;
     
     // Gets the current Page on screen. Returns the info from GUIslice library
     int getCurPage();
@@ -55,9 +60,12 @@ public:
     void showPopup(int pageID);
     // Hide a popup page
     void hidePopup();
+    // a global variable for parameter passing when switching pages
+    int pageParam;
 private:
     bool inPopup = false;   // true if a popup is active
     int curPopupID;         // stores current acitve popup ID
+
 
     PageManager_() {}
 };

@@ -48,9 +48,17 @@ start = cpp_file.index('#include "GUIslice_GSLC.h"\n')
 cpp_file.insert(start, '#include "Pages/Pages.h"\n')
 
 # connect touch callback
-
-start = cpp_file.index('    switch (pElem->nId) {\n')
+# touch up
+start = cpp_file.index("    // From the element's ID we can determine which button was pressed.\n")
 end = cpp_file.index('//<Button Enums !End!>\n')
+start += 1
+end += 4
+del cpp_file[start:end]
+cpp_file.insert(start, '    PageManager.PageArr[PageManager.getCurPage()]->onTouch(pElem->nId);\n')
+# slider
+start = cpp_file.index("  // From the element's ID we can determine which slider was updated.\n")
+end = cpp_file.index('//<Slider Enums !End!>\n')
+start += 1
 end += 4
 del cpp_file[start:end]
 cpp_file.insert(start, '    PageManager.PageArr[PageManager.getCurPage()]->onTouch(pElem->nId);\n')

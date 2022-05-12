@@ -26,6 +26,7 @@ void HardwareSetup()
     multiIoAddExpander(multiIo, ioFrom23017(0x20, ACTIVE_LOW_OPEN, 17), 16);
     multiIoAddExpander(multiIo, ioFrom23017(0x21, ACTIVE_LOW_OPEN, 17), 16);
 
+
     // setup buttons
     switches.initialiseInterrupt(multiIo, true);
     for (int i = 0; i <= 7; i++)

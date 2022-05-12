@@ -13,6 +13,9 @@ void MidiPage::onBtnPressed(uint8_t pin)
     {
         switch (pin)
         {
+        case BTN_PWR:
+            PageManager.switchPage(E_PG_AUDIOOUT);
+            break;
         case BTN_JOY:
             usbMIDI.sendControlChange(64, 127, midiChannel); // sustain
             break;
@@ -206,8 +209,10 @@ void MidiPage::onEncTurned(uint8_t id, int value)
 
 void MidiPage::onJoyUpdate(int joy_x, int joy_y)
 {
-    usbMIDI.sendPitchBend(map(joy_x, 0, 1019, 8191, -8192), midiChannel);
-    usbMIDI.sendControlChange(1, map(joy_y, 0, 1019, 0, 127), midiChannel);
+    if(usePitchbend)
+        usbMIDI.sendPitchBend(map(joy_x, 0, 1019, 8191, -8192), midiChannel);
+    if(useModwheel)
+        usbMIDI.sendControlChange(1, map(joy_y, 0, 1019, 0, 127), midiChannel);
 }
 
 void MidiPage::onTouch(int ref)
@@ -237,7 +242,14 @@ void MidiPage::onTouch(int ref)
         if (midiChannel < 1)
             midiChannel = 1;
         gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtChannel, String(midiChannel).c_str());
-    default:
+        break;
+    case E_ELEM_MIDI_PITCHBEND_BTN:
+        usePitchbend = !usePitchbend;
+        toggleButton(m_pElemMidiPitchbendBtn, usePitchbend);
+        break;
+    case E_ELEM_MIDI_MOD_BTN:
+        useModwheel = !useModwheel;
+        toggleButton(m_pElemMidiModBtn, useModwheel);
         break;
     }
 }
@@ -269,6 +281,8 @@ void MidiPage::init()
     strcpy(pageName, "MIDI");
     gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtChannel, String(midiChannel).c_str());
     gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtOctave, String(octave).c_str());
+    toggleButton(m_pElemMidiPitchbendBtn, usePitchbend);
+    toggleButton(m_pElemMidiModBtn, useModwheel);
 
     gslc_tsElemRef *ringRef;
     for(u_int8_t i=0; i<4; i++)
@@ -282,7 +296,6 @@ void MidiPage::init()
         }
         gslc_ElemSetTxtStr(&m_gui, ringRef, String(curCC[i]).c_str());
     }
-    configureEncoders();
 }
 
 void MidiPage::updateCC(uint8_t control, uint8_t value)
@@ -311,7 +324,7 @@ void MidiPage::updateCC(uint8_t control, uint8_t value)
     }
 }
 
-void MidiPage::configureEncoders()
+void MidiPage::configurePage()
 {
     for(int i=0; i<MAX_ROTARY_ENCODERS; i++)
     {

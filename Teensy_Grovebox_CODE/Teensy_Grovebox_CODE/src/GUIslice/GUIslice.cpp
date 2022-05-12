@@ -33,20 +33,95 @@ gslc_tsElem                     m_asPage1Elem[MAX_ELEM_PG_MIDI_RAM];
 gslc_tsElemRef                  m_asPage1ElemRef[MAX_ELEM_PG_MIDI];
 gslc_tsElem                     m_asPopup1Elem[MAX_ELEM_PG_POPUP_POWER_RAM];
 gslc_tsElemRef                  m_asPopup1ElemRef[MAX_ELEM_PG_POPUP_POWER];
+gslc_tsElem                     m_asPage2Elem[MAX_ELEM_PG_AUDIOOUT_RAM];
+gslc_tsElemRef                  m_asPage2ElemRef[MAX_ELEM_PG_AUDIOOUT];
+gslc_tsElem                     m_asPopup2Elem[MAX_ELEM_PG_POPUP_OUT_MIXER_RAM];
+gslc_tsElemRef                  m_asPopup2ElemRef[MAX_ELEM_PG_POPUP_OUT_MIXER];
+gslc_tsElem                     m_asPage3Elem[MAX_ELEM_PG_AUDIOIN_RAM];
+gslc_tsElemRef                  m_asPage3ElemRef[MAX_ELEM_PG_AUDIOIN];
+gslc_tsElem                     m_asPage4Elem[MAX_ELEM_PG_HOME_RAM];
+gslc_tsElemRef                  m_asPage4ElemRef[MAX_ELEM_PG_HOME];
 gslc_tsXRingGauge               m_sXRingGauge1;
 gslc_tsXRingGauge               m_sXRingGauge2;
 gslc_tsXRingGauge               m_sXRingGauge3;
 gslc_tsXRingGauge               m_sXRingGauge4;
+gslc_tsXProgress                m_sXBarGauge7;
+gslc_tsXProgress                m_sXBarGauge1;
+gslc_tsXProgress                m_sXBarGauge2;
+gslc_tsXSeekbar                 m_sXSeekbar1;
+gslc_tsXProgress                m_sXBarGauge9;
+gslc_tsXProgress                m_sXBarGauge10;
+gslc_tsXProgress                m_sXBarGauge11;
+gslc_tsXSeekbar                 m_sXSeekbar2;
+gslc_tsXRingGauge               m_sXRingGauge5;
+gslc_tsXProgress                m_sXBarGauge13;
+gslc_tsXProgress                m_sXBarGauge14;
+gslc_tsXSeekbar                 m_sXSeekbar3;
+gslc_tsXSeekbar                 m_sXSeekbar4;
+gslc_tsXProgress                m_sXBarGauge15;
+gslc_tsXProgress                m_sXBarGauge16;
+gslc_tsXSeekbar                 m_sXSeekbar8;
+gslc_tsXSeekbar                 m_sXSeekbar5;
+gslc_tsXSeekbar                 m_sXSeekbar6;
+gslc_tsXSeekbar                 m_sXSeekbar7;
+gslc_tsXProgress                m_sXBarGauge17;
+gslc_tsXProgress                m_sXBarGauge18;
+gslc_tsXRingGauge               m_sXRingGauge6;
+gslc_tsXSeekbar                 m_sXSeekbar9;
+gslc_tsXProgress                m_sXBarGauge19;
+gslc_tsXProgress                m_sXBarGauge20;
+gslc_tsXSeekbar                 m_sXSeekbar10;
 
 
 // Save some element references for direct access
 //<Save_References !Start!>
+gslc_tsElemRef* m_pElemAudioinGainRing= NULL;
+gslc_tsElemRef* m_pElemAudioinLineInBtn= NULL;
+gslc_tsElemRef* m_pElemAudioinLmLBar= NULL;
+gslc_tsElemRef* m_pElemAudioinLmRBar= NULL;
+gslc_tsElemRef* m_pElemAudioinLmVol= NULL;
+gslc_tsElemRef* m_pElemAudioinLmVolTxt= NULL;
+gslc_tsElemRef* m_pElemAudioinMicBtn= NULL;
+gslc_tsElemRef* m_pElemAudioinPflBtn= NULL;
+gslc_tsElemRef* m_pElemAudioinUsbLBar= NULL;
+gslc_tsElemRef* m_pElemAudioinUsbRBar= NULL;
+gslc_tsElemRef* m_pElemAudioinUsbVol= NULL;
+gslc_tsElemRef* m_pElemAudioinUsbVolTxt= NULL;
+gslc_tsElemRef* m_pElemAudiooutHpVolRing= NULL;
+gslc_tsElemRef* m_pElemAudiooutLineLBar= NULL;
+gslc_tsElemRef* m_pElemAudiooutLinePeakBar= NULL;
+gslc_tsElemRef* m_pElemAudiooutLineRBar= NULL;
+gslc_tsElemRef* m_pElemAudiooutLineVol= NULL;
+gslc_tsElemRef* m_pElemAudiooutLineVolTxt= NULL;
+gslc_tsElemRef* m_pElemAudiooutPrefaderBtn= NULL;
+gslc_tsElemRef* m_pElemAudiooutUsbLBar= NULL;
+gslc_tsElemRef* m_pElemAudiooutUsbPeakBar= NULL;
+gslc_tsElemRef* m_pElemAudiooutUsbRBar= NULL;
+gslc_tsElemRef* m_pElemAudiooutUsbVol= NULL;
+gslc_tsElemRef* m_pElemAudiooutUsbVolTxt= NULL;
+gslc_tsElemRef* m_pElemMidiModBtn = NULL;
+gslc_tsElemRef* m_pElemMidiPitchbendBtn= NULL;
 gslc_tsElemRef* m_pElemMidiRingBlue= NULL;
 gslc_tsElemRef* m_pElemMidiRingGreen= NULL;
 gslc_tsElemRef* m_pElemMidiRingRed= NULL;
 gslc_tsElemRef* m_pElemMidiRingYellow= NULL;
 gslc_tsElemRef* m_pElemMidiTxtChannel= NULL;
 gslc_tsElemRef* m_pElemMidiTxtOctave= NULL;
+gslc_tsElemRef* m_pElemOutMixerInsPan= NULL;
+gslc_tsElemRef* m_pElemOutMixerLmLBar= NULL;
+gslc_tsElemRef* m_pElemOutMixerLmPan= NULL;
+gslc_tsElemRef* m_pElemOutMixerLmRBar= NULL;
+gslc_tsElemRef* m_pElemOutMixerLmVol= NULL;
+gslc_tsElemRef* m_pElemOutMixerLmVolTxt= NULL;
+gslc_tsElemRef* m_pElemOutMixerPanBtn= NULL;
+gslc_tsElemRef* m_pElemOutMixerPflBtn= NULL;
+gslc_tsElemRef* m_pElemOutMixerRecPan= NULL;
+gslc_tsElemRef* m_pElemOutMixerTitleTxt= NULL;
+gslc_tsElemRef* m_pElemOutMixerUsbLBar= NULL;
+gslc_tsElemRef* m_pElemOutMixerUsbPan= NULL;
+gslc_tsElemRef* m_pElemOutMixerUsbRBar= NULL;
+gslc_tsElemRef* m_pElemOutMixerUsbVol= NULL;
+gslc_tsElemRef* m_pElemOutMixerUsbVolTxt= NULL;
 gslc_tsElemRef* m_pElemTxtBatt    = NULL;
 gslc_tsElemRef* m_pElemTxtTitle   = NULL;
 //<Save_References !End!>
@@ -81,8 +156,20 @@ bool CbBtnCommon(void* pvGui,void *pvElemRef,gslc_teTouch eTouch,int16_t nX,int1
 //<Listbox Callback !End!>
 //<Draw Callback !Start!>
 //<Draw Callback !End!>
-//<Slider Callback !Start!>
-//<Slider Callback !End!>
+
+// Callback function for when a slider's position has been updated
+bool CbSlidePos(void* pvGui,void* pvElemRef,int16_t nPos)
+{
+  gslc_tsGui*     pGui     = (gslc_tsGui*)(pvGui);
+  gslc_tsElemRef* pElemRef = (gslc_tsElemRef*)(pvElemRef);
+  gslc_tsElem*    pElem    = gslc_GetElemFromRef(pGui,pElemRef);
+  int16_t         nVal;
+
+  // From the element's ID we can determine which slider was updated.
+    PageManager.PageArr[PageManager.getCurPage()]->onTouch(pElem->nId);
+
+  return true;
+}
 //<Tick Callback !Start!>
 
 // Create page elements
@@ -99,6 +186,8 @@ void InitGUIslice_gen()
 //<Load_Fonts !Start!>
     if (!gslc_FontSet(&m_gui,E_ARIAL_10,GSLC_FONTREF_PTR,&Arial_10,1)) { return; }
     gslc_FontSetMode(&m_gui, E_ARIAL_10, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_ARIAL_10_BOLD,GSLC_FONTREF_PTR,&Arial_10_Bold,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_ARIAL_10_BOLD, GSLC_FONTREF_MODE_1);	
     if (!gslc_FontSet(&m_gui,E_ARIAL_12,GSLC_FONTREF_PTR,&Arial_12,1)) { return; }
     gslc_FontSetMode(&m_gui, E_ARIAL_12, GSLC_FONTREF_MODE_1);	
     if (!gslc_FontSet(&m_gui,E_ARIAL_12_BOLD,GSLC_FONTREF_PTR,&Arial_12_Bold,1)) { return; }
@@ -107,16 +196,37 @@ void InitGUIslice_gen()
     gslc_FontSetMode(&m_gui, E_ARIAL_13, GSLC_FONTREF_MODE_1);	
     if (!gslc_FontSet(&m_gui,E_ARIAL_14,GSLC_FONTREF_PTR,&Arial_14,1)) { return; }
     gslc_FontSetMode(&m_gui, E_ARIAL_14, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_ARIAL_14_BOLD,GSLC_FONTREF_PTR,&Arial_14_Bold,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_ARIAL_14_BOLD, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_ARIAL_8,GSLC_FONTREF_PTR,&Arial_8,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_ARIAL_8, GSLC_FONTREF_MODE_1);	
     if (!gslc_FontSet(&m_gui,E_AWESOMEF000_10,GSLC_FONTREF_PTR,&AwesomeF000_10,1)) { return; }
     gslc_FontSetMode(&m_gui, E_AWESOMEF000_10, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_AWESOMEF000_12,GSLC_FONTREF_PTR,&AwesomeF000_12,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_AWESOMEF000_12, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_AWESOMEF000_14,GSLC_FONTREF_PTR,&AwesomeF000_14,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_AWESOMEF000_14, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_AWESOMEF000_16,GSLC_FONTREF_PTR,&AwesomeF000_16,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_AWESOMEF000_16, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_AWESOMEF000_9,GSLC_FONTREF_PTR,&AwesomeF000_9,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_AWESOMEF000_9, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_AWESOMEF080_18,GSLC_FONTREF_PTR,&AwesomeF080_18,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_AWESOMEF080_18, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_AWESOMEF100_18,GSLC_FONTREF_PTR,&AwesomeF100_18,1)) { return; }
+    gslc_FontSetMode(&m_gui, E_AWESOMEF100_18, GSLC_FONTREF_MODE_1);	
     if (!gslc_FontSet(&m_gui,E_AWESOMEF200_14,GSLC_FONTREF_PTR,&AwesomeF200_14,1)) { return; }
     gslc_FontSetMode(&m_gui, E_AWESOMEF200_14, GSLC_FONTREF_MODE_1);	
+    if (!gslc_FontSet(&m_gui,E_BUILTIN5X8,GSLC_FONTREF_PTR,NULL,1)) { return; }
 //<Load_Fonts !End!>
 
 //<InitGUI !Start!>
   gslc_PageAdd(&m_gui,E_PG_BASE,m_asBasePage1Elem,MAX_ELEM_PG_BASE_RAM,m_asBasePage1ElemRef,MAX_ELEM_PG_BASE);
   gslc_PageAdd(&m_gui,E_PG_MIDI,m_asPage1Elem,MAX_ELEM_PG_MIDI_RAM,m_asPage1ElemRef,MAX_ELEM_PG_MIDI);
   gslc_PageAdd(&m_gui,E_PG_POPUP_POWER,m_asPopup1Elem,MAX_ELEM_PG_POPUP_POWER_RAM,m_asPopup1ElemRef,MAX_ELEM_PG_POPUP_POWER);
+  gslc_PageAdd(&m_gui,E_PG_AUDIOOUT,m_asPage2Elem,MAX_ELEM_PG_AUDIOOUT_RAM,m_asPage2ElemRef,MAX_ELEM_PG_AUDIOOUT);
+  gslc_PageAdd(&m_gui,E_PG_POPUP_OUT_MIXER,m_asPopup2Elem,MAX_ELEM_PG_POPUP_OUT_MIXER_RAM,m_asPopup2ElemRef,MAX_ELEM_PG_POPUP_OUT_MIXER);
+  gslc_PageAdd(&m_gui,E_PG_AUDIOIN,m_asPage3Elem,MAX_ELEM_PG_AUDIOIN_RAM,m_asPage3ElemRef,MAX_ELEM_PG_AUDIOIN);
+  gslc_PageAdd(&m_gui,E_PG_HOME,m_asPage4Elem,MAX_ELEM_PG_HOME_RAM,m_asPage4ElemRef,MAX_ELEM_PG_HOME);
 
   // Now mark E_PG_BASE as a "base" page which means that it's elements
   // are always visible. This is useful for common page elements.
@@ -135,7 +245,7 @@ void InitGUIslice_gen()
   
   
   // Create E_ELEM_TEXT_TITLE runtime modifiable text
-  static char m_sDisplayText5[16] = "MIDI";
+  static char m_sDisplayText5[16] = "AUDIO";
   pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT_TITLE,E_PG_BASE,(gslc_tsRect){35,10,150,13},
     (char*)m_sDisplayText5,16,E_ARIAL_12_BOLD);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
@@ -150,9 +260,9 @@ void InitGUIslice_gen()
   gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
   m_pElemTxtBatt = pElemRef;
   
-  // create E_ELEM_BTN5 button with text label
-  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_BTN5,E_PG_BASE,
-    (gslc_tsRect){0,0,30,30},(char*)"<",0,E_ARIAL_14,&CbBtnCommon);
+  // create E_ELEM_BASE_BACK_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_BASE_BACK_BTN,E_PG_BASE,
+    (gslc_tsRect){0,0,30,29},(char*)"<",0,E_ARIAL_14,&CbBtnCommon);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_BLACK,GSLC_COL_GRAY);
 
   // Create E_DRAW_LINE1 line 
@@ -165,49 +275,49 @@ void InitGUIslice_gen()
   
   // create E_ELEM_MIDI_OCTAVE_INC button with text label
   pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_MIDI_OCTAVE_INC,E_PG_MIDI,
-    (gslc_tsRect){195,125,35,35},(char*)"+",0,E_ARIAL_12_BOLD,&CbBtnCommon);
+    (gslc_tsRect){275,130,35,30},(char*)"g",0,E_AWESOMEF000_12,&CbBtnCommon);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
   gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   
   // create E_ELEM_MIDI_OCTAVE_DEC button with text label
   pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_MIDI_OCTAVE_DEC,E_PG_MIDI,
-    (gslc_tsRect){255,125,35,35},(char*)"-",0,E_ARIAL_12_BOLD,&CbBtnCommon);
+    (gslc_tsRect){230,130,35,30},(char*)"h",0,E_AWESOMEF000_9,&CbBtnCommon);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
   gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   
   // create E_ELEM_MIDI_CHANNEL_INC button with text label
   pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_MIDI_CHANNEL_INC,E_PG_MIDI,
-    (gslc_tsRect){195,170,35,35},(char*)"+",0,E_ARIAL_12_BOLD,&CbBtnCommon);
+    (gslc_tsRect){275,170,35,30},(char*)"g",0,E_AWESOMEF000_12,&CbBtnCommon);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
   gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   
   // create E_ELEM_MIDI_CHANNEL_DEC button with text label
   pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_MIDI_CHANNEL_DEC,E_PG_MIDI,
-    (gslc_tsRect){255,170,35,35},(char*)"-",0,E_ARIAL_12_BOLD,&CbBtnCommon);
+    (gslc_tsRect){230,170,35,30},(char*)"h",0,E_AWESOMEF000_9,&CbBtnCommon);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
   gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   
   // Create E_ELEM_MIDI_TEXT_1 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT_1,E_PG_MIDI,(gslc_tsRect){30,135,67,15},
-    (char*)"Octave: ",0,E_ARIAL_13);
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT_1,E_PG_MIDI,(gslc_tsRect){125,140,60,14},
+    (char*)"Octave: ",0,E_ARIAL_12);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
   // Create E_ELEM_MIDI_TEXT16 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT16,E_PG_MIDI,(gslc_tsRect){30,180,72,14},
-    (char*)"Channel:",0,E_ARIAL_13);
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT16,E_PG_MIDI,(gslc_tsRect){125,180,65,13},
+    (char*)"Channel:",0,E_ARIAL_12);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
   // Create E_ELEM_MIDI_TEXT_OCTAVE runtime modifiable text
-  static char m_sDisplayText11[4] = "0";
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT_OCTAVE,E_PG_MIDI,(gslc_tsRect){125,135,30,14},
-    (char*)m_sDisplayText11,4,E_ARIAL_13);
+  static char m_sDisplayText11[3] = "0";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT_OCTAVE,E_PG_MIDI,(gslc_tsRect){200,140,20,14},
+    (char*)m_sDisplayText11,3,E_ARIAL_13);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   m_pElemMidiTxtOctave = pElemRef;
   
   // Create E_ELEM_MIDI_TEXT_CHANNEL runtime modifiable text
-  static char m_sDisplayText17[4] = "0";
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT_CHANNEL,E_PG_MIDI,(gslc_tsRect){125,180,30,14},
-    (char*)m_sDisplayText17,4,E_ARIAL_13);
+  static char m_sDisplayText17[3] = "0";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT_CHANNEL,E_PG_MIDI,(gslc_tsRect){200,180,20,14},
+    (char*)m_sDisplayText17,3,E_ARIAL_13);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   m_pElemMidiTxtChannel = pElemRef;
 
@@ -370,6 +480,21 @@ void InitGUIslice_gen()
   pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_MIDI_TEXT26,E_PG_MIDI,(gslc_tsRect){291,219,18,13},
     (char*)"23",0,E_ARIAL_12);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // create E_ELEM_MIDI_PITCHBEND_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_MIDI_PITCHBEND_BTN,E_PG_MIDI,
+    (gslc_tsRect){10,130,80,30},(char*)"Pitch Bend",0,E_ARIAL_10,&CbBtnCommon);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_BLACK);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_WHITE,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemMidiPitchbendBtn = pElemRef;
+  
+  // create E_ELEM_MIDI_MOD_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_MIDI_MOD_BTN,E_PG_MIDI,
+    (gslc_tsRect){10,170,80,30},(char*)"MOD",0,E_ARIAL_10,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemMidiModBtn = pElemRef;
 
   // -----------------------------------
   // PAGE: E_PG_POPUP_POWER
@@ -381,7 +506,7 @@ void InitGUIslice_gen()
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_BLACK);
   
   // Create E_ELEM_TEXT27 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT27,E_PG_POPUP_POWER,(gslc_tsRect){40,37,102,16},
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT27,E_PG_POPUP_POWER,(gslc_tsRect){55,35,102,16},
     (char*)"Power Off ?",0,E_ARIAL_14);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
@@ -396,15 +521,799 @@ void InitGUIslice_gen()
   
   // create E_ELEM_POWER_BTN_YES button with text label
   pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_POWER_BTN_YES,E_PG_POPUP_POWER,
-    (gslc_tsRect){50,160,80,30},(char*)"Yes",0,E_ARIAL_13,&CbBtnCommon);
+    (gslc_tsRect){45,160,85,35},(char*)"Yes",0,E_ARIAL_14,&CbBtnCommon);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_RED_DK1,GSLC_COL_RED_DK1,GSLC_COL_RED_DK4);
   gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   
   // create E_ELEM_POWER_BTN_CALCEL button with text label
   pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_POWER_BTN_CALCEL,E_PG_POPUP_POWER,
-    (gslc_tsRect){190,160,80,30},(char*)"Cancel",0,E_ARIAL_13,&CbBtnCommon);
+    (gslc_tsRect){190,160,85,35},(char*)"Cancel",0,E_ARIAL_14,&CbBtnCommon);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_RED_DK1,GSLC_COL_BLACK,GSLC_COL_RED_DK4);
   gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  
+  // Create E_ELEM_TEXT96 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT96,E_PG_POPUP_POWER,(gslc_tsRect){30,30,19,22},
+    (char*)"j",0,E_AWESOMEF000_16);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_RED);
+
+  // -----------------------------------
+  // PAGE: E_PG_AUDIOOUT
+  
+
+  // Create progress bar E_ELEM_AUDIOOUT_USB_PEAK_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOOUT_USB_PEAK_BAR,E_PG_AUDIOOUT,&m_sXBarGauge7,
+    (gslc_tsRect){175,100,12,130},0,100,0,((gslc_tsColor){255,100,0}),true);
+  m_pElemAudiooutUsbPeakBar = pElemRef;
+
+  // Create progress bar E_ELEM_AUDIOOUT_USB_R_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOOUT_USB_R_BAR,E_PG_AUDIOOUT,&m_sXBarGauge1,
+    (gslc_tsRect){185,100,12,130},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemAudiooutUsbRBar = pElemRef;
+
+  // Create progress bar E_ELEM_AUDIOOUT_USB_L_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOOUT_USB_L_BAR,E_PG_AUDIOOUT,&m_sXBarGauge2,
+    (gslc_tsRect){165,100,12,130},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemAudiooutUsbLBar = pElemRef;
+
+  // Create seekbar E_ELEM_AUDIOOUT_USB_VOL 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_AUDIOOUT_USB_VOL,E_PG_AUDIOOUT,&m_sXSeekbar1,
+    (gslc_tsRect){110,70,20,170},0,63,30,
+    2,4,6,GSLC_COL_GRAY,((gslc_tsColor){250,230,0}),((gslc_tsColor){250,230,0}),true);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,GSLC_COL_WHITE,false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemAudiooutUsbVol = pElemRef;
+   
+  // Create E_ELEM_AUDIOOUT_USB_PEAK_R_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_AUDIOOUT_USB_PEAK_R_BOX,E_PG_AUDIOOUT,(gslc_tsRect){185,85,12,10});
+   
+  // Create E_ELEM_AUDIOOUT_USB_PEAK_L_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_AUDIOOUT_USB_PEAK_L_BOX,E_PG_AUDIOOUT,(gslc_tsRect){165,85,12,10});
+  
+  // create E_ELEM_AUDIOOUT_ANALOG_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_AUDIOOUT_ANALOG_BTN,E_PG_AUDIOOUT,
+    (gslc_tsRect){15,35,80,25},(char*)"Analog",0,E_ARIAL_12,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  
+  // Create E_ELEM_AUDIOOUT_USB_VOL_TEXT runtime modifiable text
+  static char m_sDisplayText44[5] = "-20";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_AUDIOOUT_USB_VOL_TEXT,E_PG_AUDIOOUT,(gslc_tsRect){165,65,40,13},
+    (char*)m_sDisplayText44,5,E_ARIAL_12_BOLD);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  m_pElemAudiooutUsbVolTxt = pElemRef;
+
+  // Create progress bar E_ELEM_AUDIOOUT_LINE_PEAK_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOOUT_LINE_PEAK_BAR,E_PG_AUDIOOUT,&m_sXBarGauge9,
+    (gslc_tsRect){65,100,12,130},0,100,0,((gslc_tsColor){255,100,0}),true);
+  m_pElemAudiooutLinePeakBar = pElemRef;
+
+  // Create progress bar E_ELEM_AUDIOOUT_LINE_R_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOOUT_LINE_R_BAR,E_PG_AUDIOOUT,&m_sXBarGauge10,
+    (gslc_tsRect){75,100,12,130},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemAudiooutLineRBar = pElemRef;
+
+  // Create progress bar E_ELEM_AUDIOOUT_LINE_L_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOOUT_LINE_L_BAR,E_PG_AUDIOOUT,&m_sXBarGauge11,
+    (gslc_tsRect){55,100,12,130},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemAudiooutLineLBar = pElemRef;
+
+  // Create seekbar E_ELEM_AUDIOOUT_LINE_VOL 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_AUDIOOUT_LINE_VOL,E_PG_AUDIOOUT,&m_sXSeekbar2,
+    (gslc_tsRect){5,70,20,170},0,63,22,
+    2,4,6,GSLC_COL_GRAY,GSLC_COL_RED_DK1,GSLC_COL_RED,true);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,GSLC_COL_WHITE,false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemAudiooutLineVol = pElemRef;
+   
+  // Create E_ELEM_AUDIOOUT_LINE_PEAK_R_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_AUDIOOUT_LINE_PEAK_R_BOX,E_PG_AUDIOOUT,(gslc_tsRect){75,85,12,10});
+   
+  // Create E_ELEM_AUDIOOUT_LINE_PEAK_L_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_AUDIOOUT_LINE_PEAK_L_BOX,E_PG_AUDIOOUT,(gslc_tsRect){55,85,12,10});
+  
+  // create E_ELEM_AUDIOOUT_USB_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_AUDIOOUT_USB_BTN,E_PG_AUDIOOUT,
+    (gslc_tsRect){125,35,80,25},(char*)"USB",0,E_ARIAL_12,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  
+  // Create E_ELEM_AUDIOOUT_LINE_VOL_TEXT runtime modifiable text
+  static char m_sDisplayText45[5] = "-20";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_AUDIOOUT_LINE_VOL_TEXT,E_PG_AUDIOOUT,(gslc_tsRect){55,65,40,13},
+    (char*)m_sDisplayText45,5,E_ARIAL_12_BOLD);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  m_pElemAudiooutLineVolTxt = pElemRef;
+
+  // Create ring gauge E_ELEM_AUDIOOUT_HP_VOL_RING 
+  static char m_sRingText5[4] = "";
+  pElemRef = gslc_ElemXRingGaugeCreate(&m_gui,E_ELEM_AUDIOOUT_HP_VOL_RING,E_PG_AUDIOOUT,&m_sXRingGauge5,
+          (gslc_tsRect){237,60,60,55},
+          (char*)m_sRingText5,4,E_ARIAL_12_BOLD);
+  gslc_ElemXRingGaugeSetValRange(&m_gui, pElemRef, 0, 100);
+  gslc_ElemXRingGaugeSetVal(&m_gui, pElemRef, 30); // Set initial value
+  gslc_ElemXRingGaugeSetThickness(&m_gui,pElemRef, 6);
+  gslc_ElemXRingGaugeSetAngleRange(&m_gui,pElemRef, 225, 270, true);
+  gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui,pElemRef, ((gslc_tsColor){20,20,255}));
+  gslc_ElemXRingGaugeSetColorInactive(&m_gui,pElemRef, ((gslc_tsColor){0,0,58}));
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  m_pElemAudiooutHpVolRing = pElemRef;
+  
+  // create E_ELEM_AUDIOOUT_PREFADER_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_AUDIOOUT_PREFADER_BTN,E_PG_AUDIOOUT,
+    (gslc_tsRect){227,190,85,30},(char*)"PFL",0,E_ARIAL_12,&CbBtnCommon);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_BLACK);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_WHITE,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemAudiooutPrefaderBtn = pElemRef;
+  
+  // create E_ELEM_AUDIOOUT_PP_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_AUDIOOUT_PP_BTN,E_PG_AUDIOOUT,
+    (gslc_tsRect){227,140,85,30},(char*)"Post Processing",0,E_ARIAL_8,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  
+  // Create E_ELEM_TEXT29 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT29,E_PG_AUDIOOUT,(gslc_tsRect){245,35,18,18},
+    (char*)"%",0,E_AWESOMEF000_14);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT30 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT30,E_PG_AUDIOOUT,(gslc_tsRect){275,33,10,20},
+    (char*)"&",0,E_AWESOMEF000_16);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT31 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT31,E_PG_AUDIOOUT,(gslc_tsRect){265,40,5,15},
+    (char*)"/",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT32 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT32,E_PG_AUDIOOUT,(gslc_tsRect){40,95,7,10},
+    (char*)"0",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT33 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT33,E_PG_AUDIOOUT,(gslc_tsRect){150,95,7,10},
+    (char*)"0",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT34 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT34,E_PG_AUDIOOUT,(gslc_tsRect){140,120,19,10},
+    (char*)"-10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_RIGHT);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  
+  // Create E_ELEM_TEXT36 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT36,E_PG_AUDIOOUT,(gslc_tsRect){140,70,19,10},
+    (char*)"+10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_RIGHT);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  
+  // Create E_ELEM_TEXT37 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT37,E_PG_AUDIOOUT,(gslc_tsRect){30,70,19,10},
+    (char*)"+10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_RIGHT);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  
+  // Create E_ELEM_TEXT38 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT38,E_PG_AUDIOOUT,(gslc_tsRect){140,170,19,10},
+    (char*)"-30",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT40 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT40,E_PG_AUDIOOUT,(gslc_tsRect){140,225,19,10},
+    (char*)"-52",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT41 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT41,E_PG_AUDIOOUT,(gslc_tsRect){30,225,19,10},
+    (char*)"-52",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT42 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT42,E_PG_AUDIOOUT,(gslc_tsRect){30,170,19,10},
+    (char*)"-30",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT43 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT43,E_PG_AUDIOOUT,(gslc_tsRect){30,120,19,10},
+    (char*)"-10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_RIGHT);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  
+  // Create E_ELEM_TEXT69 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT69,E_PG_AUDIOOUT,(gslc_tsRect){265,105,10,9},
+    (char*)"%",0,E_ARIAL_8);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_RIGHT);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+
+  // Create E_DRAW_LINE4 line 
+  pElemRef = gslc_ElemCreateLine(&m_gui,E_DRAW_LINE4,E_PG_AUDIOOUT,220,35,220,235);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_GRAY,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT75 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT75,E_PG_AUDIOOUT,(gslc_tsRect){200,225,13,10},
+    (char*)"dB",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_RIGHT);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  
+  // Create E_ELEM_TEXT76 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT76,E_PG_AUDIOOUT,(gslc_tsRect){90,225,13,10},
+    (char*)"dB",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_RIGHT);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+
+  // -----------------------------------
+  // PAGE: E_PG_POPUP_OUT_MIXER
+  
+   
+  // Create E_ELEM_BOX24 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX24,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){5,9,310,222});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_BLACK);
+  
+  // create E_ELEM_OUT_MIXER_BACK_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_OUT_MIXER_BACK_BTN,E_PG_POPUP_OUT_MIXER,
+    (gslc_tsRect){7,12,26,26},(char*)"<",0,E_ARIAL_14,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+
+  // Create E_DRAW_LINE3 line 
+  pElemRef = gslc_ElemCreateLine(&m_gui,E_DRAW_LINE3,E_PG_POPUP_OUT_MIXER,10,40,310,40);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_WHITE,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_OUT_MIXER_TITLE_TEXT runtime modifiable text
+  static char m_sDisplayText47[17] = "Analog out mixer";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_OUT_MIXER_TITLE_TEXT,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){35,20,160,13},
+    (char*)m_sDisplayText47,17,E_ARIAL_12_BOLD);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  m_pElemOutMixerTitleTxt = pElemRef;
+
+  // Create progress bar E_ELEM_OUT_MIXER_LM_R_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_OUT_MIXER_LM_R_BAR,E_PG_POPUP_OUT_MIXER,&m_sXBarGauge13,
+    (gslc_tsRect){65,120,12,100},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemOutMixerLmRBar = pElemRef;
+
+  // Create progress bar E_ELEM_OUT_MIXER_LM_L_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_OUT_MIXER_LM_L_BAR,E_PG_POPUP_OUT_MIXER,&m_sXBarGauge14,
+    (gslc_tsRect){50,120,12,100},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemOutMixerLmLBar = pElemRef;
+
+  // Create seekbar E_ELEM_OUT_MIXER_LM_VOL 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_OUT_MIXER_LM_VOL,E_PG_POPUP_OUT_MIXER,&m_sXSeekbar3,
+    (gslc_tsRect){10,95,15,133},0,61,20,
+    2,4,6,GSLC_COL_GRAY,GSLC_COL_RED_DK1,GSLC_COL_RED,true);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,GSLC_COL_WHITE,false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemOutMixerLmVol = pElemRef;
+   
+  // Create E_ELEM_OUT_MIXER_LM_PEAK_R_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_OUT_MIXER_LM_PEAK_R_BOX,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){65,105,12,10});
+   
+  // Create E_ELEM_OUT_MIXER_LM_PEAK_L_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_OUT_MIXER_LM_PEAK_L_BOX,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){50,105,12,10});
+
+  // Create seekbar E_ELEM_OUT_MIXER_LM_PAN 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_OUT_MIXER_LM_PAN,E_PG_POPUP_OUT_MIXER,&m_sXSeekbar4,
+    (gslc_tsRect){15,65,65,20},0,60,30,
+    2,2,6,GSLC_COL_GRAY,GSLC_COL_GRAY,GSLC_COL_WHITE,false);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,GSLC_COL_RED,false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemOutMixerLmPan = pElemRef;
+  
+  // Create E_ELEM_OUT_MIXER_LM_VOL_TEXT runtime modifiable text
+  static char m_sDisplayText56[5] = "-20";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_OUT_MIXER_LM_VOL_TEXT,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){45,85,36,11},
+    (char*)m_sDisplayText56,5,E_ARIAL_10_BOLD);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  m_pElemOutMixerLmVolTxt = pElemRef;
+
+  // Create progress bar E_ELEM_OUT_MIXER_USB_R_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_OUT_MIXER_USB_R_BAR,E_PG_POPUP_OUT_MIXER,&m_sXBarGauge15,
+    (gslc_tsRect){140,120,12,100},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemOutMixerUsbRBar = pElemRef;
+
+  // Create progress bar E_ELEM_OUT_MIXER_USB_L_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_OUT_MIXER_USB_L_BAR,E_PG_POPUP_OUT_MIXER,&m_sXBarGauge16,
+    (gslc_tsRect){125,120,12,100},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemOutMixerUsbLBar = pElemRef;
+
+  // Create seekbar E_ELEM_OUT_MIXER_USB_VOL 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_OUT_MIXER_USB_VOL,E_PG_POPUP_OUT_MIXER,&m_sXSeekbar8,
+    (gslc_tsRect){85,95,15,133},0,61,20,
+    2,4,6,GSLC_COL_GRAY,((gslc_tsColor){250,230,0}),((gslc_tsColor){250,230,0}),true);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,GSLC_COL_WHITE,false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemOutMixerUsbVol = pElemRef;
+   
+  // Create E_ELEM_OUT_MIXER_USB_PEAK_R_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_OUT_MIXER_USB_PEAK_R_BOX,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){140,105,12,10});
+   
+  // Create E_ELEM_OUT_MIXER_USB_PEAK_L_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_OUT_MIXER_USB_PEAK_L_BOX,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){125,105,12,10});
+
+  // Create seekbar E_ELEM_OUT_MIXER_USB_PAN 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_OUT_MIXER_USB_PAN,E_PG_POPUP_OUT_MIXER,&m_sXSeekbar5,
+    (gslc_tsRect){90,65,65,20},0,60,30,
+    2,2,6,GSLC_COL_GRAY,GSLC_COL_GRAY,GSLC_COL_WHITE,false);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,((gslc_tsColor){250,230,0}),false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemOutMixerUsbPan = pElemRef;
+  
+  // Create E_ELEM_OUT_MIXER_USB_VOL_TEXT runtime modifiable text
+  static char m_sDisplayText58[5] = "-20";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_OUT_MIXER_USB_VOL_TEXT,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){120,85,36,11},
+    (char*)m_sDisplayText58,5,E_ARIAL_10_BOLD);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  m_pElemOutMixerUsbVolTxt = pElemRef;
+
+  // Create seekbar E_ELEM_OUT_MIXER_INS_PAN 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_OUT_MIXER_INS_PAN,E_PG_POPUP_OUT_MIXER,&m_sXSeekbar6,
+    (gslc_tsRect){165,65,65,20},0,60,30,
+    2,2,6,GSLC_COL_GRAY,GSLC_COL_GRAY,GSLC_COL_WHITE,false);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,((gslc_tsColor){20,20,255}),false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemOutMixerInsPan = pElemRef;
+
+  // Create seekbar E_ELEM_OUT_MIXER_REC_PAN 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_OUT_MIXER_REC_PAN,E_PG_POPUP_OUT_MIXER,&m_sXSeekbar7,
+    (gslc_tsRect){240,65,65,20},0,60,30,
+    2,2,6,GSLC_COL_GRAY,GSLC_COL_GRAY,GSLC_COL_WHITE,false);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,GSLC_COL_GREEN_DK2,false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemOutMixerRecPan = pElemRef;
+  
+  // create E_ELEM_OUT_MIXER_PFL_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_OUT_MIXER_PFL_BTN,E_PG_POPUP_OUT_MIXER,
+    (gslc_tsRect){250,15,60,20},(char*)"PFL",0,E_ARIAL_12,&CbBtnCommon);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_BLACK);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_WHITE,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemOutMixerPflBtn = pElemRef;
+  
+  // create E_ELEM_OUT_MIXER_PAN_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_OUT_MIXER_PAN_BTN,E_PG_POPUP_OUT_MIXER,
+    (gslc_tsRect){185,15,60,20},(char*)"PAN",0,E_ARIAL_12,&CbBtnCommon);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_BLACK);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_RED_LT2,GSLC_COL_RED_LT2,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemOutMixerPanBtn = pElemRef;
+  
+  // Create E_ELEM_TEXT48 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT48,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){35,115,7,10},
+    (char*)"0",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT49 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT49,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){25,95,19,10},
+    (char*)"+10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT50 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT50,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){25,135,19,10},
+    (char*)"-10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT52 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT52,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){25,175,19,10},
+    (char*)"-30",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT54 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT54,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){25,215,19,10},
+    (char*)"-50",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT55 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT55,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){20,50,52,11},
+    (char*)"Line/Mic",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT57 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT57,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){107,50,27,11},
+    (char*)"USB",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT59 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT59,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){100,95,19,10},
+    (char*)"+10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT60 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT60,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){110,115,7,10},
+    (char*)"0",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT61 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT61,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){100,135,19,10},
+    (char*)"-10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT62 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT62,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){100,175,19,10},
+    (char*)"-30",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT63 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT63,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){100,215,19,10},
+    (char*)"-50",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT64 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT64,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){160,50,73,11},
+    (char*)"Instruments",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT65 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT65,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){245,50,54,11},
+    (char*)"Recoder",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT66 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT66,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){180,150,28,11},
+    (char*)"TBD",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT67 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT67,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){255,150,28,11},
+    (char*)"TBD",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+
+  // -----------------------------------
+  // PAGE: E_PG_AUDIOIN
+  
+
+  // Create progress bar E_ELEM_AUDIOIN_LM_L_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOIN_LM_L_BAR,E_PG_AUDIOIN,&m_sXBarGauge17,
+    (gslc_tsRect){150,105,12,125},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemAudioinLmLBar = pElemRef;
+
+  // Create progress bar E_ELEM_AUDIOIN_LM_R_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOIN_LM_R_BAR,E_PG_AUDIOIN,&m_sXBarGauge18,
+    (gslc_tsRect){170,105,12,125},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemAudioinLmRBar = pElemRef;
+   
+  // Create E_ELEM_AUDIOIN_LM_PEAK_L_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_AUDIOIN_LM_PEAK_L_BOX,E_PG_AUDIOIN,(gslc_tsRect){150,90,12,10});
+   
+  // Create E_ELEM_AUDIOIN_LM_PEAK_R_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_AUDIOIN_LM_PEAK_R_BOX,E_PG_AUDIOIN,(gslc_tsRect){170,90,12,10});
+  
+  // Create E_ELEM_AUDIOIN_LM_VOL_TEXT runtime modifiable text
+  static char m_sDisplayText87[5] = "-20";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_AUDIOIN_LM_VOL_TEXT,E_PG_AUDIOIN,(gslc_tsRect){150,60,48,15},
+    (char*)m_sDisplayText87,5,E_ARIAL_14_BOLD);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  m_pElemAudioinLmVolTxt = pElemRef;
+  
+  // create E_ELEM_AUDIOIN_LINE_IN_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_AUDIOIN_LINE_IN_BTN,E_PG_AUDIOIN,
+    (gslc_tsRect){15,55,75,25},(char*)"LINE IN",0,E_ARIAL_12,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemAudioinLineInBtn = pElemRef;
+  
+  // create E_ELEM_AUDIOIN_MIC_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_AUDIOIN_MIC_BTN,E_PG_AUDIOIN,
+    (gslc_tsRect){15,85,75,25},(char*)"MIC",0,E_ARIAL_12,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemAudioinMicBtn = pElemRef;
+
+  // Create ring gauge E_ELEM_AUDIOIN_GAIN_RING 
+  static char m_sRingText6[4] = "";
+  pElemRef = gslc_ElemXRingGaugeCreate(&m_gui,E_ELEM_AUDIOIN_GAIN_RING,E_PG_AUDIOIN,&m_sXRingGauge6,
+          (gslc_tsRect){20,140,60,55},
+          (char*)m_sRingText6,4,E_ARIAL_12_BOLD);
+  gslc_ElemXRingGaugeSetValRange(&m_gui, pElemRef, 0, 63);
+  gslc_ElemXRingGaugeSetVal(&m_gui, pElemRef, 20); // Set initial value
+  gslc_ElemXRingGaugeSetThickness(&m_gui,pElemRef, 6);
+  gslc_ElemXRingGaugeSetAngleRange(&m_gui,pElemRef, 225, 270, true);
+  gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui,pElemRef, GSLC_COL_RED);
+  gslc_ElemXRingGaugeSetColorInactive(&m_gui,pElemRef, ((gslc_tsColor){79,0,0}));
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  m_pElemAudioinGainRing = pElemRef;
+  
+  // create E_ELEM_AUDIOIN_PFL_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_AUDIOIN_PFL_BTN,E_PG_AUDIOIN,
+    (gslc_tsRect){15,205,75,25},(char*)"PFL",0,E_ARIAL_12,&CbBtnCommon);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_BLACK);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_WHITE,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemAudioinPflBtn = pElemRef;
+
+  // Create seekbar E_ELEM_AUDIOIN_LM_VOL 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_AUDIOIN_LM_VOL,E_PG_AUDIOIN,&m_sXSeekbar9,
+    (gslc_tsRect){105,75,20,163},0,61,20,
+    2,4,6,GSLC_COL_GRAY,((gslc_tsColor){250,230,0}),((gslc_tsColor){250,230,0}),true);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,GSLC_COL_WHITE,false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemAudioinLmVol = pElemRef;
+
+  // Create progress bar E_ELEM_AUDIOIN_USB_L_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOIN_USB_L_BAR,E_PG_AUDIOIN,&m_sXBarGauge19,
+    (gslc_tsRect){265,105,12,125},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemAudioinUsbLBar = pElemRef;
+
+  // Create progress bar E_ELEM_AUDIOIN_USB_R_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_AUDIOIN_USB_R_BAR,E_PG_AUDIOIN,&m_sXBarGauge20,
+    (gslc_tsRect){285,105,12,125},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemAudioinUsbRBar = pElemRef;
+   
+  // Create E_ELEM_AUDIOIN_USB_PEAK_L_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_AUDIOIN_USB_PEAK_L_BOX,E_PG_AUDIOIN,(gslc_tsRect){265,90,12,10});
+   
+  // Create E_ELEM_AUDIOIN_USB_PEAK_R_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_AUDIOIN_USB_PEAK_R_BOX,E_PG_AUDIOIN,(gslc_tsRect){285,90,12,10});
+
+  // Create seekbar E_ELEM_AUDIOIN_USB_VOL 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_AUDIOIN_USB_VOL,E_PG_AUDIOIN,&m_sXSeekbar10,
+    (gslc_tsRect){220,75,20,163},0,61,20,
+    2,4,6,GSLC_COL_GRAY,((gslc_tsColor){20,20,255}),((gslc_tsColor){20,20,255}),true);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,GSLC_COL_WHITE,false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemAudioinUsbVol = pElemRef;
+  
+  // Create E_ELEM_AUDIOIN_USB_VOL_TEXT runtime modifiable text
+  static char m_sDisplayText88[5] = "-20";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_AUDIOIN_USB_VOL_TEXT,E_PG_AUDIOIN,(gslc_tsRect){265,60,48,15},
+    (char*)m_sDisplayText88,5,E_ARIAL_14_BOLD);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  m_pElemAudioinUsbVolTxt = pElemRef;
+  
+  // Create E_ELEM_TEXT77 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT77,E_PG_AUDIOIN,(gslc_tsRect){15,35,80,14},
+    (char*)"Input Source",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT78 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT78,E_PG_AUDIOIN,(gslc_tsRect){20,120,65,14},
+    (char*)"Input Gain",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT79 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT79,E_PG_AUDIOIN,(gslc_tsRect){40,185,17,11},
+    (char*)"dB",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT80 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT80,E_PG_AUDIOIN,(gslc_tsRect){125,35,50,16},
+    (char*)"Analog",0,E_ARIAL_12);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_BLACK);
+  
+  // Create E_ELEM_TEXT81 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT81,E_PG_AUDIOIN,(gslc_tsRect){245,35,33,13},
+    (char*)"USB",0,E_ARIAL_12);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT82 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT82,E_PG_AUDIOIN,(gslc_tsRect){125,75,19,10},
+    (char*)"+10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT83 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT83,E_PG_AUDIOIN,(gslc_tsRect){135,100,7,10},
+    (char*)"0",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT84 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT84,E_PG_AUDIOIN,(gslc_tsRect){125,125,19,10},
+    (char*)"-10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT85 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT85,E_PG_AUDIOIN,(gslc_tsRect){125,225,19,10},
+    (char*)"-50",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT86 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT86,E_PG_AUDIOIN,(gslc_tsRect){125,175,19,10},
+    (char*)"-30",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT89 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT89,E_PG_AUDIOIN,(gslc_tsRect){240,75,19,10},
+    (char*)"+10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT90 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT90,E_PG_AUDIOIN,(gslc_tsRect){250,100,7,10},
+    (char*)"0",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT91 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT91,E_PG_AUDIOIN,(gslc_tsRect){240,125,19,10},
+    (char*)"-10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT92 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT92,E_PG_AUDIOIN,(gslc_tsRect){240,175,19,10},
+    (char*)"-30",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT93 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT93,E_PG_AUDIOIN,(gslc_tsRect){240,225,19,10},
+    (char*)"-50",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+
+  // Create E_DRAW_LINE7 line 
+  pElemRef = gslc_ElemCreateLine(&m_gui,E_DRAW_LINE7,E_PG_AUDIOIN,205,35,205,235);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_GRAY,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT94 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT94,E_PG_AUDIOIN,(gslc_tsRect){185,225,13,10},
+    (char*)"dB",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_RIGHT);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+  
+  // Create E_ELEM_TEXT95 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT95,E_PG_AUDIOIN,(gslc_tsRect){300,225,13,10},
+    (char*)"dB",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_RIGHT);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetTxtEnc(&m_gui,pElemRef,GSLC_TXT_ENC_UTF8);
+
+  // -----------------------------------
+  // PAGE: E_PG_HOME
+  
+   
+  // Create E_ELEM_BOX29 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX29,E_PG_HOME,(gslc_tsRect){10,40,140,40});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
+  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT99 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT99,E_PG_HOME,(gslc_tsRect){55,55,47,19},
+    (char*)"Synth",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+   
+  // Create E_ELEM_BOX30 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX30,E_PG_HOME,(gslc_tsRect){10,90,140,40});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
+  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+ 
+  // Create E_ELEM_IMAGE4 using Image 
+  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE4,E_PG_HOME,(gslc_tsRect){15,45,30,30},
+    gslc_GetImageFromProg((const unsigned char*)IMG_SYNTH_LOGO,GSLC_IMGREF_FMT_BMP24));
+ 
+  // Create E_ELEM_IMAGE5 using Image 
+  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE5,E_PG_HOME,(gslc_tsRect){15,95,30,30},
+    gslc_GetImageFromProg((const unsigned char*)IMG_MIDI_LOGO,GSLC_IMGREF_FMT_BMP24));
+  
+  // Create E_ELEM_TEXT101 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT101,E_PG_HOME,(gslc_tsRect){55,105,41,15},
+    (char*)"MIDI",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+   
+  // Create E_ELEM_BOX31 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX31,E_PG_HOME,(gslc_tsRect){165,40,140,40});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
+  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT102 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT102,E_PG_HOME,(gslc_tsRect){200,55,97,15},
+    (char*)"WaveTable",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+ 
+  // Create E_ELEM_IMAGE6 using Image 
+  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE6,E_PG_HOME,(gslc_tsRect){170,45,30,30},
+    gslc_GetImageFromProg((const unsigned char*)IMG_SF2_LOGO,GSLC_IMGREF_FMT_BMP24));
+   
+  // Create E_ELEM_BOX32 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX32,E_PG_HOME,(gslc_tsRect){10,190,140,40});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
+  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+ 
+  // Create E_ELEM_IMAGE7 using Image 
+  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE7,E_PG_HOME,(gslc_tsRect){15,195,30,30},
+    gslc_GetImageFromProg((const unsigned char*)IMG_FX_LOGO,GSLC_IMGREF_FMT_BMP24));
+  
+  // Create E_ELEM_TEXT104 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT104,E_PG_HOME,(gslc_tsRect){55,205,25,15},
+    (char*)"FX",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+   
+  // Create E_ELEM_BOX33 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX33,E_PG_HOME,(gslc_tsRect){10,140,140,40});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
+  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT105 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT105,E_PG_HOME,(gslc_tsRect){20,150,16,24},
+    (char*)"0",0,E_AWESOMEF100_18);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT106 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT106,E_PG_HOME,(gslc_tsRect){55,155,74,15},
+    (char*)"Recoder",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+   
+  // Create E_ELEM_BOX34 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX34,E_PG_HOME,(gslc_tsRect){165,190,140,40});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
+  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT107 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT107,E_PG_HOME,(gslc_tsRect){175,200,23,25},
+    (char*)"-",0,E_AWESOMEF080_18);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT108 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT108,E_PG_HOME,(gslc_tsRect){205,205,69,19},
+    (char*)"Settings",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+   
+  // Create E_ELEM_BOX35 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX35,E_PG_HOME,(gslc_tsRect){165,140,140,40});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
+  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT109 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT109,E_PG_HOME,(gslc_tsRect){175,150,23,25},
+    (char*)"-",0,E_AWESOMEF080_18);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT110 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT110,E_PG_HOME,(gslc_tsRect){205,155,82,19},
+    (char*)"Keyboard",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+   
+  // Create E_ELEM_BOX36 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX36,E_PG_HOME,(gslc_tsRect){165,90,140,40});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
+  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  
+  // Create E_ELEM_TEXT111 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT111,E_PG_HOME,(gslc_tsRect){205,105,46,15},
+    (char*)"Drum",0,E_ARIAL_14);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
 //<InitGUI !End!>
 
 //<Startup !Start!>

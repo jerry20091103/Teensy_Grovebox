@@ -57,7 +57,7 @@ void PowerPopup::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
 
 }
 
-void PowerPopup::configureEncoders()
+void PowerPopup::configurePage()
 {
 
 }

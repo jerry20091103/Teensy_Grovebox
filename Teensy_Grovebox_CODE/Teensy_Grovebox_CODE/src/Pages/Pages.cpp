@@ -1,6 +1,9 @@
 #include "Pages/Pages.h"
 #include "MidiPage.h"
 #include "PowerPopup.h"
+#include "AudiooutPage.h"
+#include "OutMixerPopup.h"
+#include "AudioinPage.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -22,12 +25,19 @@ void PageManager_::Init()
 {
     PageArr[E_PG_MIDI] = new MidiPage();
     PageArr[E_PG_POPUP_POWER] = new PowerPopup();
+    PageArr[E_PG_AUDIOOUT] = new AudiooutPage();
+    PageArr[E_PG_POPUP_OUT_MIXER] = new OutMixerPopup();
+    PageArr[E_PG_AUDIOIN] = new AudioinPage();
+    PageArr[E_PG_HOME] = nullptr;
+
+    Serial.println("Page constructor");
 
     for(auto i : PageArr)
     {
-        if(i == NULL)
+        if(i == nullptr)
             continue;
         i->init();
+        Serial.println("Page init" + String(i->pageID));
     }
 }
 
@@ -35,10 +45,10 @@ void PageManager_::switchPage(int pageID)
 {
     if(inPopup)
         hidePopup();
-
+    lastPage = getCurPage();
     gslc_SetPageCur(&m_gui, pageID);
     gslc_ElemSetTxtStr(&m_gui, m_pElemTxtTitle, PageArr[getCurPage()]->pageName);
-    PageArr[getCurPage()]->configureEncoders();
+    PageArr[getCurPage()]->configurePage();
 }
 
 void PageManager_::showPopup(int pageID)
@@ -49,7 +59,7 @@ void PageManager_::showPopup(int pageID)
     gslc_PopupShow(&m_gui, pageID, true);
     curPopupID = pageID;
     inPopup = true;
-    PageArr[getCurPage()]->configureEncoders();
+    PageArr[getCurPage()]->configurePage();
 }
 
 void PageManager_::hidePopup()
@@ -59,5 +69,19 @@ void PageManager_::hidePopup()
 
     gslc_PopupHide(&m_gui);
     inPopup = false;
-    PageArr[getCurPage()]->configureEncoders();
+    PageArr[getCurPage()]->configurePage();
+}
+
+void Pages::toggleButton(gslc_tsElemRef *ref, bool state)
+{
+    if(state)
+    {
+        gslc_ElemSetCol(&m_gui, ref, GSLC_COL_WHITE, GSLC_COL_WHITE, GSLC_COL_GRAY);
+        gslc_ElemSetTxtCol(&m_gui, ref, GSLC_COL_BLACK);
+    }
+    else
+    {
+        gslc_ElemSetCol(&m_gui, ref, GSLC_COL_WHITE, GSLC_COL_BLACK, GSLC_COL_GRAY);
+        gslc_ElemSetTxtCol(&m_gui, ref, GSLC_COL_WHITE);
+    }
 }

@@ -16,7 +16,7 @@ public:
     void onJoyUpdate(int joy_x, int joy_y);
     void onTouch(int ref);
     void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value);
-    void configureEncoders();
+    void configurePage();
 
     void update();
     void draw();
