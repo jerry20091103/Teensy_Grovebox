@@ -1187,133 +1187,93 @@ void InitGUIslice_gen()
   // -----------------------------------
   // PAGE: E_PG_HOME
   
-   
-  // Create E_ELEM_BOX29 box
-  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX29,E_PG_HOME,(gslc_tsRect){10,40,140,40});
-  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
-  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
-  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
-  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
   
-  // Create E_ELEM_TEXT99 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT99,E_PG_HOME,(gslc_tsRect){55,55,47,19},
-    (char*)"Synth",0,E_ARIAL_14);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-   
-  // Create E_ELEM_BOX30 box
-  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX30,E_PG_HOME,(gslc_tsRect){10,90,140,40});
-  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
-  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
-  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  // create E_ELEM_HOME_SYNTH_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_HOME_SYNTH_BTN,E_PG_HOME,
+    (gslc_tsRect){10,40,140,40},(char*)"        Synth",0,E_ARIAL_14,&CbBtnCommon);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_LEFT);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
- 
-  // Create E_ELEM_IMAGE4 using Image 
-  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE4,E_PG_HOME,(gslc_tsRect){15,45,30,30},
-    gslc_GetImageFromProg((const unsigned char*)IMG_SYNTH_LOGO,GSLC_IMGREF_FMT_BMP24));
- 
-  // Create E_ELEM_IMAGE5 using Image 
-  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE5,E_PG_HOME,(gslc_tsRect){15,95,30,30},
-    gslc_GetImageFromProg((const unsigned char*)IMG_MIDI_LOGO,GSLC_IMGREF_FMT_BMP24));
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   
-  // Create E_ELEM_TEXT101 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT101,E_PG_HOME,(gslc_tsRect){55,105,41,15},
-    (char*)"MIDI",0,E_ARIAL_14);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-   
-  // Create E_ELEM_BOX31 box
-  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX31,E_PG_HOME,(gslc_tsRect){165,40,140,40});
-  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
-  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
-  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  // create E_ELEM_HOME_MIDI_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_HOME_MIDI_BTN,E_PG_HOME,
+    (gslc_tsRect){10,90,140,40},(char*)"        MIDI",0,E_ARIAL_14,&CbBtnCommon);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_LEFT);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   
-  // Create E_ELEM_TEXT102 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT102,E_PG_HOME,(gslc_tsRect){200,55,97,15},
-    (char*)"WaveTable",0,E_ARIAL_14);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
- 
-  // Create E_ELEM_IMAGE6 using Image 
-  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE6,E_PG_HOME,(gslc_tsRect){170,45,30,30},
-    gslc_GetImageFromProg((const unsigned char*)IMG_SF2_LOGO,GSLC_IMGREF_FMT_BMP24));
-   
-  // Create E_ELEM_BOX32 box
-  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX32,E_PG_HOME,(gslc_tsRect){10,190,140,40});
-  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
-  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
-  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  // create E_ELEM_HOME_RECODER_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_HOME_RECODER_BTN,E_PG_HOME,
+    (gslc_tsRect){10,140,140,40},(char*)"        Recoder",0,E_ARIAL_14,&CbBtnCommon);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_LEFT);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
- 
-  // Create E_ELEM_IMAGE7 using Image 
-  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE7,E_PG_HOME,(gslc_tsRect){15,195,30,30},
-    gslc_GetImageFromProg((const unsigned char*)IMG_FX_LOGO,GSLC_IMGREF_FMT_BMP24));
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   
-  // Create E_ELEM_TEXT104 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT104,E_PG_HOME,(gslc_tsRect){55,205,25,15},
-    (char*)"FX",0,E_ARIAL_14);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-   
-  // Create E_ELEM_BOX33 box
-  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX33,E_PG_HOME,(gslc_tsRect){10,140,140,40});
-  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
-  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
-  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
+  // create E_ELEM_HOME_FX_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_HOME_FX_BTN,E_PG_HOME,
+    (gslc_tsRect){10,190,140,40},(char*)"        FX",0,E_ARIAL_14,&CbBtnCommon);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_LEFT);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  
+  // create E_ELEM_HOME_WAVE_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_HOME_WAVE_BTN,E_PG_HOME,
+    (gslc_tsRect){170,40,140,40},(char*)"        WaveTable",0,E_ARIAL_13,&CbBtnCommon);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_LEFT);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  
+  // create E_ELEM_HOME_DRUM_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_HOME_DRUM_BTN,E_PG_HOME,
+    (gslc_tsRect){170,90,140,40},(char*)"        Drum",0,E_ARIAL_14,&CbBtnCommon);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_LEFT);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  
+  // create E_ELEM_HOME_KEYBOARD_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_HOME_KEYBOARD_BTN,E_PG_HOME,
+    (gslc_tsRect){170,140,140,40},(char*)"        Keyboard",0,E_ARIAL_14,&CbBtnCommon);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_LEFT);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  
+  // create E_ELEM_HOME_SETTINGS_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_HOME_SETTINGS_BTN,E_PG_HOME,
+    (gslc_tsRect){170,190,140,40},(char*)"        Settings",0,E_ARIAL_14,&CbBtnCommon);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_LEFT);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   
   // Create E_ELEM_TEXT105 text label
   pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT105,E_PG_HOME,(gslc_tsRect){20,150,16,24},
     (char*)"0",0,E_AWESOMEF100_18);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
-  // Create E_ELEM_TEXT106 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT106,E_PG_HOME,(gslc_tsRect){55,155,74,15},
-    (char*)"Recoder",0,E_ARIAL_14);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-   
-  // Create E_ELEM_BOX34 box
-  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX34,E_PG_HOME,(gslc_tsRect){165,190,140,40});
-  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
-  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
-  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
-  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
-  
   // Create E_ELEM_TEXT107 text label
   pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT107,E_PG_HOME,(gslc_tsRect){175,200,23,25},
     (char*)"-",0,E_AWESOMEF080_18);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
-  // Create E_ELEM_TEXT108 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT108,E_PG_HOME,(gslc_tsRect){205,205,69,19},
-    (char*)"Settings",0,E_ARIAL_14);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-   
-  // Create E_ELEM_BOX35 box
-  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX35,E_PG_HOME,(gslc_tsRect){165,140,140,40});
-  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
-  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
-  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
-  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
-  
   // Create E_ELEM_TEXT109 text label
   pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT109,E_PG_HOME,(gslc_tsRect){175,150,23,25},
     (char*)"-",0,E_AWESOMEF080_18);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-  
-  // Create E_ELEM_TEXT110 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT110,E_PG_HOME,(gslc_tsRect){205,155,82,19},
-    (char*)"Keyboard",0,E_ARIAL_14);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-   
-  // Create E_ELEM_BOX36 box
-  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX36,E_PG_HOME,(gslc_tsRect){165,90,140,40});
-  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
-  gslc_ElemSetClickEn(&m_gui, pElemRef, true);
-  gslc_ElemSetTouchFunc(&m_gui, pElemRef, &CbBtnCommon);
-  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
-  
-  // Create E_ELEM_TEXT111 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT111,E_PG_HOME,(gslc_tsRect){205,105,46,15},
-    (char*)"Drum",0,E_ARIAL_14);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+ 
+  // Create E_ELEM_IMAGE13 using Image 
+  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE13,E_PG_HOME,(gslc_tsRect){15,95,30,30},
+    gslc_GetImageFromProg((const unsigned char*)midi_logo,GSLC_IMGREF_FMT_BMP24));
+ 
+  // Create E_ELEM_IMAGE16 using Image 
+  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE16,E_PG_HOME,(gslc_tsRect){15,45,30,30},
+    gslc_GetImageFromProg((const unsigned char*)synth_logo,GSLC_IMGREF_FMT_BMP24));
+ 
+  // Create E_ELEM_IMAGE17 using Image 
+  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE17,E_PG_HOME,(gslc_tsRect){175,45,30,30},
+    gslc_GetImageFromProg((const unsigned char*)sf2_logo,GSLC_IMGREF_FMT_BMP24));
+ 
+  // Create E_ELEM_IMAGE18 using Image 
+  pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE18,E_PG_HOME,(gslc_tsRect){15,195,30,30},
+    gslc_GetImageFromProg((const unsigned char*)fx_logo,GSLC_IMGREF_FMT_BMP24));
 //<InitGUI !End!>
 
 //<Startup !Start!>

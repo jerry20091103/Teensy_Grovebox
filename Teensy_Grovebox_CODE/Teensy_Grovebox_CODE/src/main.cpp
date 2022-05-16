@@ -1,11 +1,14 @@
 #include "GUIslice/GUIslice_GSLC.h"
 #include "Hardware.h"
 #include "font_Arial.h"
-#include "Test.h"
 #include "Controls.h"
 #include "Pages/Pages.h"
 #include "AudioObjects.h"
 #include "AudioIO.h"
+
+int bar_test;
+int batt_level;
+unsigned long lastBarUpdate;
 
 void update_gslc()
 {
@@ -29,8 +32,8 @@ void setup()
     digitalWrite(0, LOW); 
 
     Serial.begin(9600);
-    //while (!Serial)
-    //     ; // wait for Arduino Serial Monitor
+    while (!Serial)
+        ; // wait for Arduino Serial Monitor
     Serial.println("Setup begin!");
 
     digitalWrite(BAR_MODE, HIGH);

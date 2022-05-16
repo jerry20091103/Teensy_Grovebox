@@ -209,6 +209,7 @@ void MidiPage::onEncTurned(uint8_t id, int value)
 
 void MidiPage::onJoyUpdate(int joy_x, int joy_y)
 {
+    // TODO: joystick centering
     if(usePitchbend)
         usbMIDI.sendPitchBend(map(joy_x, 0, 1019, 8191, -8192), midiChannel);
     if(useModwheel)
@@ -250,6 +251,9 @@ void MidiPage::onTouch(int ref)
     case E_ELEM_MIDI_MOD_BTN:
         useModwheel = !useModwheel;
         toggleButton(m_pElemMidiModBtn, useModwheel);
+        break;
+    case E_ELEM_BASE_BACK_BTN:
+        PageManager.switchPage(E_PG_HOME);
         break;
     }
 }

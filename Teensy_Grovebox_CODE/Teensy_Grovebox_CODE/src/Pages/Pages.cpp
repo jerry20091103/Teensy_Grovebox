@@ -4,6 +4,7 @@
 #include "AudiooutPage.h"
 #include "OutMixerPopup.h"
 #include "AudioinPage.h"
+#include "HomePage.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -28,7 +29,7 @@ void PageManager_::Init()
     PageArr[E_PG_AUDIOOUT] = new AudiooutPage();
     PageArr[E_PG_POPUP_OUT_MIXER] = new OutMixerPopup();
     PageArr[E_PG_AUDIOIN] = new AudioinPage();
-    PageArr[E_PG_HOME] = nullptr;
+    PageArr[E_PG_HOME] = new HomePage();
 
     Serial.println("Page constructor");
 
