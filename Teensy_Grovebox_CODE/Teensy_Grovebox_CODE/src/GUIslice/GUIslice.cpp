@@ -41,6 +41,8 @@ gslc_tsElem                     m_asPage3Elem[MAX_ELEM_PG_AUDIOIN_RAM];
 gslc_tsElemRef                  m_asPage3ElemRef[MAX_ELEM_PG_AUDIOIN];
 gslc_tsElem                     m_asPage4Elem[MAX_ELEM_PG_HOME_RAM];
 gslc_tsElemRef                  m_asPage4ElemRef[MAX_ELEM_PG_HOME];
+gslc_tsElem                     m_asPage5Elem[MAX_ELEM_PG_WAVE_RAM];
+gslc_tsElemRef                  m_asPage5ElemRef[MAX_ELEM_PG_WAVE];
 gslc_tsXRingGauge               m_sXRingGauge1;
 gslc_tsXRingGauge               m_sXRingGauge2;
 gslc_tsXRingGauge               m_sXRingGauge3;
@@ -62,6 +64,9 @@ gslc_tsXProgress                m_sXBarGauge15;
 gslc_tsXProgress                m_sXBarGauge16;
 gslc_tsXSeekbar                 m_sXSeekbar8;
 gslc_tsXSeekbar                 m_sXSeekbar5;
+gslc_tsXProgress                m_sXBarGauge22;
+gslc_tsXProgress                m_sXBarGauge21;
+gslc_tsXSeekbar                 m_sXSeekbar11;
 gslc_tsXSeekbar                 m_sXSeekbar6;
 gslc_tsXSeekbar                 m_sXSeekbar7;
 gslc_tsXProgress                m_sXBarGauge17;
@@ -107,7 +112,11 @@ gslc_tsElemRef* m_pElemMidiRingRed= NULL;
 gslc_tsElemRef* m_pElemMidiRingYellow= NULL;
 gslc_tsElemRef* m_pElemMidiTxtChannel= NULL;
 gslc_tsElemRef* m_pElemMidiTxtOctave= NULL;
+gslc_tsElemRef* m_pElemOutMixerInsLBar= NULL;
 gslc_tsElemRef* m_pElemOutMixerInsPan= NULL;
+gslc_tsElemRef* m_pElemOutMixerInsRBar= NULL;
+gslc_tsElemRef* m_pElemOutMixerInsVol= NULL;
+gslc_tsElemRef* m_pElemOutMixerInsVolTxt= NULL;
 gslc_tsElemRef* m_pElemOutMixerLmLBar= NULL;
 gslc_tsElemRef* m_pElemOutMixerLmPan= NULL;
 gslc_tsElemRef* m_pElemOutMixerLmRBar= NULL;
@@ -227,6 +236,7 @@ void InitGUIslice_gen()
   gslc_PageAdd(&m_gui,E_PG_POPUP_OUT_MIXER,m_asPopup2Elem,MAX_ELEM_PG_POPUP_OUT_MIXER_RAM,m_asPopup2ElemRef,MAX_ELEM_PG_POPUP_OUT_MIXER);
   gslc_PageAdd(&m_gui,E_PG_AUDIOIN,m_asPage3Elem,MAX_ELEM_PG_AUDIOIN_RAM,m_asPage3ElemRef,MAX_ELEM_PG_AUDIOIN);
   gslc_PageAdd(&m_gui,E_PG_HOME,m_asPage4Elem,MAX_ELEM_PG_HOME_RAM,m_asPage4ElemRef,MAX_ELEM_PG_HOME);
+  gslc_PageAdd(&m_gui,E_PG_WAVE,m_asPage5Elem,MAX_ELEM_PG_WAVE_RAM,m_asPage5ElemRef,MAX_ELEM_PG_WAVE);
 
   // Now mark E_PG_BASE as a "base" page which means that it's elements
   // are always visible. This is useful for common page elements.
@@ -245,9 +255,9 @@ void InitGUIslice_gen()
   
   
   // Create E_ELEM_TEXT_TITLE runtime modifiable text
-  static char m_sDisplayText5[16] = "AUDIO";
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT_TITLE,E_PG_BASE,(gslc_tsRect){35,10,150,13},
-    (char*)m_sDisplayText5,16,E_ARIAL_12_BOLD);
+  static char m_sDisplayText5[21] = "AUDIO";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT_TITLE,E_PG_BASE,(gslc_tsRect){35,10,200,13},
+    (char*)m_sDisplayText5,21,E_ARIAL_12_BOLD);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   m_pElemTxtTitle = pElemRef;
   
@@ -763,7 +773,7 @@ void InitGUIslice_gen()
   
    
   // Create E_ELEM_BOX24 box
-  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX24,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){5,9,310,222});
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX24,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){5,10,310,222});
   gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_BLACK);
   
@@ -868,6 +878,31 @@ void InitGUIslice_gen()
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   m_pElemOutMixerUsbVolTxt = pElemRef;
 
+  // Create progress bar E_ELEM_OUT_MIXER_INS_R_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_OUT_MIXER_INS_R_BAR,E_PG_POPUP_OUT_MIXER,&m_sXBarGauge22,
+    (gslc_tsRect){215,120,12,100},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemOutMixerInsRBar = pElemRef;
+
+  // Create progress bar E_ELEM_OUT_MIXER_INS_L_BAR 
+  pElemRef = gslc_ElemXProgressCreate(&m_gui,E_ELEM_OUT_MIXER_INS_L_BAR,E_PG_POPUP_OUT_MIXER,&m_sXBarGauge21,
+    (gslc_tsRect){200,120,12,100},0,100,0,GSLC_COL_GREEN_LT3,true);
+  m_pElemOutMixerInsLBar = pElemRef;
+
+  // Create seekbar E_ELEM_OUT_MIXER_INS_VOL 
+  pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_OUT_MIXER_INS_VOL,E_PG_POPUP_OUT_MIXER,&m_sXSeekbar11,
+    (gslc_tsRect){160,95,15,133},0,61,20,
+    2,4,6,GSLC_COL_GRAY,((gslc_tsColor){20,20,255}),((gslc_tsColor){20,20,255}),true);
+  gslc_ElemXSeekbarSetPosFunc(&m_gui,pElemRef,&CbSlidePos);
+  gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,GSLC_COL_WHITE,false,GSLC_COL_GRAY,
+    0,100,GSLC_COL_GRAY);
+  m_pElemOutMixerInsVol = pElemRef;
+   
+  // Create E_ELEM_OUT_MIXER_INS_PEAK_R_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_OUT_MIXER_INS_PEAK_R_BOX,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){215,105,12,10});
+   
+  // Create E_ELEM_OUT_MIXER_INS_PEAK_L_BOX box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_OUT_MIXER_INS_PEAK_L_BOX,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){200,105,12,10});
+
   // Create seekbar E_ELEM_OUT_MIXER_INS_PAN 
   pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_OUT_MIXER_INS_PAN,E_PG_POPUP_OUT_MIXER,&m_sXSeekbar6,
     (gslc_tsRect){165,65,65,20},0,60,30,
@@ -876,6 +911,14 @@ void InitGUIslice_gen()
   gslc_ElemXSeekbarSetStyle(&m_gui,pElemRef,true,((gslc_tsColor){20,20,255}),false,GSLC_COL_GRAY,
     0,100,GSLC_COL_GRAY);
   m_pElemOutMixerInsPan = pElemRef;
+  
+  // Create E_ELEM_OUT_MIXER_INS_VOL_TEXT runtime modifiable text
+  static char m_sDisplayText118[5] = "-20";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_OUT_MIXER_INS_VOL_TEXT,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){195,85,36,11},
+    (char*)m_sDisplayText118,5,E_ARIAL_10_BOLD);
+  gslc_ElemSetTxtAlign(&m_gui,pElemRef,GSLC_ALIGN_MID_MID);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  m_pElemOutMixerInsVolTxt = pElemRef;
 
   // Create seekbar E_ELEM_OUT_MIXER_REC_PAN 
   pElemRef = gslc_ElemXSeekbarCreate(&m_gui,E_ELEM_OUT_MIXER_REC_PAN,E_PG_POPUP_OUT_MIXER,&m_sXSeekbar7,
@@ -972,14 +1015,34 @@ void InitGUIslice_gen()
     (char*)"Recoder",0,E_ARIAL_10);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
-  // Create E_ELEM_TEXT66 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT66,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){180,150,28,11},
-    (char*)"TBD",0,E_ARIAL_10);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-  
   // Create E_ELEM_TEXT67 text label
   pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT67,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){255,150,28,11},
     (char*)"TBD",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT113 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT113,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){175,95,19,10},
+    (char*)"+10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT114 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT114,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){185,115,7,10},
+    (char*)"0",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT115 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT115,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){175,135,19,10},
+    (char*)"-10",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT116 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT116,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){175,175,19,10},
+    (char*)"-30",0,E_BUILTIN5X8);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT117 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT117,E_PG_POPUP_OUT_MIXER,(gslc_tsRect){175,215,19,10},
+    (char*)"-50",0,E_BUILTIN5X8);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
 
   // -----------------------------------
@@ -1274,6 +1337,14 @@ void InitGUIslice_gen()
   // Create E_ELEM_IMAGE18 using Image 
   pElemRef = gslc_ElemCreateImg(&m_gui,E_ELEM_IMAGE18,E_PG_HOME,(gslc_tsRect){15,195,30,30},
     gslc_GetImageFromProg((const unsigned char*)fx_logo,GSLC_IMGREF_FMT_BMP24));
+
+  // -----------------------------------
+  // PAGE: E_PG_WAVE
+  
+  
+  // Create E_ELEM_TEXT112 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT112,E_PG_WAVE,(gslc_tsRect){10,45,56,15},
+    (char*)"TODO",0,E_ARIAL_14);
 //<InitGUI !End!>
 
 //<Startup !Start!>

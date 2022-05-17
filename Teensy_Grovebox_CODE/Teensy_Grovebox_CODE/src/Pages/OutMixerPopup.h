@@ -19,8 +19,8 @@ private:
     bool usePFL = false;
 
     uint8_t peakHold[2][2] = {{0, 0}, {0, 0}};
-    gslc_tsElemRef *peakBox[2][2];
-    gslc_tsElemRef *peakBar[2][2];
+    gslc_tsElemRef *peakBox[3][2];
+    gslc_tsElemRef *peakBar[3][2];
 
     MasterTracks currentMasterTrack = MasterTracks::ANALOG_OUT;
     bool adjustingPan = false;

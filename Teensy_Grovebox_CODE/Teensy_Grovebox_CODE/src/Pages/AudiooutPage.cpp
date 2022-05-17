@@ -7,7 +7,7 @@ void AudiooutPage::onBtnPressed(uint8_t pin)
     uint8_t keyNum = PinToKeyNum(pin);
     if (keyNum > 0)
     {
-       PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
+        PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
     }
     else
     {
@@ -17,6 +17,9 @@ void AudiooutPage::onBtnPressed(uint8_t pin)
             // switch to previous page and then immediately switch back to Audioin page
             PageManager.switchPage(PageManager.lastPage);
             PageManager.switchPage(E_PG_AUDIOIN);
+            break;
+        case BTN_JOY:
+            PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
             break;
         }
     }
@@ -29,7 +32,6 @@ void AudiooutPage::onBtnHold(uint8_t pin)
     case BTN_PWR:
         PageManager.showPopup(E_PG_POPUP_POWER);
         break;
-
     }
 }
 
@@ -38,7 +40,16 @@ void AudiooutPage::onBtnReleased(uint8_t pin)
     uint8_t keyNum = PinToKeyNum(pin);
     if (keyNum > 0)
     {
-       PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+        PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+    }
+    else
+    {
+        switch (pin)
+        {
+        case BTN_JOY:
+            PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+            break;
+        }
     }
 }
 
@@ -314,7 +325,7 @@ void AudiooutPage::setPFL(bool flag)
 {
     usePFL = flag;
     toggleButton(m_pElemAudiooutPrefaderBtn, flag);
-    if(usePFL)
+    if (usePFL)
     {
         AudioIO.setMasterLevelMode(LevelMeterMode::PRE_FADER);
     }

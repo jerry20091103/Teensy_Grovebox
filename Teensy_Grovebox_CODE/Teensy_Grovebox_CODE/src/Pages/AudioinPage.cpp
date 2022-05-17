@@ -17,6 +17,9 @@ void AudioinPage::onBtnPressed(uint8_t pin)
             // switch to previous page and then immediately switch back to Audioin page
             PageManager.switchPage(PageManager.lastPage);
             break;
+        case BTN_JOY:
+            PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
+            break;
         }
     }
 }
@@ -37,6 +40,15 @@ void AudioinPage::onBtnReleased(uint8_t pin)
     if (keyNum > 0)
     {
         PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+    }
+    else
+    {
+        switch (pin)
+        {
+        case BTN_JOY:
+            PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+            break;
+        }
     }
 }
 
@@ -112,6 +124,11 @@ void AudioinPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value
 
 void AudioinPage::configurePage()
 {
+    // input source, gain and volume may be changed by synth for velocity, need to change back.
+    sgtl5000_1.inputSelect(inputSource);
+    setInputGain(inputGain[inputSource]);
+    updateInputVol(InputTracks::LINEMIC_IN, inputVol[0]);
+
     switches.changeEncoderPrecision(0, inputSource ? MIC_GAIN_MAX : LINE_GAIN_MAX, inputGain[inputSource], false);
     switches.changeEncoderPrecision(1, INPUT_VOL_MAX, inputVol[0], false);
     switches.changeEncoderPrecision(2, INPUT_VOL_MAX, inputVol[1], false);

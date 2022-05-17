@@ -43,7 +43,9 @@ void HomePage::onTouch(int ref)
     case E_ELEM_HOME_MIDI_BTN:
         PageManager.switchPage(E_PG_MIDI);
         break;
-    
+    case E_ELEM_HOME_WAVE_BTN:
+        PageManager.switchPage(E_PG_WAVE);
+        break;
     default:
         break;
     }

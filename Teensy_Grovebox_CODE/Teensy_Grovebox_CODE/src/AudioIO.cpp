@@ -35,6 +35,8 @@ AudioIO_::AudioIO_()
     mixerPeak[MixerTracks::I2S][1] = &peakMixerLmR;
     mixerPeak[MixerTracks::USB][0] = &peakMixerUsbL;
     mixerPeak[MixerTracks::USB][1] = &peakMixerUsbR;
+    mixerPeak[MixerTracks::INSTRUMENTS][0] = &peakMixerInsL;
+    mixerPeak[MixerTracks::INSTRUMENTS][1] = &peakMixerInsR;
 
     outputMeterSWPeak[MasterTracks::ANALOG_OUT][0] = &mixerSWPeakI2sL;
     outputMeterSWPeak[MasterTracks::ANALOG_OUT][1] = &mixerSWPeakI2sR;

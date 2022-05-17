@@ -1,13 +1,25 @@
 #include "OutMixerPopup.h"
 #include "Hardware.h"
+#include "Controls.h"
 
 void OutMixerPopup::onBtnPressed(uint8_t pin)
 {
-    switch (pin)
+    uint8_t keyNum = PinToKeyNum(pin);
+    if (keyNum > 0)
     {
-    case BTN_FN0:
-        onTouch(E_ELEM_OUT_MIXER_PAN_BTN);
-        break;
+        PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
+    }
+    else
+    {
+        switch (pin)
+        {
+        case BTN_FN0:
+            onTouch(E_ELEM_OUT_MIXER_PAN_BTN);
+            break;
+        case BTN_JOY:
+            PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
+        break;;
+        }
     }
 }
 
@@ -17,7 +29,20 @@ void OutMixerPopup::onBtnHold(uint8_t pin)
 
 void OutMixerPopup::onBtnReleased(uint8_t pin)
 {
-
+    uint8_t keyNum = PinToKeyNum(pin);
+    if (keyNum > 0)
+    {
+        PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+    }
+    else
+    {
+        switch (pin)
+        {
+        case BTN_JOY:
+            PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+            break;
+        }
+    }
 }
 
 void OutMixerPopup::onEncTurned(uint8_t id, int value)
@@ -46,6 +71,18 @@ void OutMixerPopup::onEncTurned(uint8_t id, int value)
         {
             gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerUsbVol, TRACK_VOL_MAX - value);
             updateTrackVol(MixerTracks::USB, value);
+        }
+        break;
+    case 2:
+        if (adjustingPan)
+        {
+            gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerInsPan, value);
+            updateTrackPan(MixerTracks::INSTRUMENTS, value);
+        }
+        else
+        {
+            gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerInsVol, TRACK_VOL_MAX - value);
+            updateTrackVol(MixerTracks::INSTRUMENTS, value);
         }
         break;
         // TODO: Other tracks
@@ -84,6 +121,12 @@ void OutMixerPopup::onTouch(int ref)
         if (!adjustingPan)
             enc1->setCurrentReading(TRACK_VOL_MAX - temp);
         break;
+    case E_ELEM_OUT_MIXER_INS_VOL:
+        temp = gslc_ElemXSeekbarGetPos(&m_gui, m_pElemOutMixerInsVol);
+        updateTrackVol(MixerTracks::INSTRUMENTS, TRACK_VOL_MAX - temp);
+        if (!adjustingPan)
+            enc2->setCurrentReading(TRACK_VOL_MAX - temp);
+        break;
         // TODO: volume for Other tracks
 
     case E_ELEM_OUT_MIXER_LM_PAN:
@@ -97,6 +140,12 @@ void OutMixerPopup::onTouch(int ref)
         updateTrackPan(MixerTracks::USB, temp);
         if (adjustingPan)
             enc1->setCurrentReading(temp);
+        break;
+    case E_ELEM_OUT_MIXER_INS_PAN:
+        temp = gslc_ElemXSeekbarGetPos(&m_gui, m_pElemOutMixerInsPan);
+        updateTrackPan(MixerTracks::INSTRUMENTS, temp);
+        if (adjustingPan)
+            enc2->setCurrentReading(temp);
         break;
         // TODO: pan for Other tracks
     }
@@ -123,11 +172,14 @@ void OutMixerPopup::configurePage()
     // set pan state
     changeEncState(adjustingPan);
     // set current volume and pan level
+    // TODO: add more tracks
     gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerLmVol, TRACK_VOL_MAX - trackVol[currentMasterTrack][0]);
     gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerUsbVol, TRACK_VOL_MAX - trackVol[currentMasterTrack][1]);
+    gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerInsVol, TRACK_VOL_MAX - trackVol[currentMasterTrack][2]);
 
     gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerLmPan, trackPan[currentMasterTrack][0]);
     gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerUsbPan, trackPan[currentMasterTrack][1]);
+    gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerInsPan, trackPan[currentMasterTrack][2]);
 }
 
 void OutMixerPopup::update()
@@ -135,7 +187,7 @@ void OutMixerPopup::update()
     floatStereo temp;
     float temp_peak[2];
     // TODO: add more tracks
-    for (uint8_t i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 3; i++)
     {
         temp = AudioIO.getMixerPeak(currentMasterTrack, (MixerTracks)i);
         temp_peak[0] = temp.l;
@@ -196,11 +248,15 @@ void OutMixerPopup::init()
     peakBox[MixerTracks::I2S][1] = gslc_PageFindElemById(&m_gui, E_PG_POPUP_OUT_MIXER, E_ELEM_OUT_MIXER_LM_PEAK_R_BOX);
     peakBox[MixerTracks::USB][0] = gslc_PageFindElemById(&m_gui, E_PG_POPUP_OUT_MIXER, E_ELEM_OUT_MIXER_USB_PEAK_L_BOX);
     peakBox[MixerTracks::USB][1] = gslc_PageFindElemById(&m_gui, E_PG_POPUP_OUT_MIXER, E_ELEM_OUT_MIXER_USB_PEAK_L_BOX);
+    peakBox[MixerTracks::INSTRUMENTS][0] = gslc_PageFindElemById(&m_gui, E_PG_POPUP_OUT_MIXER, E_ELEM_OUT_MIXER_INS_PEAK_L_BOX);
+    peakBox[MixerTracks::INSTRUMENTS][1] = gslc_PageFindElemById(&m_gui, E_PG_POPUP_OUT_MIXER, E_ELEM_OUT_MIXER_INS_PEAK_L_BOX);
 
     peakBar[MixerTracks::I2S][0] = m_pElemOutMixerLmLBar;
     peakBar[MixerTracks::I2S][1] = m_pElemOutMixerLmRBar;
     peakBar[MixerTracks::USB][0] = m_pElemOutMixerUsbLBar;
     peakBar[MixerTracks::USB][1] = m_pElemOutMixerUsbRBar;
+    peakBar[MixerTracks::INSTRUMENTS][0] = m_pElemOutMixerInsLBar;
+    peakBar[MixerTracks::INSTRUMENTS][1] = m_pElemOutMixerInsRBar;
 }
 
 void OutMixerPopup::setPFL(bool flag)
@@ -231,7 +287,7 @@ void OutMixerPopup::updateTrackVol(MixerTracks track, uint8_t value)
         txtRef = m_pElemOutMixerUsbVolTxt;
         break;
     case MixerTracks::INSTRUMENTS:
-        // TODO
+        txtRef = m_pElemOutMixerInsVolTxt;
         break;
     case MixerTracks::RECORDER:
         // TODO

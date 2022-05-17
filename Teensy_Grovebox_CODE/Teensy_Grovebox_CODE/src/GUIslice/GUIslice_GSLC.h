@@ -55,7 +55,7 @@ extern "C" const unsigned short synth_logo[] PROGMEM;
 // ------------------------------------------------
 //<Enum !Start!>
 enum {E_PG_BASE,E_PG_MIDI,E_PG_POPUP_POWER,E_PG_AUDIOOUT
-      ,E_PG_POPUP_OUT_MIXER,E_PG_AUDIOIN,E_PG_HOME};
+      ,E_PG_POPUP_OUT_MIXER,E_PG_AUDIOIN,E_PG_HOME,E_PG_WAVE};
 enum {E_DRAW_LINE1,E_DRAW_LINE2,E_DRAW_LINE3,E_DRAW_LINE4,E_DRAW_LINE7
       ,E_ELEM_AUDIOIN_GAIN_RING,E_ELEM_AUDIOIN_LINE_IN_BTN
       ,E_ELEM_AUDIOIN_LM_L_BAR,E_ELEM_AUDIOIN_LM_PEAK_L_BOX
@@ -95,7 +95,10 @@ enum {E_DRAW_LINE1,E_DRAW_LINE2,E_DRAW_LINE3,E_DRAW_LINE4,E_DRAW_LINE7
       ,E_ELEM_MIDI_TEXT_OCTAVE,E_ELEM_MIDI_TEXT_PLAY_F04B
       ,E_ELEM_MIDI_TEXT_STOP_F04D,E_ELEM_MIDI_YELLOW_BOX3
       ,E_ELEM_MIDI_YELLOW_BOX4,E_ELEM_OUT_MIXER_BACK_BTN
-      ,E_ELEM_OUT_MIXER_INS_PAN,E_ELEM_OUT_MIXER_LM_L_BAR
+      ,E_ELEM_OUT_MIXER_INS_L_BAR,E_ELEM_OUT_MIXER_INS_PAN
+      ,E_ELEM_OUT_MIXER_INS_PEAK_L_BOX,E_ELEM_OUT_MIXER_INS_PEAK_R_BOX
+      ,E_ELEM_OUT_MIXER_INS_R_BAR,E_ELEM_OUT_MIXER_INS_VOL
+      ,E_ELEM_OUT_MIXER_INS_VOL_TEXT,E_ELEM_OUT_MIXER_LM_L_BAR
       ,E_ELEM_OUT_MIXER_LM_PAN,E_ELEM_OUT_MIXER_LM_PEAK_L_BOX
       ,E_ELEM_OUT_MIXER_LM_PEAK_R_BOX,E_ELEM_OUT_MIXER_LM_R_BAR
       ,E_ELEM_OUT_MIXER_LM_VOL,E_ELEM_OUT_MIXER_LM_VOL_TEXT
@@ -106,20 +109,21 @@ enum {E_DRAW_LINE1,E_DRAW_LINE2,E_DRAW_LINE3,E_DRAW_LINE4,E_DRAW_LINE7
       ,E_ELEM_OUT_MIXER_USB_R_BAR,E_ELEM_OUT_MIXER_USB_VOL
       ,E_ELEM_OUT_MIXER_USB_VOL_TEXT,E_ELEM_POWER_BTN_CALCEL
       ,E_ELEM_POWER_BTN_YES,E_ELEM_TEXT105,E_ELEM_TEXT107
-      ,E_ELEM_TEXT109,E_ELEM_TEXT27,E_ELEM_TEXT28,E_ELEM_TEXT29
-      ,E_ELEM_TEXT30,E_ELEM_TEXT31,E_ELEM_TEXT32,E_ELEM_TEXT33
-      ,E_ELEM_TEXT34,E_ELEM_TEXT36,E_ELEM_TEXT37,E_ELEM_TEXT38
-      ,E_ELEM_TEXT40,E_ELEM_TEXT41,E_ELEM_TEXT42,E_ELEM_TEXT43
-      ,E_ELEM_TEXT48,E_ELEM_TEXT49,E_ELEM_TEXT50,E_ELEM_TEXT52
-      ,E_ELEM_TEXT54,E_ELEM_TEXT55,E_ELEM_TEXT57,E_ELEM_TEXT59
-      ,E_ELEM_TEXT60,E_ELEM_TEXT61,E_ELEM_TEXT62,E_ELEM_TEXT63
-      ,E_ELEM_TEXT64,E_ELEM_TEXT65,E_ELEM_TEXT66,E_ELEM_TEXT67
-      ,E_ELEM_TEXT69,E_ELEM_TEXT75,E_ELEM_TEXT76,E_ELEM_TEXT77
-      ,E_ELEM_TEXT78,E_ELEM_TEXT79,E_ELEM_TEXT80,E_ELEM_TEXT81
-      ,E_ELEM_TEXT82,E_ELEM_TEXT83,E_ELEM_TEXT84,E_ELEM_TEXT85
-      ,E_ELEM_TEXT86,E_ELEM_TEXT89,E_ELEM_TEXT90,E_ELEM_TEXT91
-      ,E_ELEM_TEXT92,E_ELEM_TEXT93,E_ELEM_TEXT94,E_ELEM_TEXT95
-      ,E_ELEM_TEXT96,E_ELEM_TEXT_BATT,E_ELEM_TEXT_TITLE};
+      ,E_ELEM_TEXT109,E_ELEM_TEXT112,E_ELEM_TEXT113,E_ELEM_TEXT114
+      ,E_ELEM_TEXT115,E_ELEM_TEXT116,E_ELEM_TEXT117,E_ELEM_TEXT27
+      ,E_ELEM_TEXT28,E_ELEM_TEXT29,E_ELEM_TEXT30,E_ELEM_TEXT31
+      ,E_ELEM_TEXT32,E_ELEM_TEXT33,E_ELEM_TEXT34,E_ELEM_TEXT36
+      ,E_ELEM_TEXT37,E_ELEM_TEXT38,E_ELEM_TEXT40,E_ELEM_TEXT41
+      ,E_ELEM_TEXT42,E_ELEM_TEXT43,E_ELEM_TEXT48,E_ELEM_TEXT49
+      ,E_ELEM_TEXT50,E_ELEM_TEXT52,E_ELEM_TEXT54,E_ELEM_TEXT55
+      ,E_ELEM_TEXT57,E_ELEM_TEXT59,E_ELEM_TEXT60,E_ELEM_TEXT61
+      ,E_ELEM_TEXT62,E_ELEM_TEXT63,E_ELEM_TEXT64,E_ELEM_TEXT65
+      ,E_ELEM_TEXT67,E_ELEM_TEXT69,E_ELEM_TEXT75,E_ELEM_TEXT76
+      ,E_ELEM_TEXT77,E_ELEM_TEXT78,E_ELEM_TEXT79,E_ELEM_TEXT80
+      ,E_ELEM_TEXT81,E_ELEM_TEXT82,E_ELEM_TEXT83,E_ELEM_TEXT84
+      ,E_ELEM_TEXT85,E_ELEM_TEXT86,E_ELEM_TEXT89,E_ELEM_TEXT90
+      ,E_ELEM_TEXT91,E_ELEM_TEXT92,E_ELEM_TEXT93,E_ELEM_TEXT94
+      ,E_ELEM_TEXT95,E_ELEM_TEXT96,E_ELEM_TEXT_BATT,E_ELEM_TEXT_TITLE};
 // Must use separate enum for fonts with MAX_FONT at end to use gslc_FontSet.
 enum {E_ARIAL_10,E_ARIAL_10_BOLD,E_ARIAL_12,E_ARIAL_12_BOLD,E_ARIAL_13
       ,E_ARIAL_14,E_ARIAL_14_BOLD,E_ARIAL_8,E_AWESOMEF000_10
@@ -136,7 +140,7 @@ enum {E_ARIAL_10,E_ARIAL_10_BOLD,E_ARIAL_12,E_ARIAL_12_BOLD,E_ARIAL_13
 // Define the maximum number of elements and pages
 // ------------------------------------------------
 //<ElementDefines !Start!>
-#define MAX_PAGE                7
+#define MAX_PAGE                8
 
 #define MAX_ELEM_PG_BASE 4 // # Elems total on page
 #define MAX_ELEM_PG_BASE_RAM MAX_ELEM_PG_BASE // # Elems in RAM
@@ -150,7 +154,7 @@ enum {E_ARIAL_10,E_ARIAL_10_BOLD,E_ARIAL_12,E_ARIAL_12_BOLD,E_ARIAL_13
 #define MAX_ELEM_PG_AUDIOOUT 36 // # Elems total on page
 #define MAX_ELEM_PG_AUDIOOUT_RAM MAX_ELEM_PG_AUDIOOUT // # Elems in RAM
 
-#define MAX_ELEM_PG_POPUP_OUT_MIXER 38 // # Elems total on page
+#define MAX_ELEM_PG_POPUP_OUT_MIXER 48 // # Elems total on page
 #define MAX_ELEM_PG_POPUP_OUT_MIXER_RAM MAX_ELEM_PG_POPUP_OUT_MIXER // # Elems in RAM
 
 #define MAX_ELEM_PG_AUDIOIN 34 // # Elems total on page
@@ -158,6 +162,9 @@ enum {E_ARIAL_10,E_ARIAL_10_BOLD,E_ARIAL_12,E_ARIAL_12_BOLD,E_ARIAL_13
 
 #define MAX_ELEM_PG_HOME 15 // # Elems total on page
 #define MAX_ELEM_PG_HOME_RAM MAX_ELEM_PG_HOME // # Elems in RAM
+
+#define MAX_ELEM_PG_WAVE 1 // # Elems total on page
+#define MAX_ELEM_PG_WAVE_RAM MAX_ELEM_PG_WAVE // # Elems in RAM
 //<ElementDefines !End!>
 
 // ------------------------------------------------
@@ -183,6 +190,8 @@ extern gslc_tsElem                     m_asPage3Elem[MAX_ELEM_PG_AUDIOIN_RAM];
 extern gslc_tsElemRef                  m_asPage3ElemRef[MAX_ELEM_PG_AUDIOIN];
 extern gslc_tsElem                     m_asPage4Elem[MAX_ELEM_PG_HOME_RAM];
 extern gslc_tsElemRef                  m_asPage4ElemRef[MAX_ELEM_PG_HOME];
+extern gslc_tsElem                     m_asPage5Elem[MAX_ELEM_PG_WAVE_RAM];
+extern gslc_tsElemRef                  m_asPage5ElemRef[MAX_ELEM_PG_WAVE];
 extern gslc_tsXRingGauge               m_sXRingGauge1;
 extern gslc_tsXRingGauge               m_sXRingGauge2;
 extern gslc_tsXRingGauge               m_sXRingGauge3;
@@ -204,6 +213,9 @@ extern gslc_tsXProgress                m_sXBarGauge15;
 extern gslc_tsXProgress                m_sXBarGauge16;
 extern gslc_tsXSeekbar                 m_sXSeekbar8;
 extern gslc_tsXSeekbar                 m_sXSeekbar5;
+extern gslc_tsXProgress                m_sXBarGauge22;
+extern gslc_tsXProgress                m_sXBarGauge21;
+extern gslc_tsXSeekbar                 m_sXSeekbar11;
 extern gslc_tsXSeekbar                 m_sXSeekbar6;
 extern gslc_tsXSeekbar                 m_sXSeekbar7;
 extern gslc_tsXProgress                m_sXBarGauge17;
@@ -256,7 +268,11 @@ extern gslc_tsElemRef* m_pElemMidiRingRed;
 extern gslc_tsElemRef* m_pElemMidiRingYellow;
 extern gslc_tsElemRef* m_pElemMidiTxtChannel;
 extern gslc_tsElemRef* m_pElemMidiTxtOctave;
+extern gslc_tsElemRef* m_pElemOutMixerInsLBar;
 extern gslc_tsElemRef* m_pElemOutMixerInsPan;
+extern gslc_tsElemRef* m_pElemOutMixerInsRBar;
+extern gslc_tsElemRef* m_pElemOutMixerInsVol;
+extern gslc_tsElemRef* m_pElemOutMixerInsVolTxt;
 extern gslc_tsElemRef* m_pElemOutMixerLmLBar;
 extern gslc_tsElemRef* m_pElemOutMixerLmPan;
 extern gslc_tsElemRef* m_pElemOutMixerLmRBar;
