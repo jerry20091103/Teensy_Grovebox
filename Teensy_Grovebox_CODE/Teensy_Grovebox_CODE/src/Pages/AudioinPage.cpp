@@ -158,12 +158,8 @@ void AudioinPage::update()
             if (peakHold[i][j] > 0)
             {
                 peakHold[i][j]--;
-                gslc_ElemSetCol(&m_gui, peakBox[i][j], GSLC_COL_GRAY, GSLC_COL_RED, GSLC_COL_RED);
             }
-            else
-            {
-                gslc_ElemSetCol(&m_gui, peakBox[i][j], GSLC_COL_GRAY, GSLC_COL_BLACK, GSLC_COL_BLACK);
-            }
+            togglePeakBox(peakBox[i][j], (bool)peakHold[i][j]);
         }
     }
 }

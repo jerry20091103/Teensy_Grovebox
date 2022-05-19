@@ -6,7 +6,6 @@
 
 #define MASTER_VOL_MAX 63
 #define RMS_AVG_TIME 10
-#define PEAK_HOLD_TIME 100
 
 // A page for audio output adjustments and audio quick settings.
 // Also links to output mixer popup for further adjustments.
@@ -18,17 +17,12 @@ private:
     uint8_t hpVol = 15;
     bool usePFL = false;
 
-    float rmsAvgAnalog = 0;
-    float rmsAvgUsb = 0;
-    uint8_t peakHoldAnalogL = 0;
-    uint8_t peakHoldAnalogR = 0;
-    uint8_t peakHoldUsbL = 0;
-    uint8_t peakHoldUsbR = 0;
+    float rmsAvg[2] = {0, 0};
+    uint8_t peakHold[2][2] = {{0, 0}, {0, 0}};
 
-    gslc_tsElemRef *peakBoxAnalogL;
-    gslc_tsElemRef *peakBoxAnalogR;
-    gslc_tsElemRef *peakBoxUsbL;
-    gslc_tsElemRef *peakBoxUsbR;
+    gslc_tsElemRef *peakBox[2][2];
+    gslc_tsElemRef *peakBar[2][2];
+    gslc_tsElemRef *rmsBar[2];
 
     void updateHpVol(uint8_t newVal);
     void updateOutVolume(MasterTracks track, uint8_t newVal);

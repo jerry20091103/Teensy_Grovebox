@@ -7,7 +7,6 @@
 #define INPUT_VOL_MAX 61
 #define LINE_GAIN_MAX 15
 #define MIC_GAIN_MAX 63
-#define PEAK_HOLD_TIME 100
 
 // A page for audio input adjustments
 class AudioinPage : public Pages

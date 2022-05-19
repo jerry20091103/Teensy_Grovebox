@@ -5,6 +5,8 @@
 
 #define MAX_PAGE_NAME 20
 
+#define PEAK_HOLD_TIME 100
+
 // Pages class
 // A virtual class for other pages to inherit from
 class Pages
@@ -39,6 +41,7 @@ public:
 protected:
     // some common graphic functions for all pages
     void toggleButton(gslc_tsElemRef *ref, bool state);
+    void togglePeakBox(gslc_tsElemRef *ref, bool peak);
 };
 
 // PagesManager class

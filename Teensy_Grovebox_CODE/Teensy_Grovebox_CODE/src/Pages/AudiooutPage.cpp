@@ -131,111 +131,41 @@ void AudiooutPage::update()
 {
     // read peak and rms data
     float temp_rms;
-    float temp_peak;
+    float temp_peak[2];
     floatStereo temp;
-
-    // *analog out
-    temp = AudioIO.getMasterRMS(MasterTracks::ANALOG_OUT);
-    if (temp.l >= 0)
+    for (uint8_t i = 0; i < 2; i++)
     {
+        temp = AudioIO.getMasterPeak((MasterTracks)i);
+        temp_peak[0] = temp.l;
+        temp_peak[1] = temp.r;
+        temp = AudioIO.getMasterRMS((MasterTracks)i);
         temp_rms = max(temp.l, temp.r);
-        // calculate running average
-        temp_rms = (temp_rms + rmsAvgAnalog * RMS_AVG_TIME) / (RMS_AVG_TIME + 1);
-        rmsAvgAnalog = temp_rms;
-        // convert to dB
-        temp_rms = 20 * log10f(temp_rms);
-        gslc_ElemXProgressSetVal(&m_gui, m_pElemAudiooutLinePeakBar, map(temp_rms, -52, 0, 0, 100));
-    }
-
-    temp = AudioIO.getMasterPeak(MasterTracks::ANALOG_OUT);
-    if (temp.l >= 0)
-    {
-        // left
-        temp_peak = temp.l;
-        // convert to dB
-        temp_peak = 20 * log10f(temp_peak);
-        if (temp_peak >= -0.1)
-            peakHoldAnalogL = PEAK_HOLD_TIME;
-        gslc_ElemXProgressSetVal(&m_gui, m_pElemAudiooutLineLBar, map(temp_peak, -52, 0, 0, 100));
-        // Right
-        temp_peak = temp.r;
-        // convert to dB
-        temp_peak = 20 * log10f(temp_peak);
-        if (temp_peak >= -0.1)
-            peakHoldAnalogR = PEAK_HOLD_TIME;
-        gslc_ElemXProgressSetVal(&m_gui, m_pElemAudiooutLineRBar, map(temp_peak, -52, 0, 0, 100));
-    }
-
-    // peak indicator
-    if (peakHoldAnalogL > 0)
-    {
-        peakHoldAnalogL--;
-        gslc_ElemSetCol(&m_gui, peakBoxAnalogL, GSLC_COL_GRAY, GSLC_COL_RED, GSLC_COL_RED);
-    }
-    else
-    {
-        gslc_ElemSetCol(&m_gui, peakBoxAnalogL, GSLC_COL_GRAY, GSLC_COL_BLACK, GSLC_COL_BLACK);
-    }
-    if (peakHoldAnalogR > 0)
-    {
-        peakHoldAnalogR--;
-        gslc_ElemSetCol(&m_gui, peakBoxAnalogR, GSLC_COL_GRAY, GSLC_COL_RED, GSLC_COL_RED);
-    }
-    else
-    {
-        gslc_ElemSetCol(&m_gui, peakBoxAnalogR, GSLC_COL_GRAY, GSLC_COL_BLACK, GSLC_COL_BLACK);
-    }
-
-    // *usb out
-    temp = AudioIO.getMasterRMS(MasterTracks::USB_OUT);
-    if (temp.l >= 0)
-    {
-        temp_rms = max(temp.l, temp.r);
-        // calculate running average
-        temp_rms = (temp_rms + rmsAvgUsb * RMS_AVG_TIME) / (RMS_AVG_TIME + 1);
-        rmsAvgUsb = temp_rms;
-        // convert to dB
-        temp_rms = 20 * log10f(temp_rms);
-        gslc_ElemXProgressSetVal(&m_gui, m_pElemAudiooutUsbPeakBar, map(temp_rms, -52, 0, 0, 100));
-    }
-
-    temp = AudioIO.getMasterPeak(MasterTracks::USB_OUT);
-    if (temp.l >= 0)
-    {
-        // left
-        temp_peak = temp.l;
-        // convert to dB
-        temp_peak = 20 * log10f(temp_peak);
-        if (temp_peak >= -0.1)
-            peakHoldUsbL = PEAK_HOLD_TIME;
-        gslc_ElemXProgressSetVal(&m_gui, m_pElemAudiooutUsbLBar, map(temp_peak, -52, 0, 0, 100));
-        // Right
-        temp_peak = temp.r;
-        // convert to dB
-        temp_peak = 20 * log10f(temp_peak);
-        if (temp_peak >= -0.1)
-            peakHoldUsbR = PEAK_HOLD_TIME;
-        gslc_ElemXProgressSetVal(&m_gui, m_pElemAudiooutUsbRBar, map(temp_peak, -52, 0, 0, 100));
-    }
-
-    // peak indicator
-    if (peakHoldUsbL > 0)
-    {
-        peakHoldUsbL--;
-        gslc_ElemSetCol(&m_gui, peakBoxUsbL, GSLC_COL_GRAY, GSLC_COL_RED, GSLC_COL_RED);
-    }
-    else
-    {
-        gslc_ElemSetCol(&m_gui, peakBoxUsbL, GSLC_COL_GRAY, GSLC_COL_BLACK, GSLC_COL_BLACK);
-    }
-    if (peakHoldUsbR > 0)
-    {
-        peakHoldUsbR--;
-        gslc_ElemSetCol(&m_gui, peakBoxUsbR, GSLC_COL_GRAY, GSLC_COL_RED, GSLC_COL_RED);
-    }
-    else
-    {
-        gslc_ElemSetCol(&m_gui, peakBoxUsbR, GSLC_COL_GRAY, GSLC_COL_BLACK, GSLC_COL_BLACK);
+        // peak for left and right channel
+        for (uint8_t j = 0; j < 2; j++)
+        {
+            if (temp_peak[j] >= 0)
+            {
+                // convert to dB
+                temp_peak[j] = 20 * log10f(temp_peak[j]);
+                if (temp_peak[j] >= 0.1)
+                    peakHold[i][j] = PEAK_HOLD_TIME;
+                gslc_ElemXProgressSetVal(&m_gui, peakBar[i][j], map(temp_peak[j], -52, 0, 0, 100));
+            }
+            // peak indicator
+            if (peakHold[i][j] > 0)
+                peakHold[i][j]--;
+            togglePeakBox(peakBox[i][j], (bool)peakHold[i][j]);
+        }
+        // one rms value that takes max of two channels
+        if (temp_rms >= 0)
+        {
+            // calculate running average
+            temp_rms = (temp_rms + rmsAvg[i] * RMS_AVG_TIME) / (RMS_AVG_TIME + 1);
+            rmsAvg[i] = temp_rms;
+            // convert to dB
+            temp_rms  = 20 * log10f(temp_rms);
+            gslc_ElemXProgressSetVal(&m_gui, rmsBar[i], map(temp_rms, -52, 0, 0, 100));
+        }
     }
 }
 
@@ -256,10 +186,18 @@ void AudiooutPage::init()
     gslc_ElemXSeekbarSetPos(&m_gui, m_pElemAudiooutUsbVol, MASTER_VOL_MAX - usbOutVol);
     setPFL(usePFL);
 
-    peakBoxAnalogL = gslc_PageFindElemById(&m_gui, E_PG_AUDIOOUT, E_ELEM_AUDIOOUT_LINE_PEAK_L_BOX);
-    peakBoxAnalogR = gslc_PageFindElemById(&m_gui, E_PG_AUDIOOUT, E_ELEM_AUDIOOUT_LINE_PEAK_R_BOX);
-    peakBoxUsbL = gslc_PageFindElemById(&m_gui, E_PG_AUDIOOUT, E_ELEM_AUDIOOUT_USB_PEAK_L_BOX);
-    peakBoxUsbR = gslc_PageFindElemById(&m_gui, E_PG_AUDIOOUT, E_ELEM_AUDIOOUT_USB_PEAK_R_BOX);
+    peakBox[MasterTracks::ANALOG_OUT][0] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOOUT, E_ELEM_AUDIOOUT_LINE_PEAK_L_BOX);
+    peakBox[MasterTracks::ANALOG_OUT][1] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOOUT, E_ELEM_AUDIOOUT_LINE_PEAK_R_BOX);
+    peakBox[MasterTracks::USB_OUT][0] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOOUT, E_ELEM_AUDIOOUT_USB_PEAK_L_BOX);
+    peakBox[MasterTracks::USB_OUT][1] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOOUT, E_ELEM_AUDIOOUT_USB_PEAK_R_BOX);
+
+    peakBar[MasterTracks::ANALOG_OUT][0] = m_pElemAudiooutLineLBar;
+    peakBar[MasterTracks::ANALOG_OUT][1] = m_pElemAudiooutLineRBar;
+    peakBar[MasterTracks::USB_OUT][0] = m_pElemAudiooutUsbLBar;
+    peakBar[MasterTracks::USB_OUT][1] = m_pElemAudiooutUsbRBar;
+
+    rmsBar[MasterTracks::ANALOG_OUT] = m_pElemAudiooutLinePeakBar;
+    rmsBar[MasterTracks::USB_OUT] = m_pElemAudiooutUsbPeakBar;
 }
 
 void AudiooutPage::updateHpVol(uint8_t newVal)

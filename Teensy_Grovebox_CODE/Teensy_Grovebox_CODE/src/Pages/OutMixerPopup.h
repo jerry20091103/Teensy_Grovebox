@@ -6,7 +6,6 @@
 
 #define TRACK_VOL_MAX 61
 #define TRACK_PAN_MAX 60
-#define PEAK_HOLD_TIME 100
 
 // Output mixer window to adjust level and pan for each input
 // Used on both Analog out and USB out.

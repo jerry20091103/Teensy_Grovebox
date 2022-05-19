@@ -88,3 +88,11 @@ void Pages::toggleButton(gslc_tsElemRef *ref, bool state)
         gslc_ElemSetTxtCol(&m_gui, ref, GSLC_COL_WHITE);
     }
 }
+
+void Pages::togglePeakBox(gslc_tsElemRef *ref, bool state)
+{
+    if(state)
+        gslc_ElemSetCol(&m_gui, ref, GSLC_COL_GRAY, GSLC_COL_RED, GSLC_COL_RED);
+    else
+        gslc_ElemSetCol(&m_gui, ref, GSLC_COL_GRAY, GSLC_COL_BLACK, GSLC_COL_BLACK);
+}
