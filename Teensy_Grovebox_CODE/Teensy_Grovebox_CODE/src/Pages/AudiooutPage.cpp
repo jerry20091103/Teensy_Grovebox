@@ -147,7 +147,7 @@ void AudiooutPage::update()
             {
                 // convert to dB
                 temp_peak[j] = 20 * log10f(temp_peak[j]);
-                if (temp_peak[j] >= 0.1)
+                if (temp_peak[j] >= -0.1)
                     peakHold[i][j] = PEAK_HOLD_TIME;
                 gslc_ElemXProgressSetVal(&m_gui, peakBar[i][j], map(temp_peak[j], -52, 0, 0, 100));
             }
