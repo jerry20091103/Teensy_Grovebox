@@ -12,8 +12,8 @@
 class AudiooutPage : public Pages
 {
 private:
-    uint8_t analogOutVol = 43;
-    uint8_t usbOutVol = 43;
+    uint8_t analogOutVol = 53;
+    uint8_t usbOutVol = 53;
     uint8_t hpVol = 15;
     bool usePFL = false;
 

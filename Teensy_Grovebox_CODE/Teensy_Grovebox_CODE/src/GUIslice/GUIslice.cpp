@@ -77,9 +77,6 @@ gslc_tsXProgress                m_sXBarGauge19;
 gslc_tsXProgress                m_sXBarGauge20;
 gslc_tsXSeekbar                 m_sXSeekbar10;
 gslc_tsXProgress                m_sXBarGauge23;
-gslc_tsXRingGauge               m_sXRingGauge7;
-gslc_tsXRingGauge               m_sXRingGauge8;
-gslc_tsXRingGauge               m_sXRingGauge9;
 gslc_tsXRingGauge               m_sXRingGauge10;
 
 
@@ -138,14 +135,15 @@ gslc_tsElemRef* m_pElemOutMixerUsbVol= NULL;
 gslc_tsElemRef* m_pElemOutMixerUsbVolTxt= NULL;
 gslc_tsElemRef* m_pElemTxtBatt    = NULL;
 gslc_tsElemRef* m_pElemTxtTitle   = NULL;
-gslc_tsElemRef* m_pElemWaveCompRing= NULL;
-gslc_tsElemRef* m_pElemWaveDampingRing= NULL;
 gslc_tsElemRef* m_pElemWaveOctaveDecBtn= NULL;
 gslc_tsElemRef* m_pElemWaveOctaveIncBtn= NULL;
 gslc_tsElemRef* m_pElemWaveOctaveTxt= NULL;
-gslc_tsElemRef* m_pElemWaveRoomsizeRing= NULL;
 gslc_tsElemRef* m_pElemWaveSoundBtn= NULL;
 gslc_tsElemRef* m_pElemWaveVelocityBtn= NULL;
+gslc_tsElemRef* m_pElemWaveVelocityBtn39= NULL;
+gslc_tsElemRef* m_pElemWaveVelocityBtn39_40= NULL;
+gslc_tsElemRef* m_pElemWaveVelocityBtn39_40_42= NULL;
+gslc_tsElemRef* m_pElemWaveVelocityBtn39_40_42_43= NULL;
 gslc_tsElemRef* m_pElemWaveVolBar = NULL;
 gslc_tsElemRef* m_pElemWaveVolRing= NULL;
 //<Save_References !End!>
@@ -1389,57 +1387,15 @@ void InitGUIslice_gen()
   
   // Create E_ELEM_WAVE_OCTAVE_TEXT runtime modifiable text
   static char m_sDisplayText120[3] = "0";
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_WAVE_OCTAVE_TEXT,E_PG_WAVE,(gslc_tsRect){170,205,20,14},
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_WAVE_OCTAVE_TEXT,E_PG_WAVE,(gslc_tsRect){165,210,20,14},
     (char*)m_sDisplayText120,3,E_ARIAL_13);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   m_pElemWaveOctaveTxt = pElemRef;
 
-  // Create ring gauge E_ELEM_WAVE_COMP_RING 
-  static char m_sRingText7[4] = "";
-  pElemRef = gslc_ElemXRingGaugeCreate(&m_gui,E_ELEM_WAVE_COMP_RING,E_PG_WAVE,&m_sXRingGauge7,
-          (gslc_tsRect){10,135,50,50},
-          (char*)m_sRingText7,4,E_ARIAL_12_BOLD);
-  gslc_ElemXRingGaugeSetValRange(&m_gui, pElemRef, 0, 127);
-  gslc_ElemXRingGaugeSetVal(&m_gui, pElemRef, 0); // Set initial value
-  gslc_ElemXRingGaugeSetThickness(&m_gui,pElemRef, 6);
-  gslc_ElemXRingGaugeSetAngleRange(&m_gui,pElemRef, 225, 270, true);
-  gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui,pElemRef, GSLC_COL_RED);
-  gslc_ElemXRingGaugeSetColorInactive(&m_gui,pElemRef, ((gslc_tsColor){79,0,0}));
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-  m_pElemWaveCompRing = pElemRef;
-
-  // Create ring gauge E_ELEM_WAVE_ROOMSIZE_RING 
-  static char m_sRingText8[4] = "";
-  pElemRef = gslc_ElemXRingGaugeCreate(&m_gui,E_ELEM_WAVE_ROOMSIZE_RING,E_PG_WAVE,&m_sXRingGauge8,
-          (gslc_tsRect){80,135,50,50},
-          (char*)m_sRingText8,4,E_ARIAL_12_BOLD);
-  gslc_ElemXRingGaugeSetValRange(&m_gui, pElemRef, 0, 100);
-  gslc_ElemXRingGaugeSetVal(&m_gui, pElemRef, 30); // Set initial value
-  gslc_ElemXRingGaugeSetThickness(&m_gui,pElemRef, 6);
-  gslc_ElemXRingGaugeSetAngleRange(&m_gui,pElemRef, 225, 270, true);
-  gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui,pElemRef, ((gslc_tsColor){250,230,0}));
-  gslc_ElemXRingGaugeSetColorInactive(&m_gui,pElemRef, ((gslc_tsColor){75,68,0}));
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-  m_pElemWaveRoomsizeRing = pElemRef;
-
-  // Create ring gauge E_ELEM_DAMPING_RING 
-  static char m_sRingText9[4] = "";
-  pElemRef = gslc_ElemXRingGaugeCreate(&m_gui,E_ELEM_DAMPING_RING,E_PG_WAVE,&m_sXRingGauge9,
-          (gslc_tsRect){145,135,50,50},
-          (char*)m_sRingText9,4,E_ARIAL_12_BOLD);
-  gslc_ElemXRingGaugeSetValRange(&m_gui, pElemRef, 0, 100);
-  gslc_ElemXRingGaugeSetVal(&m_gui, pElemRef, 50); // Set initial value
-  gslc_ElemXRingGaugeSetThickness(&m_gui,pElemRef, 6);
-  gslc_ElemXRingGaugeSetAngleRange(&m_gui,pElemRef, 225, 270, true);
-  gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui,pElemRef, ((gslc_tsColor){20,20,255}));
-  gslc_ElemXRingGaugeSetColorInactive(&m_gui,pElemRef, ((gslc_tsColor){0,0,58}));
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-  m_pElemWaveDampingRing = pElemRef;
-
   // Create ring gauge E_ELEM_WAVE_VOL_RING 
   static char m_sRingText10[4] = "";
   pElemRef = gslc_ElemXRingGaugeCreate(&m_gui,E_ELEM_WAVE_VOL_RING,E_PG_WAVE,&m_sXRingGauge10,
-          (gslc_tsRect){215,135,50,50},
+          (gslc_tsRect){210,120,50,50},
           (char*)m_sRingText10,4,E_ARIAL_12_BOLD);
   gslc_ElemXRingGaugeSetValRange(&m_gui, pElemRef, 0, 30);
   gslc_ElemXRingGaugeSetVal(&m_gui, pElemRef, 15); // Set initial value
@@ -1458,7 +1414,7 @@ void InitGUIslice_gen()
   m_pElemWaveSoundBtn = pElemRef;
   
   // Create E_ELEM_TEXT119 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT119,E_PG_WAVE,(gslc_tsRect){105,205,60,14},
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT119,E_PG_WAVE,(gslc_tsRect){100,210,60,14},
     (char*)"Octave: ",0,E_ARIAL_12);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
@@ -1494,53 +1450,47 @@ void InitGUIslice_gen()
     (char*)"Sound:",0,E_ARIAL_12);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
   
-  // Create E_ELEM_TEXT131 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT131,E_PG_WAVE,(gslc_tsRect){15,110,37,14},
-    (char*)"Comp",0,E_ARIAL_10);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-  
-  // Create E_ELEM_TEXT132 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT132,E_PG_WAVE,(gslc_tsRect){75,115,63,11},
-    (char*)"RoomSize",0,E_ARIAL_10);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_GRAY);
-  
-  // Create E_ELEM_TEXT133 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT133,E_PG_WAVE,(gslc_tsRect){145,115,56,14},
-    (char*)"Damping",0,E_ARIAL_10);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_GRAY);
-  
   // Create E_ELEM_TEXT134 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT134,E_PG_WAVE,(gslc_tsRect){215,110,47,11},
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT134,E_PG_WAVE,(gslc_tsRect){210,100,47,11},
     (char*)"Volume",0,E_ARIAL_10);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-  
-  // Create E_ELEM_TEXT135 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT135,E_PG_WAVE,(gslc_tsRect){115,90,46,11},
-    (char*)"Reverb",0,E_ARIAL_10);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
 
   // Create E_DRAW_LINE8 line 
   pElemRef = gslc_ElemCreateLine(&m_gui,E_DRAW_LINE8,E_PG_WAVE,5,80,315,80);
   gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_GRAY,GSLC_COL_GRAY);
   
-  // Create E_ELEM_TEXT136 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT136,E_PG_WAVE,(gslc_tsRect){100,175,10,9},
-    (char*)"%",0,E_ARIAL_8);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-  
-  // Create E_ELEM_TEXT137 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT137,E_PG_WAVE,(gslc_tsRect){165,175,10,9},
-    (char*)"%",0,E_ARIAL_8);
-  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-  
   // Create E_ELEM_TEXT138 text label
-  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT138,E_PG_WAVE,(gslc_tsRect){235,175,13,9},
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT138,E_PG_WAVE,(gslc_tsRect){228,160,13,9},
     (char*)"dB",0,E_ARIAL_8);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
-
-  // Create E_DRAW_LINE11 line 
-  pElemRef = gslc_ElemCreateLine(&m_gui,E_DRAW_LINE11,E_PG_WAVE,80,108,195,108);
-  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_GRAY_DK2,GSLC_COL_GRAY_DK2);
+  
+  // create E_ELEM_BTN39 button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_BTN39,E_PG_WAVE,
+    (gslc_tsRect){10,95,85,30},(char*)"Compressor",0,E_ARIAL_10,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemWaveVelocityBtn39 = pElemRef;
+  
+  // create E_ELEM_BTN40 button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_BTN40,E_PG_WAVE,
+    (gslc_tsRect){110,95,85,30},(char*)"Modulation",0,E_ARIAL_10,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemWaveVelocityBtn39_40 = pElemRef;
+  
+  // create E_ELEM_BTN42 button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_BTN42,E_PG_WAVE,
+    (gslc_tsRect){110,140,85,30},(char*)"Reverb",0,E_ARIAL_10,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemWaveVelocityBtn39_40_42 = pElemRef;
+  
+  // create E_ELEM_BTN43 button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_BTN43,E_PG_WAVE,
+    (gslc_tsRect){10,140,85,30},(char*)"Delay",0,E_ARIAL_10,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemWaveVelocityBtn39_40_42_43 = pElemRef;
 //<InitGUI !End!>
 
 //<Startup !Start!>

@@ -8,64 +8,75 @@
 #include <SerialFlash.h>
 
 // GUItool: begin automatically generated code
-extern AudioSynthWavetable      wavetable4; //xy=207.00000762939453,1161.4546146392822
-extern AudioSynthWavetable      wavetable0;     //xy=208.97747802734375,975.742753982544
-extern AudioSynthWavetable      wavetable2; //xy=209.00000762939453,1065.4546127319336
-extern AudioSynthWavetable      wavetable3; //xy=209.00000762939453,1112.454613685608
-extern AudioSynthWavetable      wavetable6; //xy=209.00000762939453,1250.1817111968994
-extern AudioSynthWavetable      wavetable1; //xy=210.00000762939453,1019.4546089172363
-extern AudioSynthWavetable      wavetable7; //xy=210.00000762939453,1303.181713104248
-extern AudioSynthWavetable      wavetable5; //xy=211.00000762939453,1206.1817092895508
-extern AudioInputI2S            i2sIN;           //xy=409.2502212524414,554.5000600814819
-extern AudioInputUSB            usbIN;           //xy=417.2501411437988,812.5000486373901
-extern AudioMixer4              voiceMixer0_1; //xy=443.00001525878906,1213.1817741394043
-extern AudioMixer4              voiceMixer0_0;         //xy=456.00001525878906,1043.181770324707
-extern AudioAmplifier           ampI2sInR;           //xy=571.2501449584961,576.4090890884399
-extern AudioAmplifier           ampI2sInL;           //xy=574.2501449584961,536.4090852737427
-extern AudioAmplifier           ampUsbInR; //xy=576.2501449584961,832.5000076293945
-extern AudioAmplifier           ampUsbInL; //xy=579.2501449584961,792.5000038146973
-extern AudioAnalyzePeak         peakVelocity;           //xy=622.0000152587891,338.2727279663086
-extern AudioMixer4              voiceMixer1_0; //xy=652.0000190734863,1142.1817741394043
-extern AudioMixer4              mixerSWPeakUsbInL;  //xy=746.2501373291016,659.4090757369995
-extern AudioMixer4              mixerSWPeakUsbInR; //xy=747.7955017089844,732.4090452194214
-extern AudioMixer4              mixerSWPeakLmInL; //xy=758.2501983642578,393.50000286102295
-extern AudioMixer4              mixerSWPeakLmInR; //xy=759.7955627441406,466.4999723434448
-extern AudioAnalyzePeak         peakMixerInsR; //xy=934.977424621582,1062.4091272354126
-extern AudioAnalyzePeak         peakMixerInsL; //xy=935.977424621582,1022.409125328064
-extern AudioAnalyzePeak         peakLmInL; //xy=940.7047882080078,390.500036239624
-extern AudioAnalyzePeak         peakLmInR; //xy=943.2501564025879,466.5000162124634
-extern AudioAnalyzePeak         peakUsbInL; //xy=950.2501525878906,660.5000009536743
-extern AudioAnalyzePeak         peakUsbInR; //xy=950.2501754760742,729.5000886917114
-extern AudioAnalyzePeak         peakMixerLmR; //xy=1114.2501602172852,413.4999933242798
-extern AudioAnalyzePeak         peakMixerLmL; //xy=1115.2501602172852,373.49999141693115
-extern AudioMixer4              mixerOutI2sL;         //xy=1121.2501373291016,505.500018119812
-extern AudioMixer4              mixerOutI2sR;         //xy=1123.2501373291016,586.5000314712524
-extern AudioAnalyzePeak         peakMixerUsbL; //xy=1123.431983947754,740.6818256378174
-extern AudioAnalyzePeak         peakMixerUsbR;  //xy=1124.431983947754,782.6818273067474
-extern AudioMixer4              mixerOutUsbR; //xy=1127.250129699707,961.4999990463257
-extern AudioMixer4              mixerOutUsbL; //xy=1128.2501373291016,872.4999990463257
-extern AudioAmplifier           ampMasterOutI2sL;           //xy=1313.1592330932617,512.5000066757202
-extern AudioAmplifier           ampMasterOutI2sR; //xy=1317.159294128418,582.5000143051147
-extern AudioAmplifier           ampMasterOutUsbL; //xy=1338.1592330932617,884.4999990463257
-extern AudioAmplifier           ampMasterOutUsbR; //xy=1342.1592330932617,946.5000009536743
-extern AudioMixer4              mixerSWPeakI2sL;         //xy=1538.2502975463867,370.49999141693115
-extern AudioMixer4              mixerSWRmsI2sL; //xy=1540.2502937316895,439.50003719329834
-extern AudioMixer4              mixerSWPeakUsbL;  //xy=1540.3411178588867,758.500075340271
-extern AudioMixer4              mixerSWPeakI2sR; //xy=1541.3411178588867,614.4999952316284
-extern AudioMixer4              mixerSWPeakUsbR;  //xy=1541.3411178588867,1033.3182153701782
-extern AudioMixer4              mixerSWRmsUsbR; //xy=1541.3411178588867,1101.3182172775269
-extern AudioMixer4              mixerSWRmsUsbL; //xy=1544.3411140441895,829.5000715255737
-extern AudioMixer4              mixerSWRmsI2sR; //xy=1545.3411560058594,682.5000104904175
-extern AudioOutputI2S           i2sOUT;           //xy=1579.2502059936523,539.5000066757202
-extern AudioOutputUSB           usbOUT;           //xy=1595.250114440918,915.5000009536743
-extern AudioAnalyzePeak         peakI2sL;          //xy=1711.1594772338867,369.50000381469727
-extern AudioAnalyzeRMS          rmsI2sL;           //xy=1716.159481048584,437.500039100647
-extern AudioAnalyzePeak         peakUsbR; //xy=1723.159481048584,1033.5001220703125
-extern AudioAnalyzeRMS          rmsUsbR; //xy=1725.1593933105469,1100.5000352859497
-extern AudioAnalyzePeak         peakUsbL; //xy=1736.1593933105469,754.500075340271
-extern AudioAnalyzeRMS          rmsUsbL; //xy=1737.159366607666,836.5000610351562
-extern AudioAnalyzePeak         peakI2sR;          //xy=1756.1595191955566,616.5000953674316
-extern AudioAnalyzeRMS          rmsI2sR;           //xy=1759.1596984863281,673.5000562667847
+extern AudioSynthWavetable      wavetable4; //xy=85.57147216796875,1324.1688346862793
+extern AudioSynthWavetable      wavetable0;     //xy=87.54894256591797,1138.456974029541
+extern AudioSynthWavetable      wavetable2; //xy=87.57147216796875,1228.1688327789307
+extern AudioSynthWavetable      wavetable3; //xy=87.57147216796875,1275.168833732605
+extern AudioSynthWavetable      wavetable6; //xy=87.57147216796875,1412.8959312438965
+extern AudioSynthWavetable      wavetable1; //xy=88.57147216796875,1182.1688289642334
+extern AudioSynthWavetable      wavetable7; //xy=88.57147216796875,1465.8959331512451
+extern AudioSynthWavetable      wavetable5; //xy=89.57147216796875,1368.8959293365479
+extern AudioMixer4              voiceMixer0_1; //xy=321.5714797973633,1375.8959941864014
+extern AudioMixer4              voiceMixer0_0;         //xy=334.5714797973633,1205.895990371704
+extern AudioMixer4              voiceMixer1_0; //xy=520.5714797973633,1292.8959941864014
+extern AudioEffectFlange        flange1;        //xy=790.3333015441895,1028.0178527832031
+extern AudioMixer4              flangeMixer;         //xy=799.1903686523438,1096.549903869629
+extern AudioEffectDelay         delay1;         //xy=954.333309173584,1001.0176696777344
+extern AudioMixer4              delayMixer; //xy=977.6190147399902,1108.6928062438965
+extern AudioEffectFreeverbStereo freeverbs1;     //xy=1172.476146697998,1012.8749980926514
+extern AudioFilterBiquad        freeverbBiquadL;        //xy=1361.7662887573242,995.4155788421631
+extern AudioFilterBiquad        freeverbBiquadR; //xy=1362.7662811279297,1030.4155797958374
+extern AudioMixer4              freeverbMixerL; //xy=1374.7532806396484,1096.8961791992188
+extern AudioMixer4              freeverbMixerR; //xy=1377.6103897094727,1162.7014503479004
+extern AudioInputI2S            i2sIN;           //xy=1427.5835037231445,471.16686630249023
+extern AudioInputUSB            usbIN;           //xy=1435.583423614502,729.1668548583984
+extern AudioAmplifier           ampI2sInR;           //xy=1589.5834274291992,493.07589530944824
+extern AudioAmplifier           ampI2sInL;           //xy=1592.5834274291992,453.075891494751
+extern AudioAmplifier           ampUsbInR; //xy=1594.5834274291992,749.1668138504028
+extern AudioAmplifier           ampUsbInL; //xy=1597.5834274291992,709.1668100357056
+extern AudioAnalyzePeak         peakVelocity;          //xy=1620.3332977294922,238.48499202728271
+extern AudioAmplifier           ampInsOutL;           //xy=1740.294334411621,1053.6019268035889
+extern AudioAmplifier           ampInsOutR; //xy=1740.4761543273926,1094.420021057129
+extern AudioMixer4              mixerSWPeakUsbInL;  //xy=1764.5834197998047,576.0758819580078
+extern AudioMixer4              mixerSWPeakUsbInR; //xy=1766.1287841796875,649.0758514404297
+extern AudioMixer4              mixerSWPeakLmInL; //xy=1776.583480834961,310.16680908203125
+extern AudioMixer4              mixerSWPeakLmInR; //xy=1778.1288452148438,383.1667785644531
+extern AudioAnalyzePeak         peakMixerInsR; //xy=1953.3107070922852,979.0759334564209
+extern AudioAnalyzePeak         peakMixerInsL; //xy=1954.3107070922852,939.0759315490723
+extern AudioAnalyzePeak         peakLmInL; //xy=1959.038070678711,307.1668424606323
+extern AudioAnalyzePeak         peakLmInR; //xy=1961.583438873291,383.1668224334717
+extern AudioAnalyzePeak         peakUsbInL; //xy=1968.5834350585938,577.1668071746826
+extern AudioAnalyzePeak         peakUsbInR; //xy=1968.5834579467773,646.1668949127197
+extern AudioAnalyzePeak         peakMixerLmR; //xy=2132.5834426879883,330.1667995452881
+extern AudioAnalyzePeak         peakMixerLmL; //xy=2133.5834426879883,290.16679763793945
+extern AudioMixer4              mixerOutI2sL;         //xy=2139.5834197998047,422.1668243408203
+extern AudioMixer4              mixerOutI2sR;         //xy=2141.5834197998047,503.16683769226074
+extern AudioAnalyzePeak         peakMixerUsbL; //xy=2141.765266418457,657.3486318588257
+extern AudioAnalyzePeak         peakMixerUsbR;  //xy=2142.765266418457,699.3486335277557
+extern AudioMixer4              mixerOutUsbR; //xy=2145.58341217041,878.166805267334
+extern AudioMixer4              mixerOutUsbL; //xy=2146.5834197998047,789.166805267334
+extern AudioAmplifier           ampMasterOutI2sL;           //xy=2331.492515563965,429.1668128967285
+extern AudioAmplifier           ampMasterOutI2sR; //xy=2335.492576599121,499.16682052612305
+extern AudioAmplifier           ampMasterOutUsbL; //xy=2356.492515563965,801.166805267334
+extern AudioAmplifier           ampMasterOutUsbR; //xy=2360.492515563965,863.1668071746826
+extern AudioMixer4              mixerSWPeakI2sL;         //xy=2556.58358001709,287.16679763793945
+extern AudioMixer4              mixerSWRmsI2sL; //xy=2558.5835762023926,356.16684341430664
+extern AudioMixer4              mixerSWPeakUsbL;  //xy=2558.67440032959,675.1668815612793
+extern AudioMixer4              mixerSWPeakI2sR; //xy=2559.67440032959,531.1668014526367
+extern AudioMixer4              mixerSWPeakUsbR;  //xy=2559.67440032959,949.9850215911865
+extern AudioMixer4              mixerSWRmsUsbR; //xy=2559.67440032959,1017.9850234985352
+extern AudioMixer4              mixerSWRmsUsbL; //xy=2562.6743965148926,746.166877746582
+extern AudioMixer4              mixerSWRmsI2sR; //xy=2563.6744384765625,599.1668167114258
+extern AudioOutputI2S           i2sOUT;           //xy=2597.5834884643555,456.1668128967285
+extern AudioOutputUSB           usbOUT;           //xy=2613.583396911621,832.1668071746826
+extern AudioAnalyzePeak         peakI2sL;          //xy=2729.49275970459,286.16681003570557
+extern AudioAnalyzeRMS          rmsI2sL;           //xy=2734.492763519287,354.1668453216553
+extern AudioAnalyzePeak         peakUsbR; //xy=2741.492763519287,950.1669282913208
+extern AudioAnalyzeRMS          rmsUsbR; //xy=2743.49267578125,1017.166841506958
+extern AudioAnalyzePeak         peakUsbL; //xy=2754.49267578125,671.1668815612793
+extern AudioAnalyzeRMS          rmsUsbL; //xy=2755.492649078369,753.1668672561646
+extern AudioAnalyzePeak         peakI2sR;          //xy=2774.4928016662598,533.1669015884399
+extern AudioAnalyzeRMS          rmsI2sR;           //xy=2777.4929809570312,590.166862487793
 extern AudioConnection          patchCord1;
 extern AudioConnection          patchCord2;
 extern AudioConnection          patchCord3;
@@ -143,8 +154,22 @@ extern AudioConnection          patchCord74;
 extern AudioConnection          patchCord75;
 extern AudioConnection          patchCord76;
 extern AudioConnection          patchCord77;
-extern AudioControlSGTL5000     sgtl5000_1;     //xy=481.25014877319336,422.5000514984131
+extern AudioConnection          patchCord78;
+extern AudioConnection          patchCord79;
+extern AudioConnection          patchCord80;
+extern AudioConnection          patchCord81;
+extern AudioConnection          patchCord82;
+extern AudioConnection          patchCord83;
+extern AudioConnection          patchCord84;
+extern AudioConnection          patchCord85;
+extern AudioConnection          patchCord86;
+extern AudioConnection          patchCord87;
+extern AudioConnection          patchCord88;
+extern AudioConnection          patchCord89;
+extern AudioConnection          patchCord90;
+extern AudioConnection          patchCord91;
+extern AudioConnection          patchCord92;
+extern AudioControlSGTL5000     sgtl5000_1;     //xy=1499.5834312438965,339.1668577194214
 // GUItool: end automatically generated code
-
 
 #endif

@@ -1,6 +1,7 @@
 #include "AudiooutPage.h"
 #include "Hardware.h"
 #include "Controls.h"
+#include "Audio/AudioUtility.h"
 
 void AudiooutPage::onBtnPressed(uint8_t pin)
 {
@@ -146,7 +147,7 @@ void AudiooutPage::update()
             if (temp_peak[j] >= 0)
             {
                 // convert to dB
-                temp_peak[j] = 20 * log10f(temp_peak[j]);
+                temp_peak[j] = gaintodB(temp_peak[j]);
                 if (temp_peak[j] >= -0.1)
                     peakHold[i][j] = PEAK_HOLD_TIME;
                 gslc_ElemXProgressSetVal(&m_gui, peakBar[i][j], map(temp_peak[j], -52, 0, 0, 100));
@@ -163,7 +164,7 @@ void AudiooutPage::update()
             temp_rms = (temp_rms + rmsAvg[i] * RMS_AVG_TIME) / (RMS_AVG_TIME + 1);
             rmsAvg[i] = temp_rms;
             // convert to dB
-            temp_rms  = 20 * log10f(temp_rms);
+            temp_rms  = gaintodB(temp_rms);
             gslc_ElemXProgressSetVal(&m_gui, rmsBar[i], map(temp_rms, -52, 0, 0, 100));
         }
     }
@@ -234,7 +235,7 @@ void AudiooutPage::updateOutVolume(MasterTracks track, uint8_t newVal)
         {
             // convert to gain
             int db = newVal - MASTER_VOL_MAX + 10; // slider ranges from -52 dB to +10 dB
-            float temp = pow10f(db * 0.05);
+            float temp = dBtoGain(db);
             AudioIO.setMasterVolume(MasterTracks::ANALOG_OUT, temp);
             gslc_ElemSetTxtStr(&m_gui, m_pElemAudiooutLineVolTxt, String(db).c_str());
         }
@@ -251,7 +252,7 @@ void AudiooutPage::updateOutVolume(MasterTracks track, uint8_t newVal)
         {
             // convert to gain
             int db = newVal - MASTER_VOL_MAX + 10; // slider ranges from -52 dB to +10 dB
-            float temp = pow10f(db * 0.05);
+            float temp = dBtoGain(db);
             AudioIO.setMasterVolume(MasterTracks::USB_OUT, temp);
             gslc_ElemSetTxtStr(&m_gui, m_pElemAudiooutUsbVolTxt, String(db).c_str());
         }

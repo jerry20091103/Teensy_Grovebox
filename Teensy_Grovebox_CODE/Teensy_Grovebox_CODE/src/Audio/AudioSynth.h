@@ -29,6 +29,8 @@ private:
     AudioMixer4 *voiceMixer[MAX_VOICE/4];
     AudioMixer4 *voiceFinalMixer;
 
+    AudioAmplifier *mainVolume[2];
+
     bool isSustain = false;
 public:
     AudioSynth_();
@@ -36,6 +38,9 @@ public:
     void noteOff(uint8_t note);
     void sustainOn();
     void sustainOff();
+
+    // set master output volume in dB
+    void setMasterVol(int8_t vol);
 
     float velocity = 0;
 

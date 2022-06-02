@@ -1,6 +1,7 @@
 #include "AudioSynth.h"
 #include "AudioIO.h"
 #include "SF2_Samples/pianoelectrique_samples.h"
+#include "AudioUtility.h"
 
 float noteToFreq(uint8_t note)
 {
@@ -27,6 +28,10 @@ AudioSynth_::AudioSynth_()
 
     voiceFinalMixer->gain(0, 0.5);
     voiceFinalMixer->gain(1, 0.5);
+
+    // setup master volume
+    mainVolume[0] = &ampInsOutL;
+    mainVolume[1] = &ampInsOutR;
 
     // initiailze all voices
     voiceArr[0].waveTable = &wavetable0;
@@ -156,4 +161,11 @@ void AudioSynth_::sustainOff()
             it++; // the iterator increment is moved here because after erase(), "it" becomes invalid.
         }
     }
+}
+
+void AudioSynth_::setMasterVol(int8_t vol)
+{
+    float gain = dBtoGain(vol);
+    mainVolume[0]->gain(gain);
+    mainVolume[1]->gain(gain);
 }

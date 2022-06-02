@@ -3,6 +3,7 @@
 #include "Controls.h"
 #include "Audio/AudioSynth.h"
 #include "Audio/AudioIO.h"
+#include "Audio/AudioUtility.h"
 
 void WaveTablePage::onBtnPressed(uint8_t pin)
 {
@@ -66,6 +67,13 @@ void WaveTablePage::onBtnReleased(uint8_t pin)
 
 void WaveTablePage::onEncTurned(uint8_t id, int value)
 {
+    switch (id)
+    {
+    case 3: // master out volume
+        setVolume(value - 15);
+
+        break;
+    }
 }
 
 void WaveTablePage::onJoyUpdate(int joy_x, int joy_y)
@@ -109,6 +117,8 @@ void WaveTablePage::configurePage()
     AudioIO.setInputVolume(InputTracks::LINEMIC_IN, 0);
     // setup peak module for level meter
     AudioIO.setMixerLevelMode(LevelMeterMode::PRE_FADER);
+    setVolume(volume);
+    enc3->changePrecision(30, volume + 15, false);
 }
 
 void WaveTablePage::update()
@@ -117,7 +127,7 @@ void WaveTablePage::update()
     if (temp_peak >= 0)
     {
         // convert to dB
-        temp_peak = 20 * log10f(temp_peak);
+        temp_peak = gaintodB(temp_peak);
         if (temp_peak >= -0.1)
             peakHold = PEAK_HOLD_TIME;
         // calulate running average
@@ -126,7 +136,7 @@ void WaveTablePage::update()
         gslc_ElemXProgressSetVal(&m_gui, m_pElemWaveVolBar, map(temp_peak, -30, 0, 0, 100));
     }
     // peak indicator
-    if(peakHold > 0)
+    if (peakHold > 0)
         peakHold--;
     togglePeakBox(peakBox, (bool)peakHold);
 }
@@ -143,4 +153,12 @@ void WaveTablePage::init()
     gslc_ElemSetTxtStr(&m_gui, m_pElemWaveOctaveTxt, String(octave).c_str());
 
     peakBox = gslc_PageFindElemById(&m_gui, E_PG_WAVE, E_ELEM_WAVE_PEAK_BOX);
+}
+
+void WaveTablePage::setVolume(int8_t value)
+{
+    volume = value;
+    AudioSynth.setMasterVol(value);
+    gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemWaveVolRing, value + 15);
+    gslc_ElemSetTxtStr(&m_gui, m_pElemWaveVolRing, String(value).c_str());
 }

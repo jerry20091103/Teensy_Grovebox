@@ -13,7 +13,7 @@ class OutMixerPopup : public Pages
 {
 private:
     
-    uint8_t trackVol[2][4] = {{41, 41, 41 ,41}, {41, 41, 41 ,41}};
+    uint8_t trackVol[2][4] = {{51, 51, 51 ,51}, {51, 51, 51 ,51}};
     uint8_t trackPan[2][4] = {{30, 30, 30, 30}, {30, 30, 30, 30}};
     bool usePFL = false;
 

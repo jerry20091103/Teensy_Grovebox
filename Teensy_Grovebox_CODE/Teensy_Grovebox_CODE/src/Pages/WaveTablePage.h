@@ -10,10 +10,13 @@ class WaveTablePage : public Pages
 {
 private:
     uint8_t octave = 4;
+    int8_t volume = 0;
 
     gslc_tsElemRef *peakBox;
     float peakAvg = 0;
     uint8_t peakHold = 0;
+
+    void setVolume(int8_t value);
 public:
     void onBtnPressed(uint8_t pin);
     void onBtnHold(uint8_t pin);

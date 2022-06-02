@@ -1,6 +1,7 @@
 #include "AudioinPage.h"
 #include "Hardware.h"
 #include "Controls.h"
+#include "Audio/AudioUtility.h"
 
 void AudioinPage::onBtnPressed(uint8_t pin)
 {
@@ -149,7 +150,7 @@ void AudioinPage::update()
             if (temp_peak[j] >= 0)
             {
                 // convert to dB
-                temp_peak[j] = 20 * log10f(temp_peak[j]);
+                temp_peak[j] = gaintodB(temp_peak[j]);
                 if (temp_peak[j] >= -0.1)
                     peakHold[i][j] = PEAK_HOLD_TIME;
                 gslc_ElemXProgressSetVal(&m_gui, peakBar[i][j], map(temp_peak[j], -50, 0, 0, 100));
@@ -247,7 +248,7 @@ void AudioinPage::updateInputVol(InputTracks track, uint8_t value)
     {
         // convert to gain
         int db = value - INPUT_VOL_MAX + 10; // slider ranges from -50 dB to +10 dB
-        float temp = pow10f(db * 0.05);
+        float temp = dBtoGain(db);
         AudioIO.setInputVolume(track, temp);
         gslc_ElemSetTxtStr(&m_gui, txtRef, String(db).c_str());
     }
