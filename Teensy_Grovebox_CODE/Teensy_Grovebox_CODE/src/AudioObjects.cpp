@@ -17,7 +17,7 @@ AudioAmplifier           ampI2sInR;           //xy=571.2501449584961,576.4090890
 AudioAmplifier           ampI2sInL;           //xy=574.2501449584961,536.4090852737427
 AudioAmplifier           ampUsbInR; //xy=576.2501449584961,832.5000076293945
 AudioAmplifier           ampUsbInL; //xy=579.2501449584961,792.5000038146973
-AudioAnalyzePeak         rmsVelocity;           //xy=622.0000152587891,338.2727279663086
+AudioAnalyzePeak         peakVelocity;           //xy=622.0000152587891,338.2727279663086
 AudioMixer4              voiceMixer1_0; //xy=652.0000190734863,1142.1817741394043
 AudioMixer4              mixerSWPeakUsbInL;  //xy=746.2501373291016,659.4090757369995
 AudioMixer4              mixerSWPeakUsbInR; //xy=747.7955017089844,732.4090452194214
@@ -69,7 +69,7 @@ AudioConnection          patchCord7(wavetable7, 0, voiceMixer0_1, 3);
 AudioConnection          patchCord8(wavetable5, 0, voiceMixer0_1, 1);
 AudioConnection          patchCord9(i2sIN, 0, ampI2sInL, 0);
 AudioConnection          patchCord10(i2sIN, 0, mixerSWPeakLmInL, 1);
-AudioConnection          patchCord11(i2sIN, 0, rmsVelocity, 0);
+AudioConnection          patchCord11(i2sIN, 0, peakVelocity, 0);
 AudioConnection          patchCord12(i2sIN, 1, ampI2sInR, 0);
 AudioConnection          patchCord13(i2sIN, 1, mixerSWPeakLmInR, 1);
 AudioConnection          patchCord14(usbIN, 0, ampUsbInL, 0);

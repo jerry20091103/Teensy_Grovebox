@@ -5,6 +5,7 @@
 #include "Pages/Pages.h"
 #include "AudioObjects.h"
 #include "AudioIO.h"
+#include "AudioSynth.h"
 
 int bar_test;
 int batt_level;
@@ -23,6 +24,12 @@ void checkAudioUsage()
     Serial.println("Processor: " + String(AudioProcessorUsageMax()));
     AudioMemoryUsageMaxReset();
     AudioProcessorUsageMaxReset();
+}
+
+void readKeyVeloctiy()
+{
+    // get velocity from microphone
+    AudioSynth.velocity =  peakVelocity.read();
 }
 
 void setup()
@@ -59,6 +66,7 @@ void setup()
     // Schedule regular tasks
     taskManager.scheduleFixedRate(20, update_gslc);
     taskManager.scheduleFixedRate(15, UpdateJoystick);
+    taskManager.scheduleFixedRate(15, readKeyVeloctiy);
     // switch to the first page
     PageManager.switchPage(E_PG_MIDI);
 

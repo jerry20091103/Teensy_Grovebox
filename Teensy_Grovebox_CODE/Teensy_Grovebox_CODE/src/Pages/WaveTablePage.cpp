@@ -11,7 +11,7 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
     if (keyNum > 0)
     {
         noteNum = keyNum - 1 + 12 * octave;
-        AudioSynth.noteOn(noteNum, velocity);
+        AudioSynth.noteOn(noteNum);
         Serial.println(noteNum);
     }
     else
@@ -23,6 +23,12 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
             break;
         case BTN_JOY:
             AudioSynth.sustainOn();
+            break;
+        case BTN_FN0:
+            onTouch(E_ELEM_WAVE_OCTAVE_DEC_BTN);
+            break;
+        case BTN_FN1:
+            onTouch(E_ELEM_WAVE_OCTAVE_INC_BTN);
             break;
         }
     }
@@ -73,6 +79,18 @@ void WaveTablePage::onTouch(int ref)
     case E_ELEM_BASE_BACK_BTN:
         PageManager.switchPage(E_PG_HOME);
         break;
+    case E_ELEM_WAVE_OCTAVE_INC_BTN:
+        octave++;
+        if (octave > 8)
+            octave = 8;
+        gslc_ElemSetTxtStr(&m_gui, m_pElemWaveOctaveTxt, String(octave).c_str());
+        break;
+    case E_ELEM_WAVE_OCTAVE_DEC_BTN:
+        octave--;
+        if (octave < 1)
+            octave = 1;
+        gslc_ElemSetTxtStr(&m_gui, m_pElemWaveOctaveTxt, String(octave).c_str());
+        break;
 
     default:
         break;
@@ -89,12 +107,28 @@ void WaveTablePage::configurePage()
     sgtl5000_1.inputSelect(AUDIO_INPUT_MIC);
     sgtl5000_1.micGain(40);
     AudioIO.setInputVolume(InputTracks::LINEMIC_IN, 0);
+    // setup peak module for level meter
+    AudioIO.setMixerLevelMode(LevelMeterMode::PRE_FADER);
 }
 
 void WaveTablePage::update()
 {
-    // get velocity from microphone
-    velocity =  rmsVelocity.read();
+    float temp_peak = AudioIO.getMixerPeak(MasterTracks::ANALOG_OUT, MixerTracks::INSTRUMENTS).l;
+    if (temp_peak >= 0)
+    {
+        // convert to dB
+        temp_peak = 20 * log10f(temp_peak);
+        if (temp_peak >= -0.1)
+            peakHold = PEAK_HOLD_TIME;
+        // calulate running average
+        temp_peak = (temp_peak + peakAvg * PEAK_AVG_TIME) / (PEAK_AVG_TIME + 1);
+        peakAvg = temp_peak;
+        gslc_ElemXProgressSetVal(&m_gui, m_pElemWaveVolBar, map(temp_peak, -30, 0, 0, 100));
+    }
+    // peak indicator
+    if(peakHold > 0)
+        peakHold--;
+    togglePeakBox(peakBox, (bool)peakHold);
 }
 
 void WaveTablePage::draw()
@@ -105,4 +139,8 @@ void WaveTablePage::init()
 {
     pageID = E_PG_WAVE;
     strcpy(pageName, "Wave Table Synth");
+
+    gslc_ElemSetTxtStr(&m_gui, m_pElemWaveOctaveTxt, String(octave).c_str());
+
+    peakBox = gslc_PageFindElemById(&m_gui, E_PG_WAVE, E_ELEM_WAVE_PEAK_BOX);
 }

@@ -3,12 +3,17 @@
 
 #include "Pages.h"
 
+#define PEAK_AVG_TIME 2
+
 // A home menu page
 class WaveTablePage : public Pages
 {
 private:
     uint8_t octave = 4;
-    float velocity;
+
+    gslc_tsElemRef *peakBox;
+    float peakAvg = 0;
+    uint8_t peakHold = 0;
 public:
     void onBtnPressed(uint8_t pin);
     void onBtnHold(uint8_t pin);

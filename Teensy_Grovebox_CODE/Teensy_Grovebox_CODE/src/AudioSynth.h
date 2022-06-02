@@ -32,10 +32,12 @@ private:
     bool isSustain = false;
 public:
     AudioSynth_();
-    void noteOn(uint8_t note, float vel);
+    void noteOn(uint8_t note);
     void noteOff(uint8_t note);
     void sustainOn();
     void sustainOff();
+
+    float velocity = 0;
 
 };
 

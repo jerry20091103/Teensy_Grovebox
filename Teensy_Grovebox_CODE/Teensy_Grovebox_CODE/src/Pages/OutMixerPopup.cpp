@@ -169,6 +169,7 @@ void OutMixerPopup::configurePage()
         currentMasterTrack = MasterTracks::USB_OUT;
     }
     gslc_ElemSetTxtStr(&m_gui, m_pElemOutMixerTitleTxt, pageName);
+    setPFL(usePFL);
     // set pan state
     changeEncState(adjustingPan);
     // set current volume and pan level

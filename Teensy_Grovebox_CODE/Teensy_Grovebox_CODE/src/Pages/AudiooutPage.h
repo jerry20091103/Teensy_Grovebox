@@ -5,7 +5,7 @@
 #include "AudioIO.h"
 
 #define MASTER_VOL_MAX 63
-#define RMS_AVG_TIME 10
+#define RMS_AVG_TIME 5
 
 // A page for audio output adjustments and audio quick settings.
 // Also links to output mixer popup for further adjustments.

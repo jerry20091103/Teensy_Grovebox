@@ -41,7 +41,7 @@ AudioSynth_::AudioSynth_()
     // set initial instrument
     for (int i = 0; i < MAX_VOICE; i++)
     {
-        voiceArr[i].setInstrument(&pianoelectrique);
+        voiceArr[i].setInstrument(pianoelectrique);
     }
 
     // put all voices in idle list
@@ -51,7 +51,7 @@ AudioSynth_::AudioSynth_()
     }
 }
 
-void AudioSynth_::noteOn(uint8_t note, float vel)
+void AudioSynth_::noteOn(uint8_t note)
 {
     int16_t voiceFound = -1;
     // check if the note is already playing
@@ -96,7 +96,7 @@ void AudioSynth_::noteOn(uint8_t note, float vel)
 
     playingNote.push_front(noteEntry(note, voiceFound));
     voiceArr[voiceFound].isNoteOn = true;
-    voiceArr[voiceFound].noteOn(noteToFreq(note), map(vel, 0, 1, 0.2, 1));
+    voiceArr[voiceFound].noteOn(noteToFreq(note), map(velocity, 0, 1, 0.2, 1));
     Serial.println("DEBUG: playingNote size: " + String(playingNote.size()) + " idleNote size: " + String(idleNote.size()));
 }
 

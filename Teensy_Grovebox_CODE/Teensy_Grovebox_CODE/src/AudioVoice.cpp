@@ -16,7 +16,7 @@ void AudioVoice::noteOff()
     waveTable->stop();
 }
 
-void AudioVoice::setInstrument(const AudioSynthWavetable::instrument_data *instrument)
+void AudioVoice::setInstrument(const AudioSynthWavetable::instrument_data &instrument)
 {
-    waveTable->setInstrument(*instrument);
+    waveTable->setInstrument(instrument);
 }
