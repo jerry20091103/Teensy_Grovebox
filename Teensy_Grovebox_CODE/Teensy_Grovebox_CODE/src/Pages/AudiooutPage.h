@@ -2,7 +2,7 @@
 #define AUDIOOUTPAGE_H
 
 #include "Pages.h"
-#include "AudioIO.h"
+#include "Audio/AudioIO.h"
 
 #define MASTER_VOL_MAX 63
 #define RMS_AVG_TIME 5

@@ -3,9 +3,9 @@
 #include "font_Arial.h"
 #include "Controls.h"
 #include "Pages/Pages.h"
-#include "AudioObjects.h"
-#include "AudioIO.h"
-#include "AudioSynth.h"
+#include "Audio/AudioObjects.h"
+#include "Audio/AudioIO.h"
+#include "Audio/AudioSynth.h"
 
 int bar_test;
 int batt_level;

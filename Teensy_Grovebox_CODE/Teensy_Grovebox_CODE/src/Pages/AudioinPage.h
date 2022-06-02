@@ -2,7 +2,7 @@
 #define AUDIOINPAGE_H
 
 #include "Pages.h"
-#include "AudioIO.h"
+#include "Audio/AudioIO.h"
 
 #define INPUT_VOL_MAX 61
 #define LINE_GAIN_MAX 15

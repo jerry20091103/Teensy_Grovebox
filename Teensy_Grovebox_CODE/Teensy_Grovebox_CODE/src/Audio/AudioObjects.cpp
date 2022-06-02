@@ -1,4 +1,4 @@
-#include <AudioObjects.h>
+#include "AudioObjects.h"
 
 // GUItool: begin automatically generated code
 AudioSynthWavetable      wavetable4; //xy=207.00000762939453,1161.4546146392822

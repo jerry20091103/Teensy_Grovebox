@@ -2,7 +2,7 @@
 #define AUDIOIO_H
 
 #include <Audio.h>
-#include <AudioObjects.h>
+#include "Audio/AudioObjects.h"
 
 enum MixerTracks : uint8_t
 {

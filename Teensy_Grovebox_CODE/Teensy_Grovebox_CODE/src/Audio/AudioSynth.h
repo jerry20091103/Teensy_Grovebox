@@ -1,7 +1,7 @@
 #ifndef AUDIO_SYNTH_H
 #define AUDIO_SYNTH_H
 
-#include "AudioVoice.h"
+#include "Audio/AudioVoice.h"
 #include <list>
 
 #define MAX_VOICE 8

@@ -1,8 +1,8 @@
 #include "WaveTablePage.h"
 #include "Hardware.h"
 #include "Controls.h"
-#include "AudioSynth.h"
-#include "AudioIO.h"
+#include "Audio/AudioSynth.h"
+#include "Audio/AudioIO.h"
 
 void WaveTablePage::onBtnPressed(uint8_t pin)
 {

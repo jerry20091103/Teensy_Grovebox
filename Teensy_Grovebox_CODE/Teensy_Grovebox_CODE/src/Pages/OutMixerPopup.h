@@ -2,7 +2,7 @@
 #define OUTMIXERPOPUP_H
 
 #include "Pages.h"
-#include "AudioIO.h"
+#include "Audio/AudioIO.h"
 
 #define TRACK_VOL_MAX 61
 #define TRACK_PAN_MAX 60
