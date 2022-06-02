@@ -16,9 +16,9 @@ PageManager_ &PageManager_::getInstance()
 
 PageManager_ &PageManager = PageManager.getInstance();
 
-int PageManager_::getCurPage()
+int PageManager_::getCurPage(bool includePopup)
 {
-    if(inPopup)
+    if(inPopup && includePopup)
         return curPopupID;
     else
         return gslc_GetPageCur(&m_gui);

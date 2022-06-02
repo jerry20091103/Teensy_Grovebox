@@ -54,7 +54,7 @@ public:
     int lastPage = E_PG_MIDI;
     
     // Gets the current Page on screen. Returns the info from GUIslice library
-    int getCurPage();
+    int getCurPage(bool includePopup = true);
     // Initial all pages at program start
     void Init();
     // Switch to a page, will auto hide popup when in a popup.

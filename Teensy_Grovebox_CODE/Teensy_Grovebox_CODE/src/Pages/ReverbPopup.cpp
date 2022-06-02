@@ -1,9 +1,15 @@
 #include "ReverbPopup.h"
 #include "Hardware.h"
+#include "Controls.h"
 
 void ReverbPopup::onBtnPressed(uint8_t pin)
 {
-    switch (pin)
+    uint8_t keyNum = PinToKeyNum(pin);
+    if (keyNum > 0)
+    {
+        PageManager.PageArr[PageManager.getCurPage(false)]->onBtnPressed(pin);
+    }
+    else
     {
     }
 }
@@ -14,6 +20,14 @@ void ReverbPopup::onBtnHold(uint8_t pin)
 
 void ReverbPopup::onBtnReleased(uint8_t pin)
 {
+    uint8_t keyNum = PinToKeyNum(pin);
+    if (keyNum > 0)
+    {
+        PageManager.PageArr[PageManager.getCurPage(false)]->onBtnReleased(pin);
+    }
+    else
+    {
+    }
 }
 
 void ReverbPopup::onEncTurned(uint8_t id, int value)
@@ -23,7 +37,7 @@ void ReverbPopup::onEncTurned(uint8_t id, int value)
     case 0:
         updateRoomSize(value);
         break;
-    case 1: 
+    case 1:
         updateDamping(value);
         break;
     case 2:
@@ -97,7 +111,7 @@ void ReverbPopup::updateRoomSize(uint8_t value)
     float newVal = value * 0.01f;
     AudioFX.reverb.setRoomSize(newVal);
     mem->roomSize = newVal;
-    
+
     gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemReverbRSRing, value);
     gslc_ElemSetTxtStr(&m_gui, m_pElemReverbRSRing, String(value).c_str());
 }
