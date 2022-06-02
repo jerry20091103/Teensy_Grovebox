@@ -24,6 +24,8 @@ private:
     gslc_tsElemRef *peakBar[2][2];
     gslc_tsElemRef *rmsBar[2];
 
+    int popupParam;
+
     void updateHpVol(uint8_t newVal);
     void updateOutVolume(MasterTracks track, uint8_t newVal);
     void setPFL(bool flag);

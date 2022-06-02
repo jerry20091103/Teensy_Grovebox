@@ -107,11 +107,13 @@ void AudiooutPage::onTouch(int ref)
         // TODO go to post processing popup
         break;
     case E_ELEM_AUDIOOUT_ANALOG_BTN:
-        PageManager.pageParam = 0;
+        popupParam = 0;
+        PageManager.pageParam = &popupParam;
         PageManager.showPopup(E_PG_POPUP_OUT_MIXER);
         break;
     case E_ELEM_AUDIOOUT_USB_BTN:
-        PageManager.pageParam = 1;
+        popupParam = 1;
+        PageManager.pageParam = &popupParam;
         PageManager.showPopup(E_PG_POPUP_OUT_MIXER);
         break;
     }

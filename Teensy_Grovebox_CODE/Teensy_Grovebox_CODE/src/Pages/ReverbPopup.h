@@ -1,23 +1,20 @@
-#ifndef WAVE_TABLE_PAGE_H
-#define WAVE_TABLE_PAGE_H
+#ifndef ReverbPOPUP_H
+#define ReverbPOPUP_H
 
 #include "Pages.h"
 #include "Audio/AudioFX.h"
 
-#define PEAK_AVG_TIME 2
-
-// A home menu page
-class WaveTablePage : public Pages
+// Popup window for Reverb effect
+class ReverbPopup : public Pages
 {
 private:
-    uint8_t octave = 4;
-    int8_t volume = 0;
+    FXFreeverb_Mem *mem;
 
-    gslc_tsElemRef *peakBox;
-    float peakAvg = 0;
-    uint8_t peakHold = 0;
+    void updateRoomSize(uint8_t value);
+    void updateDamping(uint8_t value);
+    void updateLpf(uint8_t value);
+    void updateMix(uint8_t value);
 
-    void setVolume(int8_t value);
 public:
     void onBtnPressed(uint8_t pin);
     void onBtnHold(uint8_t pin);
@@ -31,8 +28,6 @@ public:
     void update();
     void draw();
     void init();
-    
-    FXFreeverb_Mem reverbMem;
 };
 
 #endif

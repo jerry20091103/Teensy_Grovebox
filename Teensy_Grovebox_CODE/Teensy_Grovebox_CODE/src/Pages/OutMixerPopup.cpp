@@ -159,12 +159,12 @@ void OutMixerPopup::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t val
 void OutMixerPopup::configurePage()
 {
     // set title
-    if (PageManager.pageParam == 0)
+    if (*((int*)PageManager.pageParam) == 0)
     {
         strcpy(pageName, "Analog Out Mixer");
         currentMasterTrack = MasterTracks::ANALOG_OUT;
     }
-    else if (PageManager.pageParam == 1)
+    else if (*((int*)PageManager.pageParam) == 1)
     {
         strcpy(pageName, "USB Out Mixer");
         currentMasterTrack = MasterTracks::USB_OUT;
@@ -234,12 +234,6 @@ void OutMixerPopup::init()
         updateTrackPan((MixerTracks)i, trackPan[currentMasterTrack][i]);
     }
     setPFL(usePFL);
-
-    gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerLmVol, TRACK_VOL_MAX - trackVol[currentMasterTrack][0]);
-    gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerUsbVol, TRACK_VOL_MAX - trackVol[currentMasterTrack][1]);
-
-    gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerLmPan, trackPan[currentMasterTrack][0]);
-    gslc_ElemXSeekbarSetPos(&m_gui, m_pElemOutMixerUsbPan, trackPan[currentMasterTrack][1]);
 
     // TODO: add more tracks
     peakBox[MixerTracks::I2S][0] = gslc_PageFindElemById(&m_gui, E_PG_POPUP_OUT_MIXER, E_ELEM_OUT_MIXER_LM_PEAK_L_BOX);

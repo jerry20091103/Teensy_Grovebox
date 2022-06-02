@@ -63,8 +63,8 @@ public:
     void showPopup(int pageID);
     // Hide a popup page
     void hidePopup();
-    // a global variable for parameter passing when switching pages
-    int pageParam;
+    // a global pointer variable for parameter passing when switching pages
+    void *pageParam;
 private:
     bool inPopup = false;   // true if a popup is active
     int curPopupID;         // stores current acitve popup ID

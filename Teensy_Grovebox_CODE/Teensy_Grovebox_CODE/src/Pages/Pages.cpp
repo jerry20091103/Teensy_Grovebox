@@ -6,6 +6,7 @@
 #include "AudioinPage.h"
 #include "HomePage.h"
 #include "WaveTablePage.h"
+#include "ReverbPopup.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -32,6 +33,7 @@ void PageManager_::Init()
     PageArr[E_PG_AUDIOIN] = new AudioinPage();
     PageArr[E_PG_HOME] = new HomePage();
     PageArr[E_PG_WAVE] = new WaveTablePage();
+    PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
 
     Serial.println("Page constructor");
 

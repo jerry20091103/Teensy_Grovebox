@@ -19,14 +19,12 @@ extern AudioSynthWavetable      wavetable5; //xy=89.57147216796875,1368.89592933
 extern AudioMixer4              voiceMixer0_1; //xy=321.5714797973633,1375.8959941864014
 extern AudioMixer4              voiceMixer0_0;         //xy=334.5714797973633,1205.895990371704
 extern AudioMixer4              voiceMixer1_0; //xy=520.5714797973633,1292.8959941864014
-extern AudioEffectFlange        flange1;        //xy=790.3333015441895,1028.0178527832031
-extern AudioMixer4              flangeMixer;         //xy=799.1903686523438,1096.549903869629
 extern AudioEffectDelay         delay1;         //xy=954.333309173584,1001.0176696777344
 extern AudioMixer4              delayMixer; //xy=977.6190147399902,1108.6928062438965
 extern AudioEffectFreeverbStereo freeverbs1;     //xy=1172.476146697998,1012.8749980926514
 extern AudioFilterBiquad        freeverbBiquadL;        //xy=1361.7662887573242,995.4155788421631
 extern AudioFilterBiquad        freeverbBiquadR; //xy=1362.7662811279297,1030.4155797958374
-extern AudioMixer4              freeverbMixerL; //xy=1374.7532806396484,1096.8961791992188
+extern AudioMixer4              freeverbMixerL; //xy=1376.9755249023438,1095.7851486206055
 extern AudioMixer4              freeverbMixerR; //xy=1377.6103897094727,1162.7014503479004
 extern AudioInputI2S            i2sIN;           //xy=1427.5835037231445,471.16686630249023
 extern AudioInputUSB            usbIN;           //xy=1435.583423614502,729.1668548583984
@@ -166,9 +164,6 @@ extern AudioConnection          patchCord86;
 extern AudioConnection          patchCord87;
 extern AudioConnection          patchCord88;
 extern AudioConnection          patchCord89;
-extern AudioConnection          patchCord90;
-extern AudioConnection          patchCord91;
-extern AudioConnection          patchCord92;
 extern AudioControlSGTL5000     sgtl5000_1;     //xy=1499.5834312438965,339.1668577194214
 // GUItool: end automatically generated code
 

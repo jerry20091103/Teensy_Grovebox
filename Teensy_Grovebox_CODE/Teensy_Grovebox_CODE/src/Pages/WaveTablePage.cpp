@@ -99,8 +99,9 @@ void WaveTablePage::onTouch(int ref)
             octave = 1;
         gslc_ElemSetTxtStr(&m_gui, m_pElemWaveOctaveTxt, String(octave).c_str());
         break;
-
-    default:
+    case E_ELEM_WAVE_REVERB_BTN:
+        PageManager.pageParam = &reverbMem;
+        PageManager.showPopup(E_PG_POPUP_REVERB);
         break;
     }
 }
@@ -119,6 +120,8 @@ void WaveTablePage::configurePage()
     AudioIO.setMixerLevelMode(LevelMeterMode::PRE_FADER);
     setVolume(volume);
     enc3->changePrecision(30, volume + 15, false);
+    // set reverb FX
+    AudioFX.reverb.setWithMem(&reverbMem);
 }
 
 void WaveTablePage::update()
@@ -127,13 +130,13 @@ void WaveTablePage::update()
     if (temp_peak >= 0)
     {
         // convert to dB
-        temp_peak = gaintodB(temp_peak);
-        if (temp_peak >= -0.1)
+        float temp_dB = gaintodB(temp_peak);
+        if (temp_dB >= -0.1)
             peakHold = PEAK_HOLD_TIME;
         // calulate running average
         temp_peak = (temp_peak + peakAvg * PEAK_AVG_TIME) / (PEAK_AVG_TIME + 1);
         peakAvg = temp_peak;
-        gslc_ElemXProgressSetVal(&m_gui, m_pElemWaveVolBar, map(temp_peak, -30, 0, 0, 100));
+        gslc_ElemXProgressSetVal(&m_gui, m_pElemWaveVolBar, map(gaintodB(temp_peak), -30, 0, 0, 100));
     }
     // peak indicator
     if (peakHold > 0)
