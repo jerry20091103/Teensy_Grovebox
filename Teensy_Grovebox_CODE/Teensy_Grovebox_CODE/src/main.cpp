@@ -13,7 +13,7 @@ unsigned long lastBarUpdate;
 // update GUI
 void updateGui()
 {
-    lv_task_handler();
+    lv_task_handler(); // todo: change to timer handler?
 }
 
 void updatePage()

@@ -24,6 +24,15 @@ HardwareRotaryEncoder *enc1;
 HardwareRotaryEncoder *enc2;
 HardwareRotaryEncoder *enc3;
 
+#if LV_USE_LOG != 0
+/* LVGL Serial debugging */
+void my_print(const char * buf)
+{
+    Serial.printf(buf);
+    Serial.flush();
+}
+#endif
+
 /** Callback to draw on the screen */
 void myDispFlush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
@@ -72,6 +81,9 @@ void HardwareSetup()
 
     // Setup LVGL
     lv_init();
+#if LV_USE_LOG != 0
+    lv_log_register_print_cb(my_print); /* register print function for debugging */
+#endif
     lv_disp_draw_buf_init(&draw_buf, lvgl_buf, NULL, TFT_X * TFT_Y_BUF);
     lv_disp_drv_init(&disp_drv);
     disp_drv.hor_res = TFT_X;
@@ -187,6 +199,4 @@ void HardwareSetup()
 
     // Setup midi callbacks
     usbMIDI.setHandleControlChange(onControlChange);
-
-    
 }
