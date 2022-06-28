@@ -41,6 +41,7 @@ for i in range(start, end):
 
 for i in range(start, end):
     header_file[i] = header_file[i].replace('gslc_', 'extern gslc_')
+    header_file[i] = header_file[i].replace('char', 'extern char')
 
 # add inculde "page.h"
 
@@ -58,6 +59,13 @@ cpp_file.insert(start, '    PageManager.PageArr[PageManager.getCurPage()]->onTou
 # slider
 start = cpp_file.index("  // From the element's ID we can determine which slider was updated.\n")
 end = cpp_file.index('//<Slider Enums !End!>\n')
+start += 1
+end += 4
+del cpp_file[start:end]
+cpp_file.insert(start, '    PageManager.PageArr[PageManager.getCurPage()]->onTouch(pElem->nId);\n')
+# listbox
+start = cpp_file.index("  // From the element's ID we can determine which listbox was active.\n")
+end = cpp_file.index('//<Listbox Enums !End!>\n')
 start += 1
 end += 4
 del cpp_file[start:end]

@@ -7,6 +7,7 @@
 #include "HomePage.h"
 #include "WaveTablePage.h"
 #include "ReverbPopup.h"
+#include "Sf2SelectPopup.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -34,6 +35,7 @@ void PageManager_::Init()
     PageArr[E_PG_HOME] = new HomePage();
     PageArr[E_PG_WAVE] = new WaveTablePage();
     PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
+    PageArr[E_PG_POPUP_SF2_SELECT] = new Sf2SelectPopup();
 
     Serial.println("Page constructor");
 

@@ -103,6 +103,8 @@ void WaveTablePage::onTouch(int ref)
         PageManager.pageParam = &reverbMem;
         PageManager.showPopup(E_PG_POPUP_REVERB);
         break;
+    case E_ELEM_WAVE_SOUND_BTN:
+        PageManager.showPopup(E_PG_POPUP_SF2_SELECT);
     }
 }
 

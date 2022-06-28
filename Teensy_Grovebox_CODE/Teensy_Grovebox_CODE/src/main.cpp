@@ -11,6 +11,7 @@ int bar_test;
 int batt_level;
 unsigned long lastBarUpdate;
 
+// update GUI
 void update_gslc()
 {
     gslc_Update(&m_gui);

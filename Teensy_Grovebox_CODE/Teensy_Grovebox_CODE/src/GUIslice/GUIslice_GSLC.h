@@ -21,6 +21,7 @@
 // Include any extended elements
 //<Includes !Start!>
 // Include extended elements
+#include "elem/XListbox.h"
 #include "elem/XProgress.h"
 #include "elem/XRingGauge.h"
 #include "elem/XSeekbar.h"
@@ -56,9 +57,9 @@ extern "C" const unsigned short synth_logo[] PROGMEM;
 //<Enum !Start!>
 enum {E_PG_BASE,E_PG_MIDI,E_PG_POPUP_POWER,E_PG_AUDIOOUT
       ,E_PG_POPUP_OUT_MIXER,E_PG_AUDIOIN,E_PG_HOME,E_PG_WAVE
-      ,E_PG_POPUP_REVERB};
-enum {E_DRAW_LINE1,E_DRAW_LINE2,E_DRAW_LINE3,E_DRAW_LINE4,E_DRAW_LINE7
-      ,E_DRAW_LINE8,E_DRAW_LINE9,E_ELEM_AUDIOIN_GAIN_RING
+      ,E_PG_POPUP_REVERB,E_PG_POPUP_SF2_SELECT};
+enum {E_DRAW_LINE1,E_DRAW_LINE10,E_DRAW_LINE2,E_DRAW_LINE3,E_DRAW_LINE4
+      ,E_DRAW_LINE7,E_DRAW_LINE8,E_DRAW_LINE9,E_ELEM_AUDIOIN_GAIN_RING
       ,E_ELEM_AUDIOIN_LINE_IN_BTN,E_ELEM_AUDIOIN_LM_L_BAR
       ,E_ELEM_AUDIOIN_LM_PEAK_L_BOX,E_ELEM_AUDIOIN_LM_PEAK_R_BOX
       ,E_ELEM_AUDIOIN_LM_R_BAR,E_ELEM_AUDIOIN_LM_VOL
@@ -77,6 +78,7 @@ enum {E_DRAW_LINE1,E_DRAW_LINE2,E_DRAW_LINE3,E_DRAW_LINE4,E_DRAW_LINE7
       ,E_ELEM_AUDIOOUT_USB_PEAK_R_BOX,E_ELEM_AUDIOOUT_USB_R_BAR
       ,E_ELEM_AUDIOOUT_USB_VOL,E_ELEM_AUDIOOUT_USB_VOL_TEXT
       ,E_ELEM_BASE_BACK_BTN,E_ELEM_BOX10,E_ELEM_BOX24,E_ELEM_BOX32
+      ,E_ELEM_BOX33,E_ELEM_BTN46,E_ELEM_BTN47,E_ELEM_BTN48
       ,E_ELEM_HOME_DRUM_BTN,E_ELEM_HOME_FX_BTN,E_ELEM_HOME_KEYBOARD_BTN
       ,E_ELEM_HOME_MIDI_BTN,E_ELEM_HOME_RECODER_BTN
       ,E_ELEM_HOME_SETTINGS_BTN,E_ELEM_HOME_SYNTH_BTN
@@ -112,33 +114,35 @@ enum {E_DRAW_LINE1,E_DRAW_LINE2,E_DRAW_LINE3,E_DRAW_LINE4,E_DRAW_LINE7
       ,E_ELEM_OUT_MIXER_USB_VOL_TEXT,E_ELEM_POWER_BTN_CALCEL
       ,E_ELEM_POWER_BTN_YES,E_ELEM_REVERB_BACK_BTN
       ,E_ELEM_REVERB_DAMPING_RING,E_ELEM_REVERB_FILTER_RING
-      ,E_ELEM_REVERB_MIX_RING,E_ELEM_REVERB_RS_RING,E_ELEM_TEXT105
-      ,E_ELEM_TEXT107,E_ELEM_TEXT109,E_ELEM_TEXT113,E_ELEM_TEXT114
-      ,E_ELEM_TEXT115,E_ELEM_TEXT116,E_ELEM_TEXT117,E_ELEM_TEXT119
-      ,E_ELEM_TEXT121,E_ELEM_TEXT122,E_ELEM_TEXT123,E_ELEM_TEXT126
-      ,E_ELEM_TEXT129,E_ELEM_TEXT130,E_ELEM_TEXT134,E_ELEM_TEXT138
-      ,E_ELEM_TEXT139,E_ELEM_TEXT140,E_ELEM_TEXT141,E_ELEM_TEXT142
-      ,E_ELEM_TEXT143,E_ELEM_TEXT144,E_ELEM_TEXT145,E_ELEM_TEXT146
-      ,E_ELEM_TEXT147,E_ELEM_TEXT27,E_ELEM_TEXT28,E_ELEM_TEXT29
-      ,E_ELEM_TEXT30,E_ELEM_TEXT31,E_ELEM_TEXT32,E_ELEM_TEXT33
-      ,E_ELEM_TEXT34,E_ELEM_TEXT36,E_ELEM_TEXT37,E_ELEM_TEXT38
-      ,E_ELEM_TEXT40,E_ELEM_TEXT41,E_ELEM_TEXT42,E_ELEM_TEXT43
-      ,E_ELEM_TEXT48,E_ELEM_TEXT49,E_ELEM_TEXT50,E_ELEM_TEXT52
-      ,E_ELEM_TEXT54,E_ELEM_TEXT55,E_ELEM_TEXT57,E_ELEM_TEXT59
-      ,E_ELEM_TEXT60,E_ELEM_TEXT61,E_ELEM_TEXT62,E_ELEM_TEXT63
-      ,E_ELEM_TEXT64,E_ELEM_TEXT65,E_ELEM_TEXT67,E_ELEM_TEXT69
-      ,E_ELEM_TEXT75,E_ELEM_TEXT76,E_ELEM_TEXT77,E_ELEM_TEXT78
-      ,E_ELEM_TEXT79,E_ELEM_TEXT80,E_ELEM_TEXT81,E_ELEM_TEXT82
-      ,E_ELEM_TEXT83,E_ELEM_TEXT84,E_ELEM_TEXT85,E_ELEM_TEXT86
-      ,E_ELEM_TEXT89,E_ELEM_TEXT90,E_ELEM_TEXT91,E_ELEM_TEXT92
-      ,E_ELEM_TEXT93,E_ELEM_TEXT94,E_ELEM_TEXT95,E_ELEM_TEXT96
-      ,E_ELEM_TEXT_BATT,E_ELEM_TEXT_TITLE,E_ELEM_WAVE_COMPRESSOR_BTN
-      ,E_ELEM_WAVE_DELAY_BTN,E_ELEM_WAVE_MOD_BTN
-      ,E_ELEM_WAVE_OCTAVE_DEC_BTN,E_ELEM_WAVE_OCTAVE_INC_BTN
-      ,E_ELEM_WAVE_OCTAVE_TEXT,E_ELEM_WAVE_PEAK_BOX
-      ,E_ELEM_WAVE_REVERB_BTN,E_ELEM_WAVE_SOUND_BTN
-      ,E_ELEM_WAVE_VELOCTIY_BTN,E_ELEM_WAVE_VOL_BAR
-      ,E_ELEM_WAVE_VOL_RING};
+      ,E_ELEM_REVERB_MIX_RING,E_ELEM_REVERB_RS_RING,E_ELEM_SF2_BACK_BTN
+      ,E_ELEM_SF2_CUR_PAGE_TEXT,E_ELEM_SF2_LISTBOX
+      ,E_ELEM_SF2_TOTAL_PAGE_TEXT,E_ELEM_TEXT105,E_ELEM_TEXT107
+      ,E_ELEM_TEXT109,E_ELEM_TEXT113,E_ELEM_TEXT114,E_ELEM_TEXT115
+      ,E_ELEM_TEXT116,E_ELEM_TEXT117,E_ELEM_TEXT119,E_ELEM_TEXT121
+      ,E_ELEM_TEXT122,E_ELEM_TEXT123,E_ELEM_TEXT126,E_ELEM_TEXT129
+      ,E_ELEM_TEXT130,E_ELEM_TEXT134,E_ELEM_TEXT138,E_ELEM_TEXT139
+      ,E_ELEM_TEXT140,E_ELEM_TEXT141,E_ELEM_TEXT142,E_ELEM_TEXT143
+      ,E_ELEM_TEXT144,E_ELEM_TEXT145,E_ELEM_TEXT146,E_ELEM_TEXT147
+      ,E_ELEM_TEXT148,E_ELEM_TEXT151,E_ELEM_TEXT27,E_ELEM_TEXT28
+      ,E_ELEM_TEXT29,E_ELEM_TEXT30,E_ELEM_TEXT31,E_ELEM_TEXT32
+      ,E_ELEM_TEXT33,E_ELEM_TEXT34,E_ELEM_TEXT36,E_ELEM_TEXT37
+      ,E_ELEM_TEXT38,E_ELEM_TEXT40,E_ELEM_TEXT41,E_ELEM_TEXT42
+      ,E_ELEM_TEXT43,E_ELEM_TEXT48,E_ELEM_TEXT49,E_ELEM_TEXT50
+      ,E_ELEM_TEXT52,E_ELEM_TEXT54,E_ELEM_TEXT55,E_ELEM_TEXT57
+      ,E_ELEM_TEXT59,E_ELEM_TEXT60,E_ELEM_TEXT61,E_ELEM_TEXT62
+      ,E_ELEM_TEXT63,E_ELEM_TEXT64,E_ELEM_TEXT65,E_ELEM_TEXT67
+      ,E_ELEM_TEXT69,E_ELEM_TEXT75,E_ELEM_TEXT76,E_ELEM_TEXT77
+      ,E_ELEM_TEXT78,E_ELEM_TEXT79,E_ELEM_TEXT80,E_ELEM_TEXT81
+      ,E_ELEM_TEXT82,E_ELEM_TEXT83,E_ELEM_TEXT84,E_ELEM_TEXT85
+      ,E_ELEM_TEXT86,E_ELEM_TEXT89,E_ELEM_TEXT90,E_ELEM_TEXT91
+      ,E_ELEM_TEXT92,E_ELEM_TEXT93,E_ELEM_TEXT94,E_ELEM_TEXT95
+      ,E_ELEM_TEXT96,E_ELEM_TEXT_BATT,E_ELEM_TEXT_TITLE
+      ,E_ELEM_WAVE_COMPRESSOR_BTN,E_ELEM_WAVE_DELAY_BTN
+      ,E_ELEM_WAVE_MOD_BTN,E_ELEM_WAVE_OCTAVE_DEC_BTN
+      ,E_ELEM_WAVE_OCTAVE_INC_BTN,E_ELEM_WAVE_OCTAVE_TEXT
+      ,E_ELEM_WAVE_PEAK_BOX,E_ELEM_WAVE_REVERB_BTN
+      ,E_ELEM_WAVE_SOUND_BTN,E_ELEM_WAVE_VELOCTIY_BTN
+      ,E_ELEM_WAVE_VOL_BAR,E_ELEM_WAVE_VOL_RING};
 // Must use separate enum for fonts with MAX_FONT at end to use gslc_FontSet.
 enum {E_ARIAL_10,E_ARIAL_10_BOLD,E_ARIAL_12,E_ARIAL_12_BOLD,E_ARIAL_13
       ,E_ARIAL_14,E_ARIAL_14_BOLD,E_ARIAL_8,E_AWESOMEF000_10
@@ -155,7 +159,7 @@ enum {E_ARIAL_10,E_ARIAL_10_BOLD,E_ARIAL_12,E_ARIAL_12_BOLD,E_ARIAL_13
 // Define the maximum number of elements and pages
 // ------------------------------------------------
 //<ElementDefines !Start!>
-#define MAX_PAGE                9
+#define MAX_PAGE                10
 
 #define MAX_ELEM_PG_BASE 4 // # Elems total on page
 #define MAX_ELEM_PG_BASE_RAM MAX_ELEM_PG_BASE // # Elems in RAM
@@ -183,6 +187,9 @@ enum {E_ARIAL_10,E_ARIAL_10_BOLD,E_ARIAL_12,E_ARIAL_12_BOLD,E_ARIAL_13
 
 #define MAX_ELEM_PG_POPUP_REVERB 16 // # Elems total on page
 #define MAX_ELEM_PG_POPUP_REVERB_RAM MAX_ELEM_PG_POPUP_REVERB // # Elems in RAM
+
+#define MAX_ELEM_PG_POPUP_SF2_SELECT 11 // # Elems total on page
+#define MAX_ELEM_PG_POPUP_SF2_SELECT_RAM MAX_ELEM_PG_POPUP_SF2_SELECT // # Elems in RAM
 //<ElementDefines !End!>
 
 // ------------------------------------------------
@@ -212,6 +219,8 @@ extern gslc_tsElem                     m_asPage5Elem[MAX_ELEM_PG_WAVE_RAM];
 extern gslc_tsElemRef                  m_asPage5ElemRef[MAX_ELEM_PG_WAVE];
 extern gslc_tsElem                     m_asPopup3Elem[MAX_ELEM_PG_POPUP_REVERB_RAM];
 extern gslc_tsElemRef                  m_asPopup3ElemRef[MAX_ELEM_PG_POPUP_REVERB];
+extern gslc_tsElem                     m_asPopup4Elem[MAX_ELEM_PG_POPUP_SF2_SELECT_RAM];
+extern gslc_tsElemRef                  m_asPopup4ElemRef[MAX_ELEM_PG_POPUP_SF2_SELECT];
 extern gslc_tsXRingGauge               m_sXRingGauge1;
 extern gslc_tsXRingGauge               m_sXRingGauge2;
 extern gslc_tsXRingGauge               m_sXRingGauge3;
@@ -251,6 +260,9 @@ extern gslc_tsXRingGauge               m_sXRingGauge11;
 extern gslc_tsXRingGauge               m_sXRingGauge12;
 extern gslc_tsXRingGauge               m_sXRingGauge13;
 extern gslc_tsXRingGauge               m_sXRingGauge14;
+extern gslc_tsXListbox                 m_sListbox1;
+// - Note that XLISTBOX_BUF_OH_R is extra required per item
+extern char                            m_acListboxBuf1[74 + XLISTBOX_BUF_OH_R];
 
 #define MAX_STR                 100
 
@@ -306,9 +318,13 @@ extern gslc_tsElemRef* m_pElemOutMixerLmVol;
 extern gslc_tsElemRef* m_pElemOutMixerLmVolTxt;
 extern gslc_tsElemRef* m_pElemOutMixerPanBtn;
 extern gslc_tsElemRef* m_pElemOutMixerPflBtn;
+extern gslc_tsElemRef* m_pElemOutMixerPflBtn46;
+extern gslc_tsElemRef* m_pElemOutMixerPflBtn46_47;
+extern gslc_tsElemRef* m_pElemOutMixerPflBtn46_47_48;
 extern gslc_tsElemRef* m_pElemOutMixerRecPan;
 extern gslc_tsElemRef* m_pElemOutMixerTitleTxt;
 extern gslc_tsElemRef* m_pElemOutMixerTitleTxt139;
+extern gslc_tsElemRef* m_pElemOutMixerTitleTxt139_148;
 extern gslc_tsElemRef* m_pElemOutMixerUsbLBar;
 extern gslc_tsElemRef* m_pElemOutMixerUsbPan;
 extern gslc_tsElemRef* m_pElemOutMixerUsbRBar;
@@ -318,6 +334,10 @@ extern gslc_tsElemRef* m_pElemReverbDampingRing;
 extern gslc_tsElemRef* m_pElemReverbFilterRing;
 extern gslc_tsElemRef* m_pElemReverbMixRing;
 extern gslc_tsElemRef* m_pElemReverbRSRing;
+extern gslc_tsElemRef* m_pElemSf2CurPageTxt;
+extern gslc_tsElemRef* m_pElemSf2Listbox;
+extern gslc_tsElemRef* m_pElemSf2ListboxSlider;
+extern gslc_tsElemRef* m_pElemSf2TotalPageTxt;
 extern gslc_tsElemRef* m_pElemTxtBatt;
 extern gslc_tsElemRef* m_pElemTxtTitle;
 extern gslc_tsElemRef* m_pElemWaveCompressorBtn;

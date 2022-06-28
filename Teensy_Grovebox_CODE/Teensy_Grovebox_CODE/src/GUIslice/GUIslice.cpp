@@ -45,6 +45,8 @@ gslc_tsElem                     m_asPage5Elem[MAX_ELEM_PG_WAVE_RAM];
 gslc_tsElemRef                  m_asPage5ElemRef[MAX_ELEM_PG_WAVE];
 gslc_tsElem                     m_asPopup3Elem[MAX_ELEM_PG_POPUP_REVERB_RAM];
 gslc_tsElemRef                  m_asPopup3ElemRef[MAX_ELEM_PG_POPUP_REVERB];
+gslc_tsElem                     m_asPopup4Elem[MAX_ELEM_PG_POPUP_SF2_SELECT_RAM];
+gslc_tsElemRef                  m_asPopup4ElemRef[MAX_ELEM_PG_POPUP_SF2_SELECT];
 gslc_tsXRingGauge               m_sXRingGauge1;
 gslc_tsXRingGauge               m_sXRingGauge2;
 gslc_tsXRingGauge               m_sXRingGauge3;
@@ -84,6 +86,9 @@ gslc_tsXRingGauge               m_sXRingGauge11;
 gslc_tsXRingGauge               m_sXRingGauge12;
 gslc_tsXRingGauge               m_sXRingGauge13;
 gslc_tsXRingGauge               m_sXRingGauge14;
+gslc_tsXListbox                 m_sListbox1;
+// - Note that XLISTBOX_BUF_OH_R is extra required per item
+char                            m_acListboxBuf1[74 + XLISTBOX_BUF_OH_R];
 
 
 // Save some element references for direct access
@@ -132,9 +137,13 @@ gslc_tsElemRef* m_pElemOutMixerLmVol= NULL;
 gslc_tsElemRef* m_pElemOutMixerLmVolTxt= NULL;
 gslc_tsElemRef* m_pElemOutMixerPanBtn= NULL;
 gslc_tsElemRef* m_pElemOutMixerPflBtn= NULL;
+gslc_tsElemRef* m_pElemOutMixerPflBtn46= NULL;
+gslc_tsElemRef* m_pElemOutMixerPflBtn46_47= NULL;
+gslc_tsElemRef* m_pElemOutMixerPflBtn46_47_48= NULL;
 gslc_tsElemRef* m_pElemOutMixerRecPan= NULL;
 gslc_tsElemRef* m_pElemOutMixerTitleTxt= NULL;
 gslc_tsElemRef* m_pElemOutMixerTitleTxt139= NULL;
+gslc_tsElemRef* m_pElemOutMixerTitleTxt139_148= NULL;
 gslc_tsElemRef* m_pElemOutMixerUsbLBar= NULL;
 gslc_tsElemRef* m_pElemOutMixerUsbPan= NULL;
 gslc_tsElemRef* m_pElemOutMixerUsbRBar= NULL;
@@ -144,6 +153,9 @@ gslc_tsElemRef* m_pElemReverbDampingRing= NULL;
 gslc_tsElemRef* m_pElemReverbFilterRing= NULL;
 gslc_tsElemRef* m_pElemReverbMixRing= NULL;
 gslc_tsElemRef* m_pElemReverbRSRing= NULL;
+gslc_tsElemRef* m_pElemSf2CurPageTxt= NULL;
+gslc_tsElemRef* m_pElemSf2Listbox = NULL;
+gslc_tsElemRef* m_pElemSf2TotalPageTxt= NULL;
 gslc_tsElemRef* m_pElemTxtBatt    = NULL;
 gslc_tsElemRef* m_pElemTxtTitle   = NULL;
 gslc_tsElemRef* m_pElemWaveCompressorBtn= NULL;
@@ -185,8 +197,21 @@ bool CbBtnCommon(void* pvGui,void *pvElemRef,gslc_teTouch eTouch,int16_t nX,int1
 //<Keypad Callback !End!>
 //<Spinner Callback !Start!>
 //<Spinner Callback !End!>
-//<Listbox Callback !Start!>
-//<Listbox Callback !End!>
+bool CbListbox(void* pvGui, void* pvElemRef, int16_t nSelId)
+{
+  gslc_tsGui*     pGui     = (gslc_tsGui*)(pvGui);
+  gslc_tsElemRef* pElemRef = (gslc_tsElemRef*)(pvElemRef);
+  gslc_tsElem*    pElem    = gslc_GetElemFromRef(pGui, pElemRef);
+  char            acTxt[MAX_STR + 1];
+  
+  if (pElemRef == NULL) {
+    return false;
+  }
+
+  // From the element's ID we can determine which listbox was active.
+    PageManager.PageArr[PageManager.getCurPage()]->onTouch(pElem->nId);
+  return true;
+}
 //<Draw Callback !Start!>
 //<Draw Callback !End!>
 
@@ -262,6 +287,7 @@ void InitGUIslice_gen()
   gslc_PageAdd(&m_gui,E_PG_HOME,m_asPage4Elem,MAX_ELEM_PG_HOME_RAM,m_asPage4ElemRef,MAX_ELEM_PG_HOME);
   gslc_PageAdd(&m_gui,E_PG_WAVE,m_asPage5Elem,MAX_ELEM_PG_WAVE_RAM,m_asPage5ElemRef,MAX_ELEM_PG_WAVE);
   gslc_PageAdd(&m_gui,E_PG_POPUP_REVERB,m_asPopup3Elem,MAX_ELEM_PG_POPUP_REVERB_RAM,m_asPopup3ElemRef,MAX_ELEM_PG_POPUP_REVERB);
+  gslc_PageAdd(&m_gui,E_PG_POPUP_SF2_SELECT,m_asPopup4Elem,MAX_ELEM_PG_POPUP_SF2_SELECT_RAM,m_asPopup4ElemRef,MAX_ELEM_PG_POPUP_SF2_SELECT);
 
   // Now mark E_PG_BASE as a "base" page which means that it's elements
   // are always visible. This is useful for common page elements.
@@ -1625,6 +1651,93 @@ void InitGUIslice_gen()
   pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT147,E_PG_POPUP_REVERB,(gslc_tsRect){50,115,10,9},
     (char*)"%",0,E_ARIAL_8);
   gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+
+  // -----------------------------------
+  // PAGE: E_PG_POPUP_SF2_SELECT
+  
+   
+  // Create E_ELEM_BOX33 box
+  pElemRef = gslc_ElemCreateBox(&m_gui,E_ELEM_BOX33,E_PG_POPUP_SF2_SELECT,(gslc_tsRect){10,10,300,220});
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_BLACK);
+   
+  // Create listbox
+  pElemRef = gslc_ElemXListboxCreate(&m_gui,E_ELEM_SF2_LISTBOX,E_PG_POPUP_SF2_SELECT,&m_sListbox1,
+    (gslc_tsRect){12,42,265,184},E_ARIAL_12,
+    (uint8_t*)&m_acListboxBuf1,sizeof(m_acListboxBuf1),0);
+  gslc_ElemXListboxSetSize(&m_gui, pElemRef, 8, 1); // 8 rows, 1 columns
+  gslc_ElemXListboxItemsSetSize(&m_gui, pElemRef, XLISTBOX_SIZE_AUTO, XLISTBOX_SIZE_AUTO);
+  gslc_ElemSetTxtMarginXY(&m_gui, pElemRef, 5, 0);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_BLACK,((gslc_tsColor){0,81,0}));
+  gslc_ElemXListboxSetSelFunc(&m_gui, pElemRef, &CbListbox);
+  gslc_ElemXListboxAddItem(&m_gui, pElemRef, "Electric Piano");
+  gslc_ElemXListboxAddItem(&m_gui, pElemRef, "Trumpt");
+  gslc_ElemXListboxAddItem(&m_gui, pElemRef, "Drums");
+  gslc_ElemXListboxAddItem(&m_gui, pElemRef, "Synth");
+  gslc_ElemXListboxAddItem(&m_gui, pElemRef, "Bass");
+  gslc_ElemXListboxAddItem(&m_gui, pElemRef, "A very long name");
+  gslc_ElemXListboxAddItem(&m_gui, pElemRef, "test1");
+  gslc_ElemXListboxAddItem(&m_gui, pElemRef, "test2");
+  gslc_ElemXListboxAddItem(&m_gui, pElemRef, "test3");
+  gslc_ElemSetFrameEn(&m_gui,pElemRef,true);
+  m_pElemSf2Listbox = pElemRef;
+  
+  // create E_ELEM_SF2_BACK_BTN button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_SF2_BACK_BTN,E_PG_POPUP_SF2_SELECT,
+    (gslc_tsRect){12,12,26,26},(char*)"<",0,E_ARIAL_14,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+
+  // Create E_DRAW_LINE10 line 
+  pElemRef = gslc_ElemCreateLine(&m_gui,E_DRAW_LINE10,E_PG_POPUP_SF2_SELECT,15,40,305,40);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_BLACK,GSLC_COL_WHITE,GSLC_COL_WHITE);
+  
+  // Create E_ELEM_TEXT148 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT148,E_PG_POPUP_SF2_SELECT,(gslc_tsRect){40,20,110,14},
+    (char*)"Select Sound:",0,E_ARIAL_12_BOLD);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  m_pElemOutMixerTitleTxt139_148 = pElemRef;
+  
+  // create E_ELEM_BTN46 button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_BTN46,E_PG_POPUP_SF2_SELECT,
+    (gslc_tsRect){245,15,60,20},(char*)"OK",0,E_ARIAL_12,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_GREEN_DK2,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemOutMixerPflBtn46 = pElemRef;
+  
+  // Create E_ELEM_SF2_CUR_PAGE_TEXT runtime modifiable text
+  static char m_sDisplayText149[2] = "1";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_SF2_CUR_PAGE_TEXT,E_PG_POPUP_SF2_SELECT,(gslc_tsRect){280,130,8,11},
+    (char*)m_sDisplayText149,2,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  m_pElemSf2CurPageTxt = pElemRef;
+  
+  // Create E_ELEM_SF2_TOTAL_PAGE_TEXT runtime modifiable text
+  static char m_sDisplayText150[2] = "2";
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_SF2_TOTAL_PAGE_TEXT,E_PG_POPUP_SF2_SELECT,(gslc_tsRect){295,130,8,11},
+    (char*)m_sDisplayText150,2,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  m_pElemSf2TotalPageTxt = pElemRef;
+  
+  // Create E_ELEM_TEXT151 text label
+  pElemRef = gslc_ElemCreateTxt(&m_gui,E_ELEM_TEXT151,E_PG_POPUP_SF2_SELECT,(gslc_tsRect){290,130,4,9},
+    (char*)"/",0,E_ARIAL_10);
+  gslc_ElemSetTxtCol(&m_gui,pElemRef,GSLC_COL_WHITE);
+  
+  // create E_ELEM_BTN47 button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_BTN47,E_PG_POPUP_SF2_SELECT,
+    (gslc_tsRect){280,80,25,30},(char*)"w",0,E_AWESOMEF000_10,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemOutMixerPflBtn46_47 = pElemRef;
+  
+  // create E_ELEM_BTN48 button with text label
+  pElemRef = gslc_ElemCreateBtnTxt(&m_gui,E_ELEM_BTN48,E_PG_POPUP_SF2_SELECT,
+    (gslc_tsRect){280,155,25,30},(char*)"x",0,E_AWESOMEF000_10,&CbBtnCommon);
+  gslc_ElemSetCol(&m_gui,pElemRef,GSLC_COL_WHITE,GSLC_COL_BLACK,GSLC_COL_GRAY);
+  gslc_ElemSetRoundEn(&m_gui, pElemRef, true);
+  m_pElemOutMixerPflBtn46_47_48 = pElemRef;
 //<InitGUI !End!>
 
 //<Startup !Start!>
