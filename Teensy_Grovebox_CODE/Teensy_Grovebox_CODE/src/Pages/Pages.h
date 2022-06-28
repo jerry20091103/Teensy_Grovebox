@@ -1,8 +1,6 @@
 #ifndef PAGE_H
 #define PAGE_H
 
-#include "GUIslice/GUIslice_GSLC.h"
-
 #define MAX_PAGE_NAME 20
 
 #define PEAK_HOLD_TIME 100
@@ -39,9 +37,6 @@ public:
     char pageName[MAX_PAGE_NAME];
 
 protected:
-    // some common graphic functions for all pages
-    void toggleButton(gslc_tsElemRef *ref, bool state);
-    void togglePeakBox(gslc_tsElemRef *ref, bool peak);
 };
 
 // PagesManager class

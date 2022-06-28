@@ -1,4 +1,3 @@
-#include "GUIslice/GUIslice_GSLC.h"
 #include "Hardware.h"
 #include "font_Arial.h"
 #include "Controls.h"
@@ -12,9 +11,13 @@ int batt_level;
 unsigned long lastBarUpdate;
 
 // update GUI
-void update_gslc()
+void updateGui()
 {
-    gslc_Update(&m_gui);
+    lv_task_handler();
+}
+
+void updatePage()
+{
     PageManager.PageArr[PageManager.getCurPage()]->update();
     PageManager.PageArr[PageManager.getCurPage()]->draw();
 }
@@ -60,16 +63,16 @@ void setup()
 
     //gslc_InitDebug(&DebugOut);
     // Initializes GUI (must call this before taskManager starts)
-    InitGUIslice_gen();
     PageManager.Init();
     // Initialize hardware
     HardwareSetup();
     // Schedule regular tasks
-    taskManager.scheduleFixedRate(20, update_gslc);
+    taskManager.scheduleFixedRate(5, updateGui);
+    //taskManager.scheduleFixedRate(30, updatePage);
     taskManager.scheduleFixedRate(15, UpdateJoystick);
     taskManager.scheduleFixedRate(15, readKeyVeloctiy);
     // switch to the first page
-    PageManager.switchPage(E_PG_MIDI);
+    //PageManager.switchPage(E_PG_MIDI);
 
     // unmute amp
     digitalWrite(0, HIGH);

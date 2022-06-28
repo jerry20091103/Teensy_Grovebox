@@ -2,13 +2,27 @@
 #define HARDWARE_H
 
 #include "SPI.h"
-#include "ILI9341_t3.h"
+#include "ILI9341_T4.h"
+#include "lvgl.h"
 #include "IoAbstractionWire.h"
 #include "TaskManagerIO.h"
 
 // *Pins
+// LCD
+#define TFT_MOSI 11
+#define TFT_MISO 12
+#define TFT_SCK 13
 #define TFT_DC 9
 #define TFT_CS 10
+#define TFT_RST 255
+#define TFT_BACKLIGHT 6
+#define TFT_X 320
+#define TFT_Y 240
+// Touch display
+#define TFT_TOUCH_CS 5
+#define TFT_TOUCH_IRQ 4
+// SPI (used for lcd and touch)
+#define SPI_SPEED 60000000
 // Expanders
 #define EXPANDER_PIN 100        // The expander pins starts at 100
 #define EXPANDER2_PIN 116
@@ -38,7 +52,6 @@
 #define BAR1_OUT 2
 #define BAR2_OUT 3
 #define BAR_MODE 1
-#define  LCD_PWM 6
 #define BATT_LVL 16
 #define HP_DETECT E2GPA(5)
 #define BTN_PWR E2GPA(6)
@@ -82,9 +95,28 @@
 
 #define BTN_K25 E2GPA(0)
 
-extern ILI9341_t3 tft;
+// 2 diff buffers for the LCD
+extern ILI9341_T4::DiffBuffStatic<8000> tft_diff1;
+extern ILI9341_T4::DiffBuffStatic<8000> tft_diff2;
+
+// internal frame buffer for the LCD driver
+DMAMEM uint16_t tft_fb[TFT_X * TFT_Y];
+
+// Display driver object
+extern ILI9341_T4::ILI9341Driver tft;
+
+// lvgl draw buffer
+#define TFT_Y_BUF 40
+extern lv_color_t lvgl_buf[TFT_X * TFT_Y_BUF];
+
+extern lv_disp_draw_buf_t draw_buf;    // lvgl 'draw buffer' object
+extern lv_disp_drv_t disp_drv;         // lvgl 'display driver'
+extern lv_indev_drv_t indev_drv;       // lvgl 'input device driver'
+
+// IO abstraction object
 extern MultiIoAbstractionRef multiIo;
 
+// encoder objects
 extern HardwareRotaryEncoder* enc0;
 extern HardwareRotaryEncoder* enc1;
 extern HardwareRotaryEncoder* enc2;
