@@ -1,9 +1,17 @@
 #ifndef PAGE_H
 #define PAGE_H
 
+#include "Hardware.h"
+#include "GuiUtility.h"
+
 #define MAX_PAGE_NAME 20
 
 #define PEAK_HOLD_TIME 100
+
+enum PageID{
+    PG_MIDI,
+    MAX_PAGE
+};
 
 // Pages class
 // A virtual class for other pages to inherit from
@@ -20,21 +28,19 @@ public:
     virtual void onEncTurned(uint8_t id, int value) = 0;
     // Page joystick callback function
     virtual void onJoyUpdate(int joy_x, int joy_y) = 0;
-    // Page GUI touch control callback function
-    virtual void onTouch(int ref) = 0;
     // Page MIDI control change signal received callback
     virtual void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value) = 0;
     // Configure a page before swithcing to it. Sets encoders and prepare variables.
     virtual void configurePage() = 0;
 
-    // this handles custom graphics that are not built with GUIslice builder
+    // this updates the page approximately every frame
     virtual void update() = 0;
-    virtual void draw() = 0;
     // Initialize a page at program startup
     virtual void init() = 0;
 
     int pageID;
     char pageName[MAX_PAGE_NAME];
+    lv_obj_t *screen;
 
 protected:
 };
@@ -46,24 +52,31 @@ class PageManager_
 public:
     static PageManager_ &getInstance();
     Pages *PageArr[MAX_PAGE];
-    int lastPage = E_PG_MIDI;
+    int lastPage = PG_MIDI;
+    int curPage = PG_MIDI;
     
-    // Gets the current Page on screen. Returns the info from GUIslice library
-    int getCurPage(bool includePopup = true);
+    // Gets the current Page on screen.
+    int getCurPage();
     // Initial all pages at program start
     void Init();
     // Switch to a page, will auto hide popup when in a popup.
     void switchPage(int pageID);
-    // Switch to a popup page
-    void showPopup(int pageID);
-    // Hide a popup page
-    void hidePopup();
+    // Show power off popup
+    void showPowerPopup();
     // a global pointer variable for parameter passing when switching pages
     void *pageParam;
 private:
     bool inPopup = false;   // true if a popup is active
     int curPopupID;         // stores current acitve popup ID
+    lv_obj_t *statusBar;
+    lv_obj_t *backBtn;
+    lv_obj_t *title;
+    lv_obj_t *battLabel;
 
+    const char* powerBtns[3] = {"Yes", "No", NULL};
+
+    // lvgl callback functions
+    static void onPowerBtnPressed(lv_event_t *e);
 
     PageManager_() {}
 };

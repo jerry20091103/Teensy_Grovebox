@@ -20,9 +20,9 @@ private:
     float rmsAvg[2] = {0, 0};
     uint8_t peakHold[2][2] = {{0, 0}, {0, 0}};
 
-    gslc_tsElemRef *peakBox[2][2];
-    gslc_tsElemRef *peakBar[2][2];
-    gslc_tsElemRef *rmsBar[2];
+    // gslc_tsElemRef *peakBox[2][2];
+    // gslc_tsElemRef *peakBar[2][2];
+    // gslc_tsElemRef *rmsBar[2];
 
     int popupParam;
 
@@ -35,12 +35,10 @@ public:
     void onBtnReleased(uint8_t pin);
     void onEncTurned(uint8_t id, int value);
     void onJoyUpdate(int joy_x, int joy_y);
-    void onTouch(int ref);
     void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value);
     void configurePage();
 
     void update();
-    void draw();
     void init();
 };
 

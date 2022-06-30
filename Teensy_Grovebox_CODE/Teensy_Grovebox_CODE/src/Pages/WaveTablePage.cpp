@@ -20,16 +20,16 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
         switch (pin)
         {
         case BTN_PWR:
-            PageManager.switchPage(E_PG_AUDIOOUT);
+            //PageManager.switchPage(E_PG_AUDIOOUT);
             break;
         case BTN_JOY:
             AudioSynth.sustainOn();
             break;
         case BTN_FN0:
-            onTouch(E_ELEM_WAVE_OCTAVE_DEC_BTN);
+            //onTouch(E_ELEM_WAVE_OCTAVE_DEC_BTN);
             break;
         case BTN_FN1:
-            onTouch(E_ELEM_WAVE_OCTAVE_INC_BTN);
+            //onTouch(E_ELEM_WAVE_OCTAVE_INC_BTN);
             break;
         }
     }
@@ -40,7 +40,7 @@ void WaveTablePage::onBtnHold(uint8_t pin)
     switch (pin)
     {
     case BTN_PWR:
-        PageManager.showPopup(E_PG_POPUP_POWER);
+        //PageManager.showPopup(E_PG_POPUP_POWER);
         break;
     }
 }
@@ -80,34 +80,6 @@ void WaveTablePage::onJoyUpdate(int joy_x, int joy_y)
 {
 }
 
-void WaveTablePage::onTouch(int ref)
-{
-    switch (ref)
-    {
-    case E_ELEM_BASE_BACK_BTN:
-        PageManager.switchPage(E_PG_HOME);
-        break;
-    case E_ELEM_WAVE_OCTAVE_INC_BTN:
-        octave++;
-        if (octave > 8)
-            octave = 8;
-        gslc_ElemSetTxtStr(&m_gui, m_pElemWaveOctaveTxt, String(octave).c_str());
-        break;
-    case E_ELEM_WAVE_OCTAVE_DEC_BTN:
-        octave--;
-        if (octave < 1)
-            octave = 1;
-        gslc_ElemSetTxtStr(&m_gui, m_pElemWaveOctaveTxt, String(octave).c_str());
-        break;
-    case E_ELEM_WAVE_REVERB_BTN:
-        PageManager.pageParam = &reverbMem;
-        PageManager.showPopup(E_PG_POPUP_REVERB);
-        break;
-    case E_ELEM_WAVE_SOUND_BTN:
-        PageManager.showPopup(E_PG_POPUP_SF2_SELECT);
-    }
-}
-
 void WaveTablePage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
 {
 }
@@ -121,7 +93,7 @@ void WaveTablePage::configurePage()
     // setup peak module for level meter
     AudioIO.setMixerLevelMode(LevelMeterMode::PRE_FADER);
     setVolume(volume);
-    enc3->changePrecision(30, volume + 15, false);
+    enc[3]->changePrecision(30, volume + 15, false);
     // set reverb FX
     AudioFX.reverb.setWithMem(&reverbMem);
 }
@@ -138,32 +110,28 @@ void WaveTablePage::update()
         // calulate running average
         temp_peak = (temp_peak + peakAvg * PEAK_AVG_TIME) / (PEAK_AVG_TIME + 1);
         peakAvg = temp_peak;
-        gslc_ElemXProgressSetVal(&m_gui, m_pElemWaveVolBar, map(gaintodB(temp_peak), -30, 0, 0, 100));
+        //gslc_ElemXProgressSetVal(&m_gui, m_pElemWaveVolBar, map(gaintodB(temp_peak), -30, 0, 0, 100));
     }
     // peak indicator
     if (peakHold > 0)
         peakHold--;
-    togglePeakBox(peakBox, (bool)peakHold);
-}
-
-void WaveTablePage::draw()
-{
+    //togglePeakBox(peakBox, (bool)peakHold);
 }
 
 void WaveTablePage::init()
 {
-    pageID = E_PG_WAVE;
+    //pageID = E_PG_WAVE;
     strcpy(pageName, "Wave Table Synth");
 
-    gslc_ElemSetTxtStr(&m_gui, m_pElemWaveOctaveTxt, String(octave).c_str());
+    //gslc_ElemSetTxtStr(&m_gui, m_pElemWaveOctaveTxt, String(octave).c_str());
 
-    peakBox = gslc_PageFindElemById(&m_gui, E_PG_WAVE, E_ELEM_WAVE_PEAK_BOX);
+    //peakBox = gslc_PageFindElemById(&m_gui, E_PG_WAVE, E_ELEM_WAVE_PEAK_BOX);
 }
 
 void WaveTablePage::setVolume(int8_t value)
 {
     volume = value;
     AudioSynth.setMasterVol(value);
-    gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemWaveVolRing, value + 15);
-    gslc_ElemSetTxtStr(&m_gui, m_pElemWaveVolRing, String(value).c_str());
+    // gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemWaveVolRing, value + 15);
+    // gslc_ElemSetTxtStr(&m_gui, m_pElemWaveVolRing, String(value).c_str());
 }

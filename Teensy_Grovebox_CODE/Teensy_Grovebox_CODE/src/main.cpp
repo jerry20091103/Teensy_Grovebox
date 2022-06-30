@@ -13,19 +13,22 @@ unsigned long lastBarUpdate;
 // update GUI
 void updateGui()
 {
-    lv_task_handler(); // todo: change to timer handler?
+    lv_timer_handler();
 }
 
 void updatePage()
 {
     PageManager.PageArr[PageManager.getCurPage()]->update();
-    PageManager.PageArr[PageManager.getCurPage()]->draw();
 }
 
-void checkAudioUsage() 
+extern float tempmonGetTemp(void);
+
+void checkAudioUsage()
 {
     Serial.println("Memory:    " + String(AudioMemoryUsageMax()));
     Serial.println("Processor: " + String(AudioProcessorUsageMax()));
+    Serial.print(tempmonGetTemp());
+    Serial.println("  C");
     AudioMemoryUsageMaxReset();
     AudioProcessorUsageMaxReset();
 }
@@ -33,14 +36,14 @@ void checkAudioUsage()
 void readKeyVeloctiy()
 {
     // get velocity from microphone
-    AudioSynth.velocity =  peakVelocity.read();
+    AudioSynth.velocity = peakVelocity.read();
 }
 
 void setup()
 {
     // mute amp
     pinMode(0, OUTPUT);
-    digitalWrite(0, LOW); 
+    digitalWrite(0, LOW);
 
     Serial.begin(9600);
     // while (!Serial)
@@ -55,24 +58,21 @@ void setup()
     // Audio connections require memory to work.  For more
     // detailed information, see the MemoryAndCpuUsage example
     AudioMemory(200);
-    
+
     // Enable the audio shield, select input, and enable output
     sgtl5000_1.enable();
     sgtl5000_1.inputSelect(AUDIO_INPUT_LINEIN);
     sgtl5000_1.unmuteLineout();
 
-    //gslc_InitDebug(&DebugOut);
-    // Initializes GUI (must call this before taskManager starts)
-    PageManager.Init();
     // Initialize hardware
     HardwareSetup();
     // Schedule regular tasks
     taskManager.scheduleFixedRate(5, updateGui);
-    //taskManager.scheduleFixedRate(30, updatePage);
+    taskManager.scheduleFixedRate(25, updatePage);
     taskManager.scheduleFixedRate(15, UpdateJoystick);
     taskManager.scheduleFixedRate(15, readKeyVeloctiy);
     // switch to the first page
-    //PageManager.switchPage(E_PG_MIDI);
+    PageManager.switchPage(PG_MIDI);
 
     // unmute amp
     digitalWrite(0, HIGH);

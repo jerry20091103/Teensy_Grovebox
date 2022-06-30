@@ -1,13 +1,13 @@
 #include "Pages/Pages.h"
 #include "MidiPage.h"
-#include "PowerPopup.h"
-#include "AudiooutPage.h"
-#include "OutMixerPopup.h"
-#include "AudioinPage.h"
-#include "HomePage.h"
-#include "WaveTablePage.h"
-#include "ReverbPopup.h"
-#include "Sf2SelectPopup.h"
+// #include "PowerPopup.h"
+// #include "AudiooutPage.h"
+// #include "OutMixerPopup.h"
+// #include "AudioinPage.h"
+// #include "HomePage.h"
+// #include "WaveTablePage.h"
+// #include "ReverbPopup.h"
+// #include "Sf2SelectPopup.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -17,27 +17,47 @@ PageManager_ &PageManager_::getInstance()
 
 PageManager_ &PageManager = PageManager.getInstance();
 
-int PageManager_::getCurPage(bool includePopup)
-{
-    if(inPopup && includePopup)
-        return curPopupID;
-    else
-        return gslc_GetPageCur(&m_gui);
+int PageManager_::getCurPage()
+{ 
+    return curPage;
 }
 
 void PageManager_::Init()
 {
-    PageArr[E_PG_MIDI] = new MidiPage();
-    PageArr[E_PG_POPUP_POWER] = new PowerPopup();
-    PageArr[E_PG_AUDIOOUT] = new AudiooutPage();
-    PageArr[E_PG_POPUP_OUT_MIXER] = new OutMixerPopup();
-    PageArr[E_PG_AUDIOIN] = new AudioinPage();
-    PageArr[E_PG_HOME] = new HomePage();
-    PageArr[E_PG_WAVE] = new WaveTablePage();
-    PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
-    PageArr[E_PG_POPUP_SF2_SELECT] = new Sf2SelectPopup();
+    Gui_InitStyles();
+    PageArr[PG_MIDI] = new MidiPage();
+    // PageArr[E_PG_POPUP_POWER] = new PowerPopup();
+    // PageArr[E_PG_AUDIOOUT] = new AudiooutPage();
+    // PageArr[E_PG_POPUP_OUT_MIXER] = new OutMixerPopup();
+    // PageArr[E_PG_AUDIOIN] = new AudioinPage();
+    // PageArr[E_PG_HOME] = new HomePage();
+    // PageArr[E_PG_WAVE] = new WaveTablePage();
+    // PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
+    // PageArr[E_PG_POPUP_SF2_SELECT] = new Sf2SelectPopup();
 
     Serial.println("Page constructor");
+
+    // setup top layer (status bar)
+    statusBar = lv_obj_create(lv_layer_top());
+    lv_obj_set_size(statusBar, 320, 35);
+    lv_obj_set_style_pad_all(statusBar, 1, 0);
+    lv_obj_set_style_bg_color(statusBar, color_GreyDark, 0);
+    // back button 
+    backBtn = Gui_CreateButton(statusBar);
+    lv_obj_set_height(backBtn, lv_pct(100));
+    lv_obj_t *label = lv_label_create(backBtn);
+    lv_label_set_text(label, LV_SYMBOL_LEFT);
+    lv_obj_center(label);
+    // title
+    title = lv_label_create(statusBar);
+    lv_label_set_text(title, "Tiltle");
+    lv_obj_set_style_text_font(title, font_large, 0);
+    lv_obj_align(title, LV_ALIGN_LEFT_MID, 45, 0);
+    // battery logo
+    battLabel = lv_label_create(statusBar);
+    lv_label_set_text(battLabel, LV_SYMBOL_BATTERY_1);
+    lv_obj_set_style_text_font(battLabel, font_large, 0);
+    lv_obj_align(battLabel, LV_ALIGN_RIGHT_MID, -5, 0);
 
     for(auto i : PageArr)
     {
@@ -50,53 +70,37 @@ void PageManager_::Init()
 
 void PageManager_::switchPage(int pageID)
 {
-    if(inPopup)
-        hidePopup();
     lastPage = getCurPage();
-    gslc_SetPageCur(&m_gui, pageID);
-    gslc_ElemSetTxtStr(&m_gui, m_pElemTxtTitle, PageArr[getCurPage()]->pageName);
+    curPage = pageID;
+    // set title text
+    lv_label_set_text(title, PageArr[pageID]->pageName);
     PageArr[getCurPage()]->configurePage();
+    lv_scr_load(PageArr[pageID]->screen);   
 }
 
-void PageManager_::showPopup(int pageID)
+void PageManager_::showPowerPopup()
 {
-    if(inPopup)
-        return;
-
-    gslc_PopupShow(&m_gui, pageID, true);
-    curPopupID = pageID;
-    inPopup = true;
-    PageArr[getCurPage()]->configurePage();
+    lv_obj_t *msgbox = lv_msgbox_create(NULL, "Power Off", "Are you sure you want to power off?", powerBtns, false);
+    lv_obj_center(msgbox);
+    lv_obj_set_style_bg_color(msgbox, lv_color_black(), 0);
+    lv_obj_add_event_cb(msgbox, onPowerBtnPressed, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_t *temp = lv_msgbox_get_title(msgbox);
+    lv_obj_set_style_text_font(temp, font_large, 0);
+    lv_label_set_recolor(temp, true);
+    temp = lv_msgbox_get_btns(msgbox);
+    lv_obj_set_style_text_font(temp, font_large, 0);
 }
 
-void PageManager_::hidePopup()
+void PageManager_::onPowerBtnPressed(lv_event_t *e)
 {
-    if(!inPopup)
-        return;
-
-    gslc_PopupHide(&m_gui);
-    inPopup = false;
-    PageArr[getCurPage()]->configurePage();
-}
-
-void Pages::toggleButton(gslc_tsElemRef *ref, bool state)
-{
-    if(state)
+    lv_obj_t *msgbox = lv_event_get_current_target(e);
+    if(strcmp(lv_msgbox_get_active_btn_text(msgbox), "Yes") == 0)
     {
-        gslc_ElemSetCol(&m_gui, ref, GSLC_COL_WHITE, GSLC_COL_WHITE, GSLC_COL_GRAY);
-        gslc_ElemSetTxtCol(&m_gui, ref, GSLC_COL_BLACK);
+        // power off!
+        ioDeviceDigitalWriteS(multiIo, PWR_HOLD, LOW);
     }
     else
     {
-        gslc_ElemSetCol(&m_gui, ref, GSLC_COL_WHITE, GSLC_COL_BLACK, GSLC_COL_GRAY);
-        gslc_ElemSetTxtCol(&m_gui, ref, GSLC_COL_WHITE);
+        lv_msgbox_close(msgbox);
     }
-}
-
-void Pages::togglePeakBox(gslc_tsElemRef *ref, bool state)
-{
-    if(state)
-        gslc_ElemSetCol(&m_gui, ref, GSLC_COL_GRAY, GSLC_COL_RED, GSLC_COL_RED);
-    else
-        gslc_ElemSetCol(&m_gui, ref, GSLC_COL_GRAY, GSLC_COL_BLACK, GSLC_COL_BLACK);
 }

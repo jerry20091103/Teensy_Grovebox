@@ -30,7 +30,7 @@ void AudioinPage::onBtnHold(uint8_t pin)
     switch (pin)
     {
     case BTN_PWR:
-        PageManager.showPopup(E_PG_POPUP_POWER);
+        //PageManager.showPopup(E_PG_POPUP_POWER);
         break;
     }
 }
@@ -63,12 +63,12 @@ void AudioinPage::onEncTurned(uint8_t id, int value)
         break;
     case 1:
         // Analog in volume
-        gslc_ElemXSeekbarSetPos(&m_gui, m_pElemAudioinLmVol, INPUT_VOL_MAX - value);
+        //gslc_ElemXSeekbarSetPos(&m_gui, m_pElemAudioinLmVol, INPUT_VOL_MAX - value);
         updateInputVol(InputTracks::LINEMIC_IN, value);
         break;
     case 2:
         // USB in volume
-        gslc_ElemXSeekbarSetPos(&m_gui, m_pElemAudioinUsbVol, INPUT_VOL_MAX - value);
+        //gslc_ElemXSeekbarSetPos(&m_gui, m_pElemAudioinUsbVol, INPUT_VOL_MAX - value);
         updateInputVol(InputTracks::USB_IN, value);
         break;
     }
@@ -76,47 +76,6 @@ void AudioinPage::onEncTurned(uint8_t id, int value)
 
 void AudioinPage::onJoyUpdate(int joy_x, int joy_y)
 {
-}
-
-void AudioinPage::onTouch(int ref)
-{
-    int temp;
-    switch (ref)
-    {
-    case E_ELEM_BASE_BACK_BTN:
-        PageManager.switchPage(PageManager.lastPage);
-        break;
-    case E_ELEM_AUDIOIN_PFL_BTN:
-        usePFL = !usePFL;
-        setPFL(usePFL);
-        break;
-    case E_ELEM_AUDIOIN_LINE_IN_BTN:
-        inputSource = 0;
-        enc0->changePrecision(LINE_GAIN_MAX, inputGain[inputSource], false);
-        toggleButton(m_pElemAudioinLineInBtn, true);
-        toggleButton(m_pElemAudioinMicBtn, false);
-        sgtl5000_1.inputSelect(AUDIO_INPUT_LINEIN);
-        setInputGain(inputGain[0]);
-        break;
-    case E_ELEM_AUDIOIN_MIC_BTN:
-        inputSource = 1;
-        enc0->changePrecision(MIC_GAIN_MAX, inputGain[inputSource], false);
-        toggleButton(m_pElemAudioinLineInBtn, false);
-        toggleButton(m_pElemAudioinMicBtn, true);
-        sgtl5000_1.inputSelect(AUDIO_INPUT_MIC);
-        setInputGain(inputGain[1]);
-        break;
-    case E_ELEM_AUDIOIN_LM_VOL:
-        temp = gslc_ElemXSeekbarGetPos(&m_gui, m_pElemAudioinLmVol);
-        updateInputVol(InputTracks::LINEMIC_IN, INPUT_VOL_MAX - temp);
-        enc1->setCurrentReading(INPUT_VOL_MAX - temp);
-        break;
-    case E_ELEM_AUDIOIN_USB_VOL:
-        temp = gslc_ElemXSeekbarGetPos(&m_gui, m_pElemAudioinUsbVol);
-        updateInputVol(InputTracks::USB_IN, INPUT_VOL_MAX - temp);
-        enc2->setCurrentReading(INPUT_VOL_MAX - temp);
-        break;
-    }
 }
 
 void AudioinPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
@@ -153,48 +112,44 @@ void AudioinPage::update()
                 temp_peak[j] = gaintodB(temp_peak[j]);
                 if (temp_peak[j] >= -0.1)
                     peakHold[i][j] = PEAK_HOLD_TIME;
-                gslc_ElemXProgressSetVal(&m_gui, peakBar[i][j], map(temp_peak[j], -50, 0, 0, 100));
+                //gslc_ElemXProgressSetVal(&m_gui, peakBar[i][j], map(temp_peak[j], -50, 0, 0, 100));
             }
             // peak indicator
             if (peakHold[i][j] > 0)
             {
                 peakHold[i][j]--;
             }
-            togglePeakBox(peakBox[i][j], (bool)peakHold[i][j]);
+            //togglePeakBox(peakBox[i][j], (bool)peakHold[i][j]);
         }
     }
 }
 
-void AudioinPage::draw()
-{
-}
-
 void AudioinPage::init()
 {
-    pageID = E_PG_AUDIOIN;
+    //pageID = E_PG_AUDIOIN;
     strcpy(pageName, "Audio Input");
 
     inputSource = 0;
-    toggleButton(m_pElemAudioinLineInBtn, true);
-    toggleButton(m_pElemAudioinMicBtn, false);
+    //toggleButton(m_pElemAudioinLineInBtn, true);
+    //toggleButton(m_pElemAudioinMicBtn, false);
     sgtl5000_1.inputSelect(AUDIO_INPUT_LINEIN);
     setInputGain(inputGain[0]);
 
     updateInputVol(InputTracks::LINEMIC_IN, inputVol[0]);
     updateInputVol(InputTracks::USB_IN, inputVol[1]);
-    gslc_ElemXSeekbarSetPos(&m_gui, m_pElemAudioinLmVol, INPUT_VOL_MAX - inputVol[0]);
-    gslc_ElemXSeekbarSetPos(&m_gui, m_pElemAudioinUsbVol, INPUT_VOL_MAX - inputVol[1]);
+    //gslc_ElemXSeekbarSetPos(&m_gui, m_pElemAudioinLmVol, INPUT_VOL_MAX - inputVol[0]);
+    //gslc_ElemXSeekbarSetPos(&m_gui, m_pElemAudioinUsbVol, INPUT_VOL_MAX - inputVol[1]);
     setPFL(usePFL);
 
-    peakBox[InputTracks::LINEMIC_IN][0] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOIN, E_ELEM_AUDIOIN_LM_PEAK_L_BOX);
-    peakBox[InputTracks::LINEMIC_IN][1] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOIN, E_ELEM_AUDIOIN_LM_PEAK_R_BOX);
-    peakBox[InputTracks::USB_IN][0] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOIN, E_ELEM_AUDIOIN_USB_PEAK_L_BOX);
-    peakBox[InputTracks::USB_IN][1] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOIN, E_ELEM_AUDIOIN_USB_PEAK_R_BOX);
+    // peakBox[InputTracks::LINEMIC_IN][0] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOIN, E_ELEM_AUDIOIN_LM_PEAK_L_BOX);
+    // peakBox[InputTracks::LINEMIC_IN][1] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOIN, E_ELEM_AUDIOIN_LM_PEAK_R_BOX);
+    // peakBox[InputTracks::USB_IN][0] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOIN, E_ELEM_AUDIOIN_USB_PEAK_L_BOX);
+    // peakBox[InputTracks::USB_IN][1] = gslc_PageFindElemById(&m_gui, E_PG_AUDIOIN, E_ELEM_AUDIOIN_USB_PEAK_R_BOX);
 
-    peakBar[InputTracks::LINEMIC_IN][0] = m_pElemAudioinLmLBar;
-    peakBar[InputTracks::LINEMIC_IN][1] = m_pElemAudioinLmRBar;
-    peakBar[InputTracks::USB_IN][0] = m_pElemAudioinUsbLBar;
-    peakBar[InputTracks::USB_IN][1] = m_pElemAudioinUsbRBar;
+    // peakBar[InputTracks::LINEMIC_IN][0] = m_pElemAudioinLmLBar;
+    // peakBar[InputTracks::LINEMIC_IN][1] = m_pElemAudioinLmRBar;
+    // peakBar[InputTracks::USB_IN][0] = m_pElemAudioinUsbLBar;
+    // peakBar[InputTracks::USB_IN][1] = m_pElemAudioinUsbRBar;
 }
 
 void AudioinPage::setInputGain(uint8_t value)
@@ -206,14 +161,14 @@ void AudioinPage::setInputGain(uint8_t value)
         temp = map(value, 0, 15, 0, 63); // the range of GUI ring is 0~63, need to map when displaying line gain (0~15)
     else
         temp = value;
-    gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemAudioinGainRing, temp);
-    gslc_ElemSetTxtStr(&m_gui, m_pElemAudioinGainRing, String(value).c_str());
+    // gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemAudioinGainRing, temp);
+    // gslc_ElemSetTxtStr(&m_gui, m_pElemAudioinGainRing, String(value).c_str());
 }
 
 void AudioinPage::setPFL(bool flag)
 {
     usePFL = flag;
-    toggleButton(m_pElemAudioinPflBtn, flag);
+    //toggleButton(m_pElemAudioinPflBtn, flag);
     if (usePFL)
     {
         AudioIO.setInputLevelMode(LevelMeterMode::PRE_FADER);
@@ -226,14 +181,14 @@ void AudioinPage::setPFL(bool flag)
 
 void AudioinPage::updateInputVol(InputTracks track, uint8_t value)
 {
-    gslc_tsElemRef *txtRef = nullptr;
+    //gslc_tsElemRef *txtRef = nullptr;
     switch (track)
     {
     case InputTracks::LINEMIC_IN:
-        txtRef = m_pElemAudioinLmVolTxt;
+        //txtRef = m_pElemAudioinLmVolTxt;
         break;
     case InputTracks::USB_IN:
-        txtRef = m_pElemAudioinUsbVolTxt;
+        //txtRef = m_pElemAudioinUsbVolTxt;
         break;
     }
 
@@ -242,7 +197,7 @@ void AudioinPage::updateInputVol(InputTracks track, uint8_t value)
     if (value == 0)
     {
         AudioIO.setInputVolume(track, 0);
-        gslc_ElemSetTxtStr(&m_gui, txtRef, "Mute");
+        //gslc_ElemSetTxtStr(&m_gui, txtRef, "Mute");
     }
     else
     {
@@ -250,6 +205,6 @@ void AudioinPage::updateInputVol(InputTracks track, uint8_t value)
         int db = value - INPUT_VOL_MAX + 10; // slider ranges from -50 dB to +10 dB
         float temp = dBtoGain(db);
         AudioIO.setInputVolume(track, temp);
-        gslc_ElemSetTxtStr(&m_gui, txtRef, String(db).c_str());
+        //gslc_ElemSetTxtStr(&m_gui, txtRef, String(db).c_str());
     }
 }

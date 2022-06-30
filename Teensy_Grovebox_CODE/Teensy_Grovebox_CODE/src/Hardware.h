@@ -95,32 +95,17 @@
 
 #define BTN_K25 E2GPA(0)
 
-// 2 diff buffers for the LCD
-extern ILI9341_T4::DiffBuffStatic<8000> tft_diff1;
-extern ILI9341_T4::DiffBuffStatic<8000> tft_diff2;
-
-// internal frame buffer for the LCD driver
-DMAMEM uint16_t tft_fb[TFT_X * TFT_Y];
-
 // Display driver object
 extern ILI9341_T4::ILI9341Driver tft;
 
 // lvgl draw buffer
 #define TFT_Y_BUF 40
-extern lv_color_t lvgl_buf[TFT_X * TFT_Y_BUF];
-
-extern lv_disp_draw_buf_t draw_buf;    // lvgl 'draw buffer' object
-extern lv_disp_drv_t disp_drv;         // lvgl 'display driver'
-extern lv_indev_drv_t indev_drv;       // lvgl 'input device driver'
 
 // IO abstraction object
 extern MultiIoAbstractionRef multiIo;
 
 // encoder objects
-extern HardwareRotaryEncoder* enc0;
-extern HardwareRotaryEncoder* enc1;
-extern HardwareRotaryEncoder* enc2;
-extern HardwareRotaryEncoder* enc3;
+extern HardwareRotaryEncoder* enc[4];
 
 void HardwareSetup();
 

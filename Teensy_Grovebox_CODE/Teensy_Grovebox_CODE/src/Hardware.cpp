@@ -1,5 +1,7 @@
 #include "Hardware.h"
 #include "Controls.h"
+#include "Pages/Pages.h"
+#include "misc/lv_log.h"
 
 // 2 diff buffers for the LCD
 ILI9341_T4::DiffBuffStatic<8000> tft_diff1;
@@ -10,19 +12,20 @@ ILI9341_T4::ILI9341Driver tft(TFT_CS, TFT_DC, TFT_SCK, TFT_MOSI, TFT_MISO, TFT_R
 
 IntervalTimer guiTimer;
 
-// lvgl draw buffer
-extern lv_color_t lvgl_buf[TFT_X * 40];
+// internal frame buffer for the LCD driver
+DMAMEM uint16_t tft_fb[TFT_X * TFT_Y];
 
-extern lv_disp_draw_buf_t draw_buf; // lvgl 'draw buffer' object
-extern lv_disp_drv_t disp_drv;      // lvgl 'display driver'
-extern lv_indev_drv_t indev_drv;    // lvgl 'input device driver'
+// lvgl draw buffer
+lv_color_t lvgl_buf[TFT_X * 40];
+
+lv_disp_draw_buf_t draw_buf; // lvgl 'draw buffer' object
+lv_disp_drv_t disp_drv;      // lvgl 'display driver'
+lv_indev_drv_t indev_drv;    // lvgl 'input device driver'
 
 MultiIoAbstractionRef multiIo = multiIoExpander(EXPANDER_PIN);
 
-HardwareRotaryEncoder *enc0;
-HardwareRotaryEncoder *enc1;
-HardwareRotaryEncoder *enc2;
-HardwareRotaryEncoder *enc3;
+HardwareRotaryEncoder *enc[4];
+
 
 #if LV_USE_LOG != 0
 /* LVGL Serial debugging */
@@ -73,10 +76,14 @@ void HardwareSetup()
     tft.setRotation(3);
     tft.setDiffGap(4);
     tft.setVSyncSpacing(1);
-    tft.setRefreshRate(40);
+    tft.setRefreshRate(80);
+    // LCD brightness control
+    pinMode(TFT_BACKLIGHT, OUTPUT);
+    analogWrite(TFT_BACKLIGHT, 200);
 
     // LCD touch calibration
-    int touchCalib[4] = {400, 3775, 3901, 483};
+    //tft.calibrateTouch();
+    int touchCalib[4] = {371, 3817, 3926, 495};
     tft.setTouchCalibration(touchCalib);
 
     // Setup LVGL
@@ -97,6 +104,9 @@ void HardwareSetup()
     indev_drv.type = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = myTouchRead;
     lv_indev_drv_register(&indev_drv);
+
+    // Initializes GUI
+    PageManager.Init();
 
     // setup io expanders
     Wire.begin();
@@ -152,14 +162,14 @@ void HardwareSetup()
     switches.onRelease(BTN_PWR, BtnReleaseCallback);
 
     // setup rotray encoders
-    enc0 = new HardwareRotaryEncoder(ENC1A, ENC1B, Enc0Callback, HWACCEL_SLOWER);
-    enc1 = new HardwareRotaryEncoder(ENC2A, ENC2B, Enc1Callback, HWACCEL_SLOWER);
-    enc2 = new HardwareRotaryEncoder(ENC3A, ENC3B, Enc2Callback, HWACCEL_SLOWER);
-    enc3 = new HardwareRotaryEncoder(ENC4A, ENC4B, Enc3Callback, HWACCEL_SLOWER);
-    switches.setEncoder(0, enc0);
-    switches.setEncoder(1, enc1);
-    switches.setEncoder(2, enc2);
-    switches.setEncoder(3, enc3);
+    enc[0] = new HardwareRotaryEncoder(ENC1A, ENC1B, Enc0Callback, HWACCEL_SLOWER);
+    enc[1] = new HardwareRotaryEncoder(ENC2A, ENC2B, Enc1Callback, HWACCEL_SLOWER);
+    enc[2] = new HardwareRotaryEncoder(ENC3A, ENC3B, Enc2Callback, HWACCEL_SLOWER);
+    enc[3] = new HardwareRotaryEncoder(ENC4A, ENC4B, Enc3Callback, HWACCEL_SLOWER);
+    switches.setEncoder(0, enc[0]);
+    switches.setEncoder(1, enc[1]);
+    switches.setEncoder(2, enc[2]);
+    switches.setEncoder(3, enc[3]);
     switches.changeEncoderPrecision(0, 0, 0);
     switches.changeEncoderPrecision(1, 0, 0);
     switches.changeEncoderPrecision(2, 0, 0);
@@ -175,10 +185,6 @@ void HardwareSetup()
     pinMode(BAR1_OUT, OUTPUT);
     pinMode(BAR2_OUT, OUTPUT);
     pinMode(BAR_MODE, OUTPUT);
-
-    // LCD brightness control
-    pinMode(TFT_BACKLIGHT, OUTPUT);
-    analogWrite(TFT_BACKLIGHT, 200);
 
     // Battery level
     pinMode(BATT_LVL, INPUT);
