@@ -7,7 +7,19 @@
 class HomePage : public Pages
 {
 private:
+    // lvgl object refs
+    lv_obj_t *btnMatrix;
 
+    // lvgl gui callbacks
+    static void onBtnPressed(lv_event_t *e);
+
+    // button map
+    const char* btnMap[12] = {
+        "Synth", "Wavetable", "\n",
+        "MIDI", "Drum", "\n",
+        "Record", "Keybaord", "\n",
+        "FX", "Settings", ""
+    };
 public:
     void onBtnPressed(uint8_t pin);
     void onBtnHold(uint8_t pin);

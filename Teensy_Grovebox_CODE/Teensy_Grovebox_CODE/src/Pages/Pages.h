@@ -9,6 +9,7 @@
 #define PEAK_HOLD_TIME 100
 
 enum PageID{
+    PG_HOME,
     PG_MIDI,
     MAX_PAGE
 };
@@ -52,8 +53,8 @@ class PageManager_
 public:
     static PageManager_ &getInstance();
     Pages *PageArr[MAX_PAGE];
-    int lastPage = PG_MIDI;
-    int curPage = PG_MIDI;
+    int lastPage = -1;
+    int curPage = PG_HOME;
     
     // Gets the current Page on screen.
     int getCurPage();
@@ -77,6 +78,7 @@ private:
 
     // lvgl callback functions
     static void onPowerBtnPressed(lv_event_t *e);
+    static void onBackBtnPressed(lv_event_t *e);
 
     PageManager_() {}
 };

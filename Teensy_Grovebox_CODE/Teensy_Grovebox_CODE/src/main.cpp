@@ -72,7 +72,7 @@ void setup()
     taskManager.scheduleFixedRate(15, UpdateJoystick);
     taskManager.scheduleFixedRate(15, readKeyVeloctiy);
     // switch to the first page
-    PageManager.switchPage(PG_MIDI);
+    PageManager.switchPage(PG_HOME);
 
     // unmute amp
     digitalWrite(0, HIGH);
