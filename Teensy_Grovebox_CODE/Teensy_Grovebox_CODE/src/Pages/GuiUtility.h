@@ -1,4 +1,5 @@
 #include "lvgl.h"
+#include "Arduino.h"
 
 // * Global Colors
 static const lv_color_t color_Red = lv_palette_main(LV_PALETTE_RED);
@@ -21,9 +22,9 @@ static const lv_font_t *font_large = &lv_font_montserrat_18;
 static lv_style_t style_paramArcMain;
 static lv_style_t style_paramArcInd;
 static lv_style_t style_paramArcKnob;
-lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color = 0);
+PROGMEM lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color = 0);
 
 // Button
-lv_obj_t *Gui_CreateButton(lv_obj_t *parent, bool toggle = false, uint8_t color = 0);
+PROGMEM lv_obj_t *Gui_CreateButton(lv_obj_t *parent, bool toggle = false, uint8_t color = 0);
 
-void Gui_InitStyles();
+PROGMEM void Gui_InitStyles();

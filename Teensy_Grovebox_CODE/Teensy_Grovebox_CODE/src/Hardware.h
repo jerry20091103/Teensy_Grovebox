@@ -107,6 +107,6 @@ extern MultiIoAbstractionRef multiIo;
 // encoder objects
 extern HardwareRotaryEncoder* enc[4];
 
-void HardwareSetup();
+PROGMEM void HardwareSetup();
 
 #endif

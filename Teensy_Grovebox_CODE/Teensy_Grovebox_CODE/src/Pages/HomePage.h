@@ -30,7 +30,7 @@ public:
     void configurePage();
 
     void update();
-    void init();
+    PROGMEM void init();
 };
 
 #endif

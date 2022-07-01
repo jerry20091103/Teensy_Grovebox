@@ -8,7 +8,7 @@ void OutMixerPopup::onBtnPressed(uint8_t pin)
     uint8_t keyNum = PinToKeyNum(pin);
     if (keyNum > 0)
     {
-        PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
+        PageManager.PageArr[PageManager.getPrevPage()]->onBtnPressed(pin);
     }
     else
     {
@@ -18,7 +18,7 @@ void OutMixerPopup::onBtnPressed(uint8_t pin)
             //onTouch(E_ELEM_OUT_MIXER_PAN_BTN);
             break;
         case BTN_JOY:
-            PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
+            PageManager.PageArr[PageManager.getPrevPage()]->onBtnPressed(pin);
         break;;
         }
     }
@@ -33,14 +33,14 @@ void OutMixerPopup::onBtnReleased(uint8_t pin)
     uint8_t keyNum = PinToKeyNum(pin);
     if (keyNum > 0)
     {
-        PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+        PageManager.PageArr[PageManager.getPrevPage()]->onBtnReleased(pin);
     }
     else
     {
         switch (pin)
         {
         case BTN_JOY:
-            PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+            PageManager.PageArr[PageManager.getPrevPage()]->onBtnReleased(pin);
             break;
         }
     }

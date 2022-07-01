@@ -8,7 +8,7 @@ void AudioinPage::onBtnPressed(uint8_t pin)
     uint8_t keyNum = PinToKeyNum(pin);
     if (keyNum > 0)
     {
-        PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
+        PageManager.PageArr[PageManager.getPrevPage()]->onBtnPressed(pin);
     }
     else
     {
@@ -16,10 +16,10 @@ void AudioinPage::onBtnPressed(uint8_t pin)
         {
         case BTN_PWR:
             // switch to previous page and then immediately switch back to Audioin page
-            PageManager.switchPage(PageManager.lastPage);
+            PageManager.switchPage(PageManager.getPrevPage());
             break;
         case BTN_JOY:
-            PageManager.PageArr[PageManager.lastPage]->onBtnPressed(pin);
+            PageManager.PageArr[PageManager.getPrevPage()]->onBtnPressed(pin);
             break;
         }
     }
@@ -40,14 +40,14 @@ void AudioinPage::onBtnReleased(uint8_t pin)
     uint8_t keyNum = PinToKeyNum(pin);
     if (keyNum > 0)
     {
-        PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+        PageManager.PageArr[PageManager.getPrevPage()]->onBtnReleased(pin);
     }
     else
     {
         switch (pin)
         {
         case BTN_JOY:
-            PageManager.PageArr[PageManager.lastPage]->onBtnReleased(pin);
+            PageManager.PageArr[PageManager.getPrevPage()]->onBtnReleased(pin);
             break;
         }
     }

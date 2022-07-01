@@ -3,12 +3,13 @@
 
 #include "Hardware.h"
 #include "GuiUtility.h"
+#include "Utility/SimpleStack.h"
 
 #define MAX_PAGE_NAME 20
 
 #define PEAK_HOLD_TIME 100
 
-enum PageID{
+enum PageID : uint8_t{
     PG_HOME,
     PG_MIDI,
     MAX_PAGE
@@ -53,15 +54,15 @@ class PageManager_
 public:
     static PageManager_ &getInstance();
     Pages *PageArr[MAX_PAGE];
-    int lastPage = -1;
-    int curPage = PG_HOME;
     
-    // Gets the current Page on screen.
-    int getCurPage();
+    // Get the current Page on screen.
+    uint8_t getCurPage();
+    // Get the previous Page.
+    uint8_t getPrevPage();
     // Initial all pages at program start
-    void Init();
+    PROGMEM void Init();
     // Switch to a page, will auto hide popup when in a popup.
-    void switchPage(int pageID);
+    void switchPage(uint8_t pageID);
     // Show power off popup
     void showPowerPopup();
     // a global pointer variable for parameter passing when switching pages
@@ -79,6 +80,9 @@ private:
     // lvgl callback functions
     static void onPowerBtnPressed(lv_event_t *e);
     static void onBackBtnPressed(lv_event_t *e);
+
+    // navigation stack
+    SimpleStack<uint8_t, MAX_PAGE> navStack;
 
     PageManager_() {}
 };

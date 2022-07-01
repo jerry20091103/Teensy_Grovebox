@@ -16,9 +16,18 @@ PageManager_ &PageManager_::getInstance()
 
 PageManager_ &PageManager = PageManager.getInstance();
 
-int PageManager_::getCurPage()
+uint8_t PageManager_::getCurPage()
 { 
-    return curPage;
+    return navStack.top();
+}
+
+uint8_t PageManager_::getPrevPage()
+{
+    uint8_t curPage = navStack.top();
+    navStack.pop();
+    uint8_t lastPage = navStack.top();
+    navStack.push(curPage);
+    return lastPage;
 }
 
 void PageManager_::Init()
@@ -66,12 +75,15 @@ void PageManager_::Init()
         i->init();
         Serial.println("Page init" + String(i->pageID));
     }
+
+
+    // switch to the first page
+    PageManager.switchPage(PG_HOME);
 }
 
-void PageManager_::switchPage(int pageID)
+void PageManager_::switchPage(uint8_t pageID)
 {
-    lastPage = getCurPage();
-    curPage = pageID;
+    navStack.push(pageID);
     // set title text
     lv_label_set_text(title, PageArr[pageID]->pageName);
     PageArr[getCurPage()]->configurePage();
@@ -107,7 +119,9 @@ void PageManager_::onPowerBtnPressed(lv_event_t *e)
 
 void PageManager_::onBackBtnPressed(lv_event_t *e)
 {
-    if(PageManager.lastPage < 0)
-        return;
-    PageManager.switchPage(PageManager.lastPage);
+    if(PageManager.navStack.size() > 1)
+    {
+        PageManager.navStack.pop();
+        PageManager.switchPage(PageManager.navStack.pop());
+    }
 }

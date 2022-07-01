@@ -39,6 +39,7 @@ void readKeyVeloctiy()
     AudioSynth.velocity = peakVelocity.read();
 }
 
+PROGMEM
 void setup()
 {
     // mute amp
@@ -71,8 +72,6 @@ void setup()
     taskManager.scheduleFixedRate(25, updatePage);
     taskManager.scheduleFixedRate(15, UpdateJoystick);
     taskManager.scheduleFixedRate(15, readKeyVeloctiy);
-    // switch to the first page
-    PageManager.switchPage(PG_HOME);
 
     // unmute amp
     digitalWrite(0, HIGH);
