@@ -1,7 +1,7 @@
 #include "Pages/Pages.h"
 #include "HomePage.h"
 #include "MidiPage.h"
-// #include "AudiooutPage.h"
+#include "AudioPage.h"
 // #include "OutMixerPopup.h"
 // #include "AudioinPage.h"
 // #include "WaveTablePage.h"
@@ -35,7 +35,7 @@ void PageManager_::Init()
     Gui_InitStyles();
     PageArr[PG_HOME] = new HomePage();
     PageArr[PG_MIDI] = new MidiPage();
-    // PageArr[E_PG_AUDIOOUT] = new AudiooutPage();
+    PageArr[PG_AUDIO] = new AudioPage();
     // PageArr[E_PG_POPUP_OUT_MIXER] = new OutMixerPopup();
     // PageArr[E_PG_AUDIOIN] = new AudioinPage();
     // PageArr[E_PG_HOME] = new HomePage();
@@ -83,11 +83,18 @@ void PageManager_::Init()
 
 void PageManager_::switchPage(uint8_t pageID)
 {
+    Serial.println(pageID);
     navStack.push(pageID);
+    navStack.print();
     // set title text
     lv_label_set_text(title, PageArr[pageID]->pageName);
-    PageArr[getCurPage()]->configurePage();
-    lv_scr_load_anim(PageArr[pageID]->screen, LV_SCR_LOAD_ANIM_FADE_IN, 150, 0, false);
+    PageArr[pageID]->configurePage();
+    lv_scr_load(PageArr[pageID]->screen);
+}
+
+void PageManager_::goBack()
+{
+    PageManager.onBackBtnPressed(NULL);
 }
 
 void PageManager_::showPowerPopup()

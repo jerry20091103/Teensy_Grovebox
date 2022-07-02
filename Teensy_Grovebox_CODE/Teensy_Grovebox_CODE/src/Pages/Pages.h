@@ -12,6 +12,7 @@
 enum PageID : uint8_t{
     PG_HOME,
     PG_MIDI,
+    PG_AUDIO,
     MAX_PAGE
 };
 
@@ -65,6 +66,8 @@ public:
     void switchPage(uint8_t pageID);
     // Show power off popup
     void showPowerPopup();
+    // Go back to previous page
+    void goBack();
     // a global pointer variable for parameter passing when switching pages
     void *pageParam;
 private:

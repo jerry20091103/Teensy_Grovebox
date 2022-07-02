@@ -39,8 +39,8 @@ void HomePage::onBtnPressed(uint8_t pin)
 {
     switch (pin)
     {
-    
-    default:
+    case BTN_PWR:
+        PageManager.switchPage(PG_AUDIO);
         break;
     }
 }

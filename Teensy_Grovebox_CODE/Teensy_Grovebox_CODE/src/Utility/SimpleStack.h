@@ -1,6 +1,6 @@
 
 
-template <class T, int i>
+template <class T, uint8_t i>
 class SimpleStack
 {
 public:
@@ -45,8 +45,19 @@ public:
     {
         return topInd;
     };
+    void print()
+    {
+        for (int ind = 0; ind < i; ind++)
+        {
+            Serial.print(data[ind]);
+            Serial.print(" ");
+        }
+        Serial.println();
+        Serial.print("top: ");
+        Serial.println(topInd);
+    }
 
 private:
-    T data[i];
+    T data[i+1];
     int topInd;
 };

@@ -47,8 +47,10 @@ void setup()
     digitalWrite(0, LOW);
 
     Serial.begin(9600);
-    // while (!Serial)
-    //     ; // wait for Arduino Serial Monitor
+//#if LV_USE_LOG != 0
+    while (!Serial)
+         ; // wait for Arduino Serial Monitor
+//#endif
     Serial.println("Setup begin!");
 
     digitalWrite(BAR_MODE, HIGH);

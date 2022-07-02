@@ -82,7 +82,7 @@ void MidiPage::onBtnPressed(uint8_t pin)
         switch (pin)
         {
         case BTN_PWR:
-            // todo PageManager.switchPage(E_PG_AUDIOOUT);
+            PageManager.switchPage(PG_AUDIO);
             break;
         case BTN_JOY:
             usbMIDI.sendControlChange(64, 127, midiChannel); // sustain

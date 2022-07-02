@@ -18,10 +18,7 @@ extern AudioSynthWavetable      wavetable7; //xy=88.57147216796875,1465.89593315
 extern AudioSynthWavetable      wavetable5; //xy=89.57147216796875,1368.8959293365479
 extern AudioMixer4              voiceMixer0_1; //xy=321.5714797973633,1375.8959941864014
 extern AudioMixer4              voiceMixer0_0;         //xy=334.5714797973633,1205.895990371704
-extern AudioMixer4              voiceMixer1_0; //xy=520.5714797973633,1292.8959941864014
-extern AudioEffectDelay         delay1;         //xy=954.333309173584,1001.0176696777344
-extern AudioMixer4              delayMixer; //xy=977.6190147399902,1108.6928062438965
-extern AudioEffectFreeverbStereo freeverbs1;     //xy=1172.476146697998,1012.8749980926514
+extern AudioMixer4              voiceMixer1_0; //xy=602.7937316894531,1294.0072498321533
 extern AudioFilterBiquad        freeverbBiquadL;        //xy=1361.7662887573242,995.4155788421631
 extern AudioFilterBiquad        freeverbBiquadR; //xy=1362.7662811279297,1030.4155797958374
 extern AudioMixer4              freeverbMixerL; //xy=1376.9755249023438,1095.7851486206055
@@ -39,8 +36,8 @@ extern AudioMixer4              mixerSWPeakUsbInL;  //xy=1764.5834197998047,576.
 extern AudioMixer4              mixerSWPeakUsbInR; //xy=1766.1287841796875,649.0758514404297
 extern AudioMixer4              mixerSWPeakLmInL; //xy=1776.583480834961,310.16680908203125
 extern AudioMixer4              mixerSWPeakLmInR; //xy=1778.1288452148438,383.1667785644531
-extern AudioAnalyzePeak         peakMixerInsR; //xy=1953.3107070922852,979.0759334564209
-extern AudioAnalyzePeak         peakMixerInsL; //xy=1954.3107070922852,939.0759315490723
+extern AudioAnalyzePeak         peakMixerInsL; //xy=1900.9774322509766,922.409252166748
+extern AudioAnalyzePeak         peakMixerInsR; //xy=1912.1997375488281,964.6315307617188
 extern AudioAnalyzePeak         peakLmInL; //xy=1959.038070678711,307.1668424606323
 extern AudioAnalyzePeak         peakLmInR; //xy=1961.583438873291,383.1668224334717
 extern AudioAnalyzePeak         peakUsbInL; //xy=1968.5834350585938,577.1668071746826
@@ -158,12 +155,6 @@ extern AudioConnection          patchCord80;
 extern AudioConnection          patchCord81;
 extern AudioConnection          patchCord82;
 extern AudioConnection          patchCord83;
-extern AudioConnection          patchCord84;
-extern AudioConnection          patchCord85;
-extern AudioConnection          patchCord86;
-extern AudioConnection          patchCord87;
-extern AudioConnection          patchCord88;
-extern AudioConnection          patchCord89;
 extern AudioControlSGTL5000     sgtl5000_1;     //xy=1499.5834312438965,339.1668577194214
 // GUItool: end automatically generated code
 
