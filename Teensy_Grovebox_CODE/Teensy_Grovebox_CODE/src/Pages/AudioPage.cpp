@@ -64,7 +64,7 @@ void AudioPage::init()
     lv_obj_t *label;
     lv_obj_t *btn;
 
-    // *OUTPUT TAB
+    // *OUTPUT TAB------------------------------------------------------------------------------
     lv_obj_t *tab1 = lv_tabview_add_tab(tabView, "OUTPUT");
     // *analog out
     OutArc[MasterTracks::ANALOG_OUT] = Gui_CreateParamArc(tab1, 1, false);
@@ -149,7 +149,7 @@ void AudioPage::init()
     lv_obj_align(hpModeLabel, LV_ALIGN_TOP_MID, 0, -20);
     // volume text
     hpVolText = lv_label_create(hpArc);
-    lv_label_set_text(hpVolText, "-10");
+    lv_label_set_text(hpVolText, "50");
     lv_obj_center(hpVolText);
     // % text
     label = lv_label_create(hpArc);
@@ -168,12 +168,114 @@ void AudioPage::init()
     lv_label_set_text(label, "PFL");
     lv_obj_center(label);
 
-    // *INPUT TAB
+    // *INPUT TAB-------------------------------------------------------------------------------
     lv_obj_t *tab2 = lv_tabview_add_tab(tabView, "INPUT");
-    label = lv_label_create(tab2);
-    lv_label_set_text(label, "tab2");
-    // *POST-DSP TAB
+    lv_obj_clear_flag(tab2, LV_OBJ_FLAG_SCROLLABLE);
+    // *analog in
+    InArc[InputTracks::LINEMIC_IN] = Gui_CreateParamArc(tab2, 2, false);
+    lv_obj_set_x(InArc[InputTracks::LINEMIC_IN], 90);
+    // title
+    label = lv_label_create(InArc[InputTracks::LINEMIC_IN]);
+    lv_label_set_text(label, "Analog");
+    lv_obj_align(label, LV_ALIGN_TOP_LEFT, 80, 2);
+    // volume text
+    InVolText[InputTracks::LINEMIC_IN] = lv_label_create(InArc[InputTracks::LINEMIC_IN]);
+    lv_label_set_text(InVolText[InputTracks::LINEMIC_IN], "-10");
+    lv_obj_align(InVolText[InputTracks::LINEMIC_IN], LV_ALIGN_CENTER, 0, 0);
+    // dB text
+    label = lv_label_create(InArc[InputTracks::LINEMIC_IN]);
+    lv_label_set_text(label, "dB");
+    lv_obj_set_style_text_font(label, font_small, 0);
+    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 0);
+    // volume meter and peak led
+    InBar[InputTracks::LINEMIC_IN][0] = Gui_CreateVolumeMeter(InArc[InputTracks::LINEMIC_IN], 120, 10);
+    lv_obj_align(InBar[InputTracks::LINEMIC_IN][0], LV_ALIGN_CENTER, 105, 5);
+
+    InPeakLed[InputTracks::LINEMIC_IN][0] = Gui_CreatePeakLed(InBar[InputTracks::LINEMIC_IN][0], 10, 10);
+    lv_obj_align(InPeakLed[InputTracks::LINEMIC_IN][0], LV_ALIGN_RIGHT_MID, 15, 0);
+
+    InBar[InputTracks::LINEMIC_IN][1] = Gui_CreateVolumeMeter(InArc[InputTracks::LINEMIC_IN], 120, 10);
+    lv_obj_align(InBar[InputTracks::LINEMIC_IN][1], LV_ALIGN_CENTER, 105, 20);
+
+    InPeakLed[InputTracks::LINEMIC_IN][1] = Gui_CreatePeakLed(InBar[InputTracks::LINEMIC_IN][1], 10, 10);
+    lv_obj_align(InPeakLed[InputTracks::LINEMIC_IN][1], LV_ALIGN_RIGHT_MID, 15, 0);
+
+    // *usb in
+    InArc[InputTracks::USB_IN] = Gui_CreateParamArc(tab2, 3, false);
+    lv_obj_set_pos(InArc[InputTracks::USB_IN], 90, 80);
+    // title
+    label = lv_label_create(InArc[InputTracks::USB_IN]);
+    lv_label_set_text(label, "USB");
+    lv_obj_align(label, LV_ALIGN_TOP_LEFT, 80, 2);
+    // volume text
+    InVolText[InputTracks::USB_IN] = lv_label_create(InArc[InputTracks::USB_IN]);
+    lv_label_set_text(InVolText[InputTracks::USB_IN], "-10");
+    lv_obj_align(InVolText[InputTracks::USB_IN], LV_ALIGN_CENTER, 0, 0);
+    // dB text
+    label = lv_label_create(InArc[InputTracks::USB_IN]);
+    lv_label_set_text(label, "dB");
+    lv_obj_set_style_text_font(label, font_small, 0);
+    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 0);
+    // volume meter and peak led
+    InBar[InputTracks::USB_IN][0] = Gui_CreateVolumeMeter(InArc[InputTracks::USB_IN], 120, 10);
+    lv_obj_align(InBar[InputTracks::USB_IN][0], LV_ALIGN_CENTER, 105, 5);
+
+    InPeakLed[InputTracks::USB_IN][0] = Gui_CreatePeakLed(InBar[InputTracks::USB_IN][0], 10, 10);
+    lv_obj_align(InPeakLed[InputTracks::USB_IN][0], LV_ALIGN_RIGHT_MID, 15, 0);
+
+    InBar[InputTracks::USB_IN][1] = Gui_CreateVolumeMeter(InArc[InputTracks::USB_IN], 120, 10);
+    lv_obj_align(InBar[InputTracks::USB_IN][1], LV_ALIGN_CENTER, 105, 20);
+
+    InPeakLed[InputTracks::USB_IN][1] = Gui_CreatePeakLed(InBar[InputTracks::USB_IN][1], 10, 10);
+    lv_obj_align(InPeakLed[InputTracks::USB_IN][1], LV_ALIGN_RIGHT_MID, 15, 0);
+
+    // *input gain
+    gainArc = Gui_CreateParamArc(tab2, 1, false);
+    lv_obj_set_y(gainArc, 15);
+    // title
+    label = lv_label_create(gainArc);
+    lv_label_set_text(label, "Gain");
+    lv_obj_align(label, LV_ALIGN_TOP_MID, 0, -20);
+    // gain text
+    gainText = lv_label_create(gainArc);
+    lv_label_set_text(gainText, "0");
+    lv_obj_align(gainText, LV_ALIGN_CENTER, 0, 0);
+    // dB text
+    label = lv_label_create(gainArc);
+    lv_label_set_text(label, "dB");
+    lv_obj_set_style_text_font(label, font_small, 0);
+    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 0);
+
+    // *input source
+    // title
+    label = lv_label_create(gainArc);
+    lv_label_set_text(label, "Source");
+    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 20);
+    // line button
+    lineBtn = Gui_CreateButton(tab2, true);
+    lv_obj_set_pos(lineBtn, 0, 100);
+    lv_obj_set_size(lineBtn, 60, 25);
+    label = lv_label_create(lineBtn);
+    lv_label_set_text(label, "LINE");
+    lv_obj_center(label);
+    // mic button
+    micBtn = Gui_CreateButton(tab2, true);
+    lv_obj_set_pos(micBtn, 0, 130);
+    lv_obj_set_size(micBtn, 60, 25);
+    label = lv_label_create(micBtn);
+    lv_label_set_text(label, "MIC");
+    lv_obj_center(label);
+
+    // PFL button
+    btn = Gui_CreateButton(tab2, true);
+    lv_obj_set_pos(btn, 250, 0);
+    lv_obj_set_height(btn, 25);
+    label = lv_label_create(btn);
+    lv_label_set_text(label, "PFL");
+    lv_obj_center(label);
+
+    // *POST-DSP TAB----------------------------------------------------------------------------
     lv_obj_t *tab3 = lv_tabview_add_tab(tabView, "POST-DSP");
     label = lv_label_create(tab3);
-    lv_label_set_text(label, "tab3");
+    lv_label_set_text(label, "TBD");
 }

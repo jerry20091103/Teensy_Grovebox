@@ -11,6 +11,7 @@ private:
     bool usePFL = false;
 
     // lvgl object refs
+    // output tab
     lv_obj_t *OutArc[2];
     lv_obj_t *OutVolText[2];
     lv_obj_t *OutBar[2][2];
@@ -18,6 +19,15 @@ private:
     lv_obj_t *hpArc;
     lv_obj_t *hpModeLabel;
     lv_obj_t *hpVolText;
+    // input tab
+    lv_obj_t *InArc[2];
+    lv_obj_t *InVolText[2];
+    lv_obj_t *InBar[2][2];
+    lv_obj_t *InPeakLed[2][2];
+    lv_obj_t *gainArc;
+    lv_obj_t *gainText;
+    lv_obj_t *lineBtn;
+    lv_obj_t *micBtn;
 
 public:
     void onBtnPressed(uint8_t pin);
