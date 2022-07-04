@@ -28,6 +28,15 @@ private:
     lv_obj_t *gainText;
     lv_obj_t *lineBtn;
     lv_obj_t *micBtn;
+    // post-dsp tab
+    // output mixer
+    lv_obj_t *mixerArc[4];
+    lv_obj_t *mixerVolText[4];
+    lv_obj_t *mixerBar[4][2];
+    lv_obj_t *mixerPeakLed[4][2];
+
+    // helper functions
+    PROGMEM void createTrackGui(lv_obj_t *&parent, lv_obj_t *&arcRef, lv_obj_t *&volTextRef, lv_obj_t **barArrRef, lv_obj_t **peakArrRef, uint8_t color, const char *name);
 
 public:
     void onBtnPressed(uint8_t pin);
