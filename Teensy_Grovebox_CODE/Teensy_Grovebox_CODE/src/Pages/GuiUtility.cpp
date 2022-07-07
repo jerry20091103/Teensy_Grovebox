@@ -105,7 +105,8 @@ lv_obj_t *Gui_CreateVolumeMeter(lv_obj_t *parent, uint8_t w, uint8_t h, uint8_t 
 {
     lv_obj_t *bar = lv_bar_create(parent);
     lv_obj_set_size(bar, w, h);
-    lv_bar_set_value(bar, 50, LV_ANIM_ON);
+    lv_bar_set_range(bar, -50, 0);
+    lv_bar_set_value(bar, 0, LV_ANIM_ON);
     lv_obj_set_style_anim_time(bar, 100, 0);
     lv_obj_add_flag(bar, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
     lv_obj_clear_flag(bar, LV_OBJ_FLAG_SCROLLABLE);
@@ -132,6 +133,5 @@ lv_obj_t *Gui_CreatePeakLed(lv_obj_t *parent, uint8_t w, uint8_t h)
     lv_led_set_color(led, color_Red);
     lv_obj_set_style_shadow_spread(led, 0, 0);
     lv_obj_set_style_bg_color(led, color_Red, 0);
-    lv_led_on(led);
     return led;
 }

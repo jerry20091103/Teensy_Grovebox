@@ -71,7 +71,7 @@ void setup()
     HardwareSetup();
     // Schedule regular tasks
     taskManager.scheduleFixedRate(5, updateGui);
-    taskManager.scheduleFixedRate(25, updatePage);
+    taskManager.scheduleFixedRate(30, updatePage);
     taskManager.scheduleFixedRate(15, UpdateJoystick);
     taskManager.scheduleFixedRate(15, readKeyVeloctiy);
 
