@@ -44,6 +44,7 @@ public:
     void pitchbend(float semitone);
     void setUseVelocity(bool value);
     void setUsePitchbend(bool value);
+    void setSF2Instrument(uint8_t id);
 
     // set master output volume in dB
     void setMasterVol(int8_t vol);

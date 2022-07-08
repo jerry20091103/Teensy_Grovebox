@@ -4,6 +4,7 @@
 #include "Audio/AudioSynth.h"
 #include "Audio/AudioIO.h"
 #include "Audio/AudioUtility.h"
+#include "SF2_Samples/SF2_Samples.h"
 
 void WaveTablePage::onVelocityBtnPressed(lv_event_t *e)
 {
@@ -48,6 +49,13 @@ void WaveTablePage::onOctaveSelect(lv_event_t *e)
         // decrease
         instance->onBtnPressed(BTN_FN0);
     }
+}
+
+void WaveTablePage::onSF2DropdownSelect(lv_event_t *e)
+{
+    lv_obj_t * dropdown = lv_event_get_target(e);
+    uint8_t id = lv_dropdown_get_selected(dropdown);
+    AudioSynth.setSF2Instrument(id);
 }
 
 void WaveTablePage::onVolArcPressed(lv_event_t *e)
@@ -217,7 +225,8 @@ void WaveTablePage::init()
     lv_obj_set_x(sf2SelectDropdown, 60);
     lv_obj_set_width(sf2SelectDropdown, 170);
     lv_obj_add_flag(sf2SelectDropdown, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
-    lv_dropdown_set_options(sf2SelectDropdown, "Electric Piano\nTrumpet\nBells");
+    lv_dropdown_set_options_static(sf2SelectDropdown, SF2_Instrument_Names);
+    lv_obj_add_event_cb(sf2SelectDropdown, onSF2DropdownSelect, LV_EVENT_VALUE_CHANGED, this);
     label = lv_label_create(sf2SelectDropdown);
     lv_label_set_text(label, "Sound:");
     lv_obj_align(label, LV_ALIGN_LEFT_MID, -70, 0);

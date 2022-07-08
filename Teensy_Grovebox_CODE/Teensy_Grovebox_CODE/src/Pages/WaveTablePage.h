@@ -41,6 +41,7 @@ private:
     static void onPitchDropdownSelect(lv_event_t *e);
     static void onOctaveSelect(lv_event_t* e);
     static void onVolArcPressed(lv_event_t *e);
+    static void onSF2DropdownSelect(lv_event_t *e);
     // helper functions
     void setVolume(int8_t value);
 

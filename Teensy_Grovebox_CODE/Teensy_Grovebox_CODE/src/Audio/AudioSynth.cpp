@@ -1,6 +1,6 @@
 #include "AudioSynth.h"
 #include "AudioIO.h"
-#include "SF2_Samples/pianoelectrique_samples.h"
+#include "SF2_Samples/SF2_Samples.h"
 #include "AudioUtility.h"
 
 float noteToFreq(uint8_t note)
@@ -46,7 +46,7 @@ AudioSynth_::AudioSynth_()
     // set initial instrument
     for (int i = 0; i < MAX_VOICE; i++)
     {
-        voiceArr[i].setInstrument(pianoelectrique);
+        voiceArr[i].setInstrument(*SF2_InstrumentRef[0]);
     }
 
     // put all voices in idle list
@@ -101,11 +101,11 @@ void AudioSynth_::noteOn(uint8_t note)
 
     playingNote.push_front(noteEntry(note, voiceFound));
     voiceArr[voiceFound].isNoteOn = true;
-    if(useVelocity)
+    if (useVelocity)
         voiceArr[voiceFound].noteOn(noteToFreq(note), map(velocity, 0, 1, 0.2, 1));
     else
         voiceArr[voiceFound].noteOn(noteToFreq(note), 0.8);
-    if(usePitchbend)
+    if (usePitchbend)
         voiceArr[voiceFound].setPitchbend(curPitchbend);
     Serial.println("DEBUG: playingNote size: " + String(playingNote.size()) + " idleNote size: " + String(idleNote.size()));
 }
@@ -120,7 +120,7 @@ void AudioSynth_::noteOff(uint8_t note)
             uint8_t voiceInd = (*it).voiceIndex;
             voiceArr[voiceInd].isNoteOn = false;
             // If sustaining, set isNoteOn = false, and let it play in playingNote (don't stop it)
-            if(isSustain)
+            if (isSustain)
                 Serial.println("DEBUG: sustain voice in playingNote, voice index = " + String(voiceInd));
             if (!isSustain)
             {
@@ -158,7 +158,7 @@ void AudioSynth_::sustainOff()
             voiceArr[voiceInd].noteOff();
             Serial.println("DEBUG: playingNote size: " + String(playingNote.size()) + " idleNote size: " + String(idleNote.size()));
 
-            if(playingNote.empty())
+            if (playingNote.empty())
                 break;
         }
         else
@@ -168,7 +168,7 @@ void AudioSynth_::sustainOff()
     }
 }
 
-// find all playing notes and set their pitch bend 
+// find all playing notes and set their pitch bend
 void AudioSynth_::pitchbend(float semitone)
 {
     curPitchbend = semitone;
@@ -193,4 +193,15 @@ void AudioSynth_::setUseVelocity(bool value)
 void AudioSynth_::setUsePitchbend(bool value)
 {
     usePitchbend = value;
+}
+
+void AudioSynth_::setSF2Instrument(uint8_t id)
+{
+    if (id < MAX_SF2_INSTRUMENTS)
+    {
+        for (int i = 0; i < MAX_VOICE; i++)
+        {
+            voiceArr[i].setInstrument(*SF2_InstrumentRef[id]);
+        }
+    }
 }

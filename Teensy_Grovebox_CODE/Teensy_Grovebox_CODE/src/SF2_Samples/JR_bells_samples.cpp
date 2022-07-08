@@ -1,5 +1,6 @@
 #include "JR_bells_samples.h"
 
+PROGMEM
 static const uint32_t sample_0_JR_bells_Eff01rb2L[38016] = {
 0x04b20489,0x049d049d,0x04b90493,0x04b204a4,0x049a04b5,0x04a104b2,0x04a404b2,0x04c3049d,
 0x04b504af,0x04af04b5,0x04b904b5,0x04ab04ab,0x04b904bc,0x04cd04d8,0x04bc04b5,0x049d049d,
@@ -4759,16 +4760,16 @@ static const AudioSynthWavetable::sample_data JR_bells_samples[1] = {
 		(int16_t*)sample_0_JR_bells_Eff01rb2L, // sample
 		true, // LOOP
 		17, // LENGTH_BITS
-		(1 << (32 - 17)) * WAVETABLE_CENTS_SHIFT(0) * 44100.0 / WAVETABLE_NOTE_TO_FREQUENCY(60) / AUDIO_SAMPLE_RATE_EXACT + 0.5, // PER_HERTZ_PHASE_INCREMENT
+		(1 << (32 - 17)) * WAVETABLE_CENTS_SHIFT(0) * 44100.0 / WAVETABLE_NOTE_TO_FREQUENCY(67) / AUDIO_SAMPLE_RATE_EXACT , // PER_HERTZ_PHASE_INCREMENT
 		((uint32_t)76001 - 1) << (32 - 17), // MAX_PHASE
 		((uint32_t)76000 - 1) << (32 - 17), // LOOP_PHASE_END
 		(((uint32_t)76000 - 1) << (32 - 17)) - (((uint32_t)64500 - 1) << (32 - 17)), // LOOP_PHASE_LENGTH
 		uint16_t(UINT16_MAX * WAVETABLE_DECIBEL_SHIFT(0)), // INITIAL_ATTENUATION_SCALAR
-		uint32_t(0.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD + 0.5), // DELAY_COUNT
-		uint32_t(1.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD + 0.5), // ATTACK_COUNT
-		uint32_t(0.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD + 0.5), // HOLD_COUNT
-		uint32_t(1.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD + 0.5), // DECAY_COUNT
-		uint32_t(1.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD + 0.5), // RELEASE_COUNT
+		uint32_t(0.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD ), // DELAY_COUNT
+		uint32_t(1.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD ), // ATTACK_COUNT
+		uint32_t(0.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD ), // HOLD_COUNT
+		uint32_t(1.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD ), // DECAY_COUNT
+		uint32_t(1000.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / AudioSynthWavetable::ENVELOPE_PERIOD ), // RELEASE_COUNT
 		int32_t((1.0 - WAVETABLE_DECIBEL_SHIFT(0.0)) * AudioSynthWavetable::UNITY_GAIN), // SUSTAIN_MULT
 		uint32_t(0.00 * AudioSynthWavetable::SAMPLES_PER_MSEC / (2 * AudioSynthWavetable::LFO_PERIOD)), // VIBRATO_DELAY
 		uint32_t(8.2 * AudioSynthWavetable::LFO_PERIOD * (UINT32_MAX / AUDIO_SAMPLE_RATE_EXACT)), // VIBRATO_INCREMENT
