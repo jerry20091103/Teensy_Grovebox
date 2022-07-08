@@ -1,11 +1,21 @@
 #ifndef PAGE_H
 #define PAGE_H
 
-#include "GUIslice/GUIslice_GSLC.h"
+#include "Hardware.h"
+#include "GuiUtility.h"
+#include "Utility/SimpleStack.h"
 
 #define MAX_PAGE_NAME 20
 
 #define PEAK_HOLD_TIME 100
+
+enum PageID : uint8_t{
+    PG_HOME,
+    PG_MIDI,
+    PG_AUDIO,
+    PG_WAVE,
+    MAX_PAGE
+};
 
 // Pages class
 // A virtual class for other pages to inherit from
@@ -22,26 +32,21 @@ public:
     virtual void onEncTurned(uint8_t id, int value) = 0;
     // Page joystick callback function
     virtual void onJoyUpdate(int joy_x, int joy_y) = 0;
-    // Page GUI touch control callback function
-    virtual void onTouch(int ref) = 0;
     // Page MIDI control change signal received callback
     virtual void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value) = 0;
     // Configure a page before swithcing to it. Sets encoders and prepare variables.
     virtual void configurePage() = 0;
 
-    // this handles custom graphics that are not built with GUIslice builder
+    // this updates the page approximately every frame
     virtual void update() = 0;
-    virtual void draw() = 0;
     // Initialize a page at program startup
     virtual void init() = 0;
 
     int pageID;
     char pageName[MAX_PAGE_NAME];
+    lv_obj_t *screen;
 
 protected:
-    // some common graphic functions for all pages
-    void toggleButton(gslc_tsElemRef *ref, bool state);
-    void togglePeakBox(gslc_tsElemRef *ref, bool peak);
 };
 
 // PagesManager class
@@ -51,24 +56,37 @@ class PageManager_
 public:
     static PageManager_ &getInstance();
     Pages *PageArr[MAX_PAGE];
-    int lastPage = E_PG_MIDI;
     
-    // Gets the current Page on screen. Returns the info from GUIslice library
-    int getCurPage(bool includePopup = true);
+    // Get the current Page on screen.
+    uint8_t getCurPage();
+    // Get the previous Page.
+    uint8_t getPrevPage();
     // Initial all pages at program start
-    void Init();
+    PROGMEM void Init();
     // Switch to a page, will auto hide popup when in a popup.
-    void switchPage(int pageID);
-    // Switch to a popup page
-    void showPopup(int pageID);
-    // Hide a popup page
-    void hidePopup();
+    void switchPage(uint8_t pageID);
+    // Show power off popup
+    void showPowerPopup();
+    // Go back to previous page
+    void goBack();
     // a global pointer variable for parameter passing when switching pages
     void *pageParam;
 private:
     bool inPopup = false;   // true if a popup is active
     int curPopupID;         // stores current acitve popup ID
+    lv_obj_t *statusBar;
+    lv_obj_t *backBtn;
+    lv_obj_t *title;
+    lv_obj_t *battLabel;
 
+    const char* powerBtns[3] = {"Yes", "No", NULL};
+
+    // lvgl callback functions
+    static void onPowerBtnPressed(lv_event_t *e);
+    static void onBackBtnPressed(lv_event_t *e);
+
+    // navigation stack
+    SimpleStack<uint8_t, MAX_PAGE> navStack;
 
     PageManager_() {}
 };

@@ -101,7 +101,12 @@ void AudioSynth_::noteOn(uint8_t note)
 
     playingNote.push_front(noteEntry(note, voiceFound));
     voiceArr[voiceFound].isNoteOn = true;
-    voiceArr[voiceFound].noteOn(noteToFreq(note), map(velocity, 0, 1, 0.2, 1));
+    if(useVelocity)
+        voiceArr[voiceFound].noteOn(noteToFreq(note), map(velocity, 0, 1, 0.2, 1));
+    else
+        voiceArr[voiceFound].noteOn(noteToFreq(note), 0.8);
+    if(usePitchbend)
+        voiceArr[voiceFound].setPitchbend(curPitchbend);
     Serial.println("DEBUG: playingNote size: " + String(playingNote.size()) + " idleNote size: " + String(idleNote.size()));
 }
 
@@ -163,9 +168,29 @@ void AudioSynth_::sustainOff()
     }
 }
 
+// find all playing notes and set their pitch bend 
+void AudioSynth_::pitchbend(float semitone)
+{
+    curPitchbend = semitone;
+    for (std::list<noteEntry>::iterator it = playingNote.begin(); it != playingNote.end(); it++)
+    {
+        voiceArr[(*it).voiceIndex].setPitchbend(semitone);
+    }
+}
+
 void AudioSynth_::setMasterVol(int8_t vol)
 {
     float gain = dBtoGain(vol);
     mainVolume[0]->gain(gain);
     mainVolume[1]->gain(gain);
+}
+
+void AudioSynth_::setUseVelocity(bool value)
+{
+    useVelocity = value;
+}
+
+void AudioSynth_::setUsePitchbend(bool value)
+{
+    usePitchbend = value;
 }

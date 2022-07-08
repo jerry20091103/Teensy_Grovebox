@@ -1,9 +1,77 @@
 #include "MidiPage.h"
 #include "Controls.h"
 
+// lvgl event callbacks
+void MidiPage::onArcValueChanged(lv_event_t *e)
+{
+    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
+    lv_obj_t *arc = lv_event_get_target(e);
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        if (arc == instance->ccArc[i])
+        {
+            instance->updateCC(instance->curCC[i], lv_arc_get_value(arc));
+            break;
+        }
+    }
+}
+
+void MidiPage::onTogglePitchbend(lv_event_t *e)
+{
+    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
+    instance->usePitchbend = !instance->usePitchbend;
+}
+
+void MidiPage::onToggleModwheel(lv_event_t *e)
+{
+    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
+    instance->useModwheel = !instance->useModwheel;
+}
+
+void MidiPage::onOctaveInc(lv_event_t *e)
+{
+    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
+    instance->octave++;
+    if (instance->octave > 8)
+    {
+        instance->octave = 8;
+    }
+    lv_label_set_text_fmt(instance->octaveText, "%d", instance->octave);
+}
+
+void MidiPage::onOctaveDec(lv_event_t *e)
+{
+    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
+    instance->octave--;
+    if (instance->octave < 1)
+    {
+        instance->octave = 1;
+    }
+    lv_label_set_text_fmt(instance->octaveText, "%d", instance->octave);
+}
+
+void MidiPage::onChannelInc(lv_event_t *e)
+{
+    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
+    instance->midiChannel++;
+    if(instance->midiChannel > 16)
+        instance->midiChannel = 16;
+    lv_label_set_text_fmt(instance->channelText, "%d", instance->midiChannel);
+}
+
+void MidiPage::onChannelDec(lv_event_t *e)
+{
+    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
+    instance->midiChannel--;
+    if(instance->midiChannel < 1)
+        instance->midiChannel = 1;
+    lv_label_set_text_fmt(instance->channelText, "%d", instance->midiChannel);
+}
+
 void MidiPage::onBtnPressed(uint8_t pin)
 {
     uint8_t keyNum = PinToKeyNum(pin);
+    uint8_t noteNum;
     if (keyNum > 0)
     {
         noteNum = keyNum - 1 + 12 * octave;
@@ -14,7 +82,7 @@ void MidiPage::onBtnPressed(uint8_t pin)
         switch (pin)
         {
         case BTN_PWR:
-            PageManager.switchPage(E_PG_AUDIOOUT);
+            PageManager.switchPage(PG_AUDIO);
             break;
         case BTN_JOY:
             usbMIDI.sendControlChange(64, 127, midiChannel); // sustain
@@ -46,84 +114,16 @@ void MidiPage::onBtnPressed(uint8_t pin)
             break;
         // ENC btns
         case BTN_ENC1:
-            if(!encConfigure[0])
-            {
-                // enter configure state
-                encConfigure[0] = true;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingRed, GSLC_COL_GRAY);
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingRed, GSLC_COL_WHITE);
-                gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingRed, 127);
-                switches.changeEncoderPrecision(0, CC_MAX - CC_MIN, curCC[0]-CC_MIN, true);
-            }
-            else
-            {
-                // exit configure state
-                encConfigure[0] = false;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingRed, gslc_tsColor{79, 0, 0});
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingRed, GSLC_COL_RED);
-                gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingRed, storeCC[curCC[0]-CC_MIN]);
-                switches.changeEncoderPrecision(0, 127, storeCC[curCC[0]-CC_MIN], false);
-            }
+            toggleEncConfigure(0);
             break;
         case BTN_ENC2:
-            if(!encConfigure[1])
-            {
-                // enter configure state
-                encConfigure[1] = true;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingYellow, GSLC_COL_GRAY);
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingYellow, GSLC_COL_WHITE);
-                gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingYellow, 127);
-                switches.changeEncoderPrecision(1, CC_MAX - CC_MIN, curCC[1]-CC_MIN, true);
-            }
-            else
-            {
-                // exit configure state
-                encConfigure[1] = false;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingYellow, gslc_tsColor{75, 68, 0});
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingYellow, gslc_tsColor{250, 230, 0});
-                gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingYellow, storeCC[curCC[1]-CC_MIN]);
-                switches.changeEncoderPrecision(1, 127, storeCC[curCC[1]-CC_MIN], false);
-            }
+            toggleEncConfigure(1);
             break;
         case BTN_ENC3:
-            if(!encConfigure[2])
-            {
-                // enter configure state
-                encConfigure[2] = true;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingBlue, GSLC_COL_GRAY);
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingBlue, GSLC_COL_WHITE);
-                gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingBlue, 127);
-                switches.changeEncoderPrecision(2, CC_MAX - CC_MIN, curCC[2]-CC_MIN, true);
-            }
-            else
-            {
-                // exit configure state
-                encConfigure[2] = false;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingBlue, gslc_tsColor{0, 0, 58});
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingBlue, gslc_tsColor{20, 20, 255});
-                gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingBlue, storeCC[curCC[2]-CC_MIN]);
-                switches.changeEncoderPrecision(2, 127, storeCC[curCC[2]-CC_MIN], false);
-            }
+            toggleEncConfigure(2);
             break;
         case BTN_ENC4:
-            if(!encConfigure[3])
-            {
-                // enter configure state
-                encConfigure[3] = true;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingGreen, GSLC_COL_GRAY);
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingGreen, GSLC_COL_WHITE);
-                gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingGreen, 127);
-                switches.changeEncoderPrecision(3, CC_MAX - CC_MIN, curCC[3]-CC_MIN, true);
-            }
-            else
-            {
-                // exit configure state
-                encConfigure[3] = false;
-                gslc_ElemXRingGaugeSetColorInactive(&m_gui, m_pElemMidiRingGreen, gslc_tsColor{0, 61, 0});
-                gslc_ElemXRingGaugeSetColorActiveFlat(&m_gui, m_pElemMidiRingGreen, GSLC_COL_GREEN_DK2);
-                gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingGreen, storeCC[curCC[3]-CC_MIN]);
-                switches.changeEncoderPrecision(3, 127, storeCC[curCC[3]-CC_MIN], false);
-            }
+            toggleEncConfigure(3);
             break;
         default:
             break;
@@ -136,9 +136,9 @@ void MidiPage::onBtnHold(uint8_t pin)
     switch (pin)
     {
     case BTN_PWR:
-        PageManager.showPopup(E_PG_POPUP_POWER);
+        PageManager.showPowerPopup();
         break;
-    
+
     default:
         break;
     }
@@ -147,6 +147,7 @@ void MidiPage::onBtnHold(uint8_t pin)
 void MidiPage::onBtnReleased(uint8_t pin)
 {
     uint8_t keyNum = PinToKeyNum(pin);
+    uint8_t noteNum;
     if (keyNum > 0)
     {
         noteNum = keyNum - 1 + 12 * octave;
@@ -186,22 +187,13 @@ void MidiPage::onBtnReleased(uint8_t pin)
 
 void MidiPage::onEncTurned(uint8_t id, int value)
 {
-    if(encConfigure[id])
+    if (encConfigure[id])
     {
         curCC[id] = value + CC_MIN;
-        
-        gslc_tsElemRef *ringRef = NULL;
-        switch (id)
-        {
-        case 0: ringRef = m_pElemMidiRingRed;       break;
-        case 1: ringRef = m_pElemMidiRingYellow;    break;
-        case 2: ringRef = m_pElemMidiRingBlue;      break;
-        case 3: ringRef = m_pElemMidiRingGreen;     break;
-        }
-        gslc_ElemSetTxtStr(&m_gui, ringRef, String(curCC[id]).c_str());
+        lv_label_set_text_fmt(ccText[id], "%d", curCC[id]);
     }
     else
-    {   
+    {
         usbMIDI.sendControlChange(curCC[id], value, midiChannel);
         updateCC(curCC[id], value);
     }
@@ -210,57 +202,15 @@ void MidiPage::onEncTurned(uint8_t id, int value)
 void MidiPage::onJoyUpdate(int joy_x, int joy_y)
 {
     // TODO: joystick centering
-    if(usePitchbend)
+    if (usePitchbend)
         usbMIDI.sendPitchBend(map(joy_x, 0, 1019, 8191, -8192), midiChannel);
-    if(useModwheel)
+    if (useModwheel)
         usbMIDI.sendControlChange(1, map(joy_y, 0, 1019, 0, 127), midiChannel);
-}
-
-void MidiPage::onTouch(int ref)
-{
-    switch (ref)
-    {
-    case E_ELEM_MIDI_OCTAVE_INC:
-        octave++;
-        if (octave > 8)
-            octave = 8;
-        gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtOctave, String(octave).c_str());
-        break;
-    case E_ELEM_MIDI_OCTAVE_DEC:
-        octave--;
-        if (octave < 1)
-            octave = 1;
-        gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtOctave, String(octave).c_str());
-        break;
-    case E_ELEM_MIDI_CHANNEL_INC:
-        midiChannel++;
-        if (midiChannel > 16)
-            midiChannel = 16;
-        gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtChannel, String(midiChannel).c_str());
-        break;
-    case E_ELEM_MIDI_CHANNEL_DEC:
-        midiChannel--;
-        if (midiChannel < 1)
-            midiChannel = 1;
-        gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtChannel, String(midiChannel).c_str());
-        break;
-    case E_ELEM_MIDI_PITCHBEND_BTN:
-        usePitchbend = !usePitchbend;
-        toggleButton(m_pElemMidiPitchbendBtn, usePitchbend);
-        break;
-    case E_ELEM_MIDI_MOD_BTN:
-        useModwheel = !useModwheel;
-        toggleButton(m_pElemMidiModBtn, useModwheel);
-        break;
-    case E_ELEM_BASE_BACK_BTN:
-        PageManager.switchPage(E_PG_HOME);
-        break;
-    }
 }
 
 void MidiPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
 {
-    if(channel != midiChannel || control < CC_MIN || control > CC_MAX)
+    if (channel != midiChannel || control < CC_MIN || control > CC_MAX)
     {
         return;
     }
@@ -272,73 +222,228 @@ void MidiPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
 
 void MidiPage::update()
 {
-    gslc_ElemSetTxtStr(&m_gui, m_pElemTxtBatt, "\x40");
-}
-
-void MidiPage::draw()
-{
 }
 
 void MidiPage::init()
 {
-    pageID = E_PG_MIDI;
+    pageID = PG_MIDI;
     strcpy(pageName, "MIDI");
-    gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtChannel, String(midiChannel).c_str());
-    gslc_ElemSetTxtStr(&m_gui, m_pElemMidiTxtOctave, String(octave).c_str());
-    toggleButton(m_pElemMidiPitchbendBtn, usePitchbend);
-    toggleButton(m_pElemMidiModBtn, useModwheel);
+    // create screen
+    screen = lv_obj_create(NULL);
+    lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
+    // create lvgl objects
+    // 4 CC arcs and CC text
+    lv_obj_t *arcGroup = lv_obj_create(screen);
+    lv_obj_remove_style_all(arcGroup);
+    lv_obj_set_size(arcGroup, 320, 80);
+    lv_obj_set_pos(arcGroup, 0, 35);
 
-    gslc_tsElemRef *ringRef;
-    for(u_int8_t i=0; i<4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
-        switch (i)
-        {
-        case 0: ringRef = m_pElemMidiRingRed;       break;
-        case 1: ringRef = m_pElemMidiRingYellow;    break;
-        case 2: ringRef = m_pElemMidiRingBlue;      break;
-        case 3: ringRef = m_pElemMidiRingGreen;     break;
-        }
-        gslc_ElemSetTxtStr(&m_gui, ringRef, String(curCC[i]).c_str());
+        ccArc[i] = Gui_CreateParamArc(arcGroup, i + 1);
+        lv_arc_set_value(ccArc[i], storeCC[curCC[i] - CC_MIN]);
+        lv_arc_set_range(ccArc[i], 0, 127);
+        lv_obj_set_x(ccArc[i], lv_pct(25 * i));
+        lv_obj_add_event_cb(ccArc[i], onArcValueChanged, LV_EVENT_VALUE_CHANGED, this);
+        ccText[i] = lv_label_create(ccArc[i]);
+        lv_obj_center(ccText[i]);
+        lv_label_set_text_fmt(ccText[i], "%d", curCC[i]);
     }
+    // button group
+    lv_obj_t *btnGroup = lv_obj_create(screen);
+    lv_obj_remove_style_all(btnGroup);
+    lv_obj_set_style_pad_all(btnGroup, 10, 0);
+    lv_obj_set_size(btnGroup, 320, 135);
+    lv_obj_set_pos(btnGroup, 0, 105);
+    lv_obj_clear_flag(btnGroup, LV_OBJ_FLAG_SCROLLABLE);
+    // pitchbend button
+    lv_obj_t *btn = Gui_CreateButton(btnGroup, true);
+    if(usePitchbend)
+        lv_obj_add_state(btn, LV_STATE_CHECKED);
+    lv_obj_add_event_cb(btn, onTogglePitchbend, LV_EVENT_CLICKED, this);
+    lv_obj_set_width(btn, 90);
+    lv_obj_t *label = lv_label_create(btn);
+    lv_label_set_text(label, "PitchBend");
+    lv_obj_center(label);
+    // mod button
+    btn = Gui_CreateButton(btnGroup, true);
+    if(useModwheel)
+        lv_obj_add_state(btn, LV_STATE_CHECKED);
+    lv_obj_add_event_cb(btn, onToggleModwheel, LV_EVENT_CLICKED, this);
+    lv_obj_set_width(btn, 90);
+    lv_obj_set_y(btn, 45);
+    label = lv_label_create(btn);
+    lv_label_set_text(label, "ModWheel");
+    lv_obj_center(label);
+    // octave select
+    label = lv_label_create(btnGroup);
+    lv_label_set_text(label, "Octave:");
+    lv_obj_set_pos(label, 110, 7);
+
+    btn = Gui_CreateButton(btnGroup);
+    lv_obj_set_x(btn, 180);
+    lv_obj_add_event_cb(btn, onOctaveDec, LV_EVENT_CLICKED, this);
+    label = lv_label_create(btn);
+    lv_label_set_text(label, LV_SYMBOL_MINUS);
+
+    octaveText = lv_label_create(btnGroup);
+    lv_obj_set_style_text_font(octaveText, font_large, 0);
+    lv_label_set_text_fmt(octaveText, "%d", octave);
+    lv_obj_set_pos(octaveText, 232, 7);
+
+    btn = Gui_CreateButton(btnGroup);
+    lv_obj_set_x(btn, 260);
+    lv_obj_add_event_cb(btn, onOctaveInc, LV_EVENT_CLICKED, this);
+    label = lv_label_create(btn);
+    lv_label_set_text(label, LV_SYMBOL_PLUS);
+
+    // channel select
+    label = lv_label_create(btnGroup);
+    lv_label_set_text(label, "Channel:");
+    lv_obj_set_pos(label, 105, 7+45);
+
+    btn = Gui_CreateButton(btnGroup);
+    lv_obj_set_pos(btn, 180, 45);
+    lv_obj_add_event_cb(btn, onChannelDec, LV_EVENT_CLICKED, this);
+    label = lv_label_create(btn);
+    lv_label_set_text(label, LV_SYMBOL_MINUS);
+
+    channelText = lv_label_create(btnGroup);
+    lv_obj_set_style_text_font(channelText, font_large, 0);
+    lv_label_set_text_fmt(channelText, "%d", midiChannel);
+    lv_obj_set_pos(channelText, 232, 7+45);
+
+    btn = Gui_CreateButton(btnGroup);
+    lv_obj_set_pos(btn, 260, 45);
+    lv_obj_add_event_cb(btn, onChannelInc, LV_EVENT_CLICKED, this);
+    label = lv_label_create(btn);
+    lv_label_set_text(label, LV_SYMBOL_PLUS);
+
+    // bottom buttons
+    btn = Gui_CreateButton(btnGroup, false, 1);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_set_pos(btn, 0, 90);
+    lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+    label = lv_label_create(btn);
+    lv_obj_center(label);
+    lv_label_set_text(label, LV_SYMBOL_PLAY);
+
+    btn = Gui_CreateButton(btnGroup, false, 1);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_set_pos(btn, 39, 90);
+    lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+    label = lv_label_create(btn);
+    lv_obj_center(label);
+    lv_label_set_text(label, LV_SYMBOL_STOP);
+
+    btn = Gui_CreateButton(btnGroup, false, 2);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_set_pos(btn, 78, 90);
+    lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+    label = lv_label_create(btn);
+    lv_obj_center(label);
+    lv_label_set_text(label, LV_SYMBOL_PREV);
+
+    btn = Gui_CreateButton(btnGroup, false, 2);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_set_pos(btn, 117, 90);
+    lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+    label = lv_label_create(btn);
+    lv_obj_center(label);
+    lv_label_set_text(label, LV_SYMBOL_NEXT);
+
+    btn = Gui_CreateButton(btnGroup, false, 3);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_set_pos(btn, 156, 90);
+    lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+    label = lv_label_create(btn);
+    lv_obj_center(label);
+    lv_label_set_text(label, "20");
+
+    btn = Gui_CreateButton(btnGroup, false, 3);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_set_pos(btn, 195, 90);
+    lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+    label = lv_label_create(btn);
+    lv_obj_center(label);
+    lv_label_set_text(label, "21");
+
+    btn = Gui_CreateButton(btnGroup, false, 4);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_set_pos(btn, 234, 90);
+    lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+    label = lv_label_create(btn);
+    lv_obj_center(label);
+    lv_label_set_text(label, "22");
+
+    btn = Gui_CreateButton(btnGroup, false, 4);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_set_pos(btn, 273, 90);
+    lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
+    label = lv_label_create(btn);
+    lv_obj_center(label);
+    lv_label_set_text(label, "23");
 }
 
 void MidiPage::updateCC(uint8_t control, uint8_t value)
 {
-    storeCC[control-CC_MIN] = value;
+    storeCC[control - CC_MIN] = value;
     // did not use else if because two encoders may be mapped to the same CC
-    if(control == curCC[0])
+    for (uint8_t i = 0; i < 4; i++)
     {
-        gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingRed, value);
-        enc0->setCurrentReading(value);
+        if (control == curCC[i])
+        {
+            lv_arc_set_value(ccArc[i], value);
+            enc[i]->setCurrentReading(value);
+        }
     }
-    if(control == curCC[1])
+}
+
+void MidiPage::toggleEncConfigure(uint8_t id)
+{
+    if (!encConfigure[id])
     {
-        gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingYellow, value);
-        enc1->setCurrentReading(value);
+        // enter configure state
+        encConfigure[id] = true;
+        lv_obj_set_style_arc_color(ccArc[id], lv_color_white(), LV_PART_INDICATOR);
+        lv_arc_set_value(ccArc[id], 127);
+        switches.changeEncoderPrecision(0, CC_MAX - CC_MIN, curCC[id] - CC_MIN, true);
     }
-    if(control == curCC[2])
+    else
     {
-        gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingBlue, value);
-        enc2->setCurrentReading(value);
-    }
-    if(control == curCC[3])
-    {
-        gslc_ElemXRingGaugeSetVal(&m_gui, m_pElemMidiRingGreen, value);
-        enc3->setCurrentReading(value);
+        // exit configure state
+        encConfigure[id] = false;
+        switch (id)
+        {
+        case 0:
+            lv_obj_set_style_arc_color(ccArc[id], color_Red, LV_PART_INDICATOR);
+            break;
+        case 1:
+            lv_obj_set_style_arc_color(ccArc[id], color_Yellow, LV_PART_INDICATOR);
+            break;
+        case 2:
+            lv_obj_set_style_arc_color(ccArc[id], color_Blue, LV_PART_INDICATOR);
+            break;
+        case 3:
+            lv_obj_set_style_arc_color(ccArc[id], color_Green, LV_PART_INDICATOR);
+            break;
+        }
+        lv_arc_set_value(ccArc[id], storeCC[curCC[id] - CC_MIN]);
+        switches.changeEncoderPrecision(0, 127, storeCC[curCC[id] - CC_MIN], false);
     }
 }
 
 void MidiPage::configurePage()
 {
-    for(int i=0; i<MAX_ROTARY_ENCODERS; i++)
+    for (int i = 0; i < MAX_ROTARY_ENCODERS; i++)
     {
-        if(encConfigure[i])
+        if (encConfigure[i])
         {
-            switches.changeEncoderPrecision(i, CC_MAX - CC_MIN, curCC[i]-CC_MIN, false);
+            switches.changeEncoderPrecision(i, CC_MAX - CC_MIN, curCC[i] - CC_MIN, false);
         }
         else
         {
-            switches.changeEncoderPrecision(i, 127, storeCC[curCC[i]-CC_MIN], false);
+            switches.changeEncoderPrecision(i, 127, storeCC[curCC[i] - CC_MIN], false);
         }
     }
 }

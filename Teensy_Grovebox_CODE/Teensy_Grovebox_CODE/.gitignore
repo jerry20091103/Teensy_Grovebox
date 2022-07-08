@@ -7,3 +7,4 @@
 *.xlsx
 workspace.code-workspace
 src/GUIslice/gui_backup
+lib/ILI9341_T4/examples

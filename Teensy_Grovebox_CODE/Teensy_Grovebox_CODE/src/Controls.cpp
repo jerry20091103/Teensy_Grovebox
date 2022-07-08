@@ -5,6 +5,7 @@ int lastJoyX, lastJoyY;
 
 void UpdateJoystick()
 {
+    // TODO: joystick centering
     int joyX, joyY;
     joyX = analogRead(40);
     joyY = analogRead(41);

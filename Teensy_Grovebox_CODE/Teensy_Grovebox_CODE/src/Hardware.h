@@ -2,13 +2,27 @@
 #define HARDWARE_H
 
 #include "SPI.h"
-#include "ILI9341_t3.h"
+#include "ILI9341_T4.h"
+#include "lvgl.h"
 #include "IoAbstractionWire.h"
 #include "TaskManagerIO.h"
 
 // *Pins
+// LCD
+#define TFT_MOSI 11
+#define TFT_MISO 12
+#define TFT_SCK 13
 #define TFT_DC 9
 #define TFT_CS 10
+#define TFT_RST 255
+#define TFT_BACKLIGHT 6
+#define TFT_X 320
+#define TFT_Y 240
+// Touch display
+#define TFT_TOUCH_CS 5
+#define TFT_TOUCH_IRQ 4
+// SPI (used for lcd and touch)
+#define SPI_SPEED 60000000
 // Expanders
 #define EXPANDER_PIN 100        // The expander pins starts at 100
 #define EXPANDER2_PIN 116
@@ -38,7 +52,6 @@
 #define BAR1_OUT 2
 #define BAR2_OUT 3
 #define BAR_MODE 1
-#define  LCD_PWM 6
 #define BATT_LVL 16
 #define HP_DETECT E2GPA(5)
 #define BTN_PWR E2GPA(6)
@@ -82,14 +95,18 @@
 
 #define BTN_K25 E2GPA(0)
 
-extern ILI9341_t3 tft;
+// Display driver object
+extern ILI9341_T4::ILI9341Driver tft;
+
+// lvgl draw buffer
+#define TFT_Y_BUF 40
+
+// IO abstraction object
 extern MultiIoAbstractionRef multiIo;
 
-extern HardwareRotaryEncoder* enc0;
-extern HardwareRotaryEncoder* enc1;
-extern HardwareRotaryEncoder* enc2;
-extern HardwareRotaryEncoder* enc3;
+// encoder objects
+extern HardwareRotaryEncoder* enc[4];
 
-void HardwareSetup();
+PROGMEM void HardwareSetup();
 
 #endif

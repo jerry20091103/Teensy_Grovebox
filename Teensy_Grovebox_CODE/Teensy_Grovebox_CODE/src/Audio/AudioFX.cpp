@@ -4,7 +4,7 @@ AudioFX_ AudioFX;
 
 FXFreeverbs::FXFreeverbs()
 {
-    reverb = &freeverbs1;
+    //reverb = &freeverbs1;
     lpf[0] = &freeverbBiquadL;
     lpf[1] = &freeverbBiquadR;
     mix[0] = &freeverbMixerL;
@@ -27,12 +27,12 @@ void FXFreeverbs::setMix(float value)
 
 void FXFreeverbs::setRoomSize(float value)
 {
-    reverb->roomsize(value);
+    //reverb->roomsize(value);
 }
 
 void FXFreeverbs::setDamping(float value)
 {
-    reverb->damping(value);
+    //reverb->damping(value);
 }
 
 void FXFreeverbs::setLpf(float frequecny)
