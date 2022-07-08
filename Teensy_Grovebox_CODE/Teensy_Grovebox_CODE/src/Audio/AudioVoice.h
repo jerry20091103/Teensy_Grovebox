@@ -12,8 +12,10 @@ public:
     AudioVoice();
     void noteOn(float freq, float amp = 0.9);
     void noteOff();
+    void setPitchbend(float semitone);
     void setInstrument(const AudioSynthWavetable::instrument_data &instrument);
     AudioSynthWavetable *waveTable;
+    float frequency;
     bool isNoteOn = false;
 };
 

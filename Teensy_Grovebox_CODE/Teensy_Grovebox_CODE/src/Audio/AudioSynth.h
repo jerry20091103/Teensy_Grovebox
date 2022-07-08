@@ -32,12 +32,18 @@ private:
     AudioAmplifier *mainVolume[2];
 
     bool isSustain = false;
+    bool useVelocity = true;
+    bool usePitchbend = false;
+    float curPitchbend = 0;
 public:
     AudioSynth_();
     void noteOn(uint8_t note);
     void noteOff(uint8_t note);
     void sustainOn();
     void sustainOff();
+    void pitchbend(float semitone);
+    void setUseVelocity(bool value);
+    void setUsePitchbend(bool value);
 
     // set master output volume in dB
     void setMasterVol(int8_t vol);

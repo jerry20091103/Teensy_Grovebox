@@ -448,7 +448,6 @@ void AudioPage::init()
     lv_obj_align(hpModeLabel, LV_ALIGN_TOP_MID, 0, -20);
     // volume text
     hpVolText = lv_label_create(hpArc);
-    lv_label_set_text(hpVolText, "50");
     lv_obj_center(hpVolText);
     // % text
     label = lv_label_create(hpArc);

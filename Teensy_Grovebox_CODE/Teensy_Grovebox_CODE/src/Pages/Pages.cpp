@@ -2,7 +2,7 @@
 #include "HomePage.h"
 #include "MidiPage.h"
 #include "AudioPage.h"
-// #include "WaveTablePage.h"
+#include "WaveTablePage.h"
 // #include "ReverbPopup.h"
 // #include "Sf2SelectPopup.h"
 
@@ -34,7 +34,7 @@ void PageManager_::Init()
     PageArr[PG_HOME] = new HomePage();
     PageArr[PG_MIDI] = new MidiPage();
     PageArr[PG_AUDIO] = new AudioPage();
-    // PageArr[E_PG_WAVE] = new WaveTablePage();
+    PageArr[PG_WAVE] = new WaveTablePage();
     // PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
     // PageArr[E_PG_POPUP_SF2_SELECT] = new Sf2SelectPopup();
 

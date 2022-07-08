@@ -12,7 +12,7 @@ void HomePage::onBtnPressed(lv_event_t *e)
         //PageManager.switchPage(PG_SYNTH);
         break;
     case 1:
-        //PageManager.switchPage(PG_WAVE);
+        PageManager.switchPage(PG_WAVE);
         break;
     case 2:
         PageManager.switchPage(PG_MIDI);
