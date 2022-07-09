@@ -4,7 +4,6 @@
 void HomePage::onBtnPressed(lv_event_t *e)
 {
     lv_obj_t *obj = lv_event_get_target(e);
-    HomePage *instance = (HomePage *)lv_event_get_user_data(e);
     uint32_t id = lv_btnmatrix_get_selected_btn(obj);
     switch (id)
     {

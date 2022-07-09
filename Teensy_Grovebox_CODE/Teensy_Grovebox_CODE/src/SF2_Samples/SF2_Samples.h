@@ -1,7 +1,7 @@
 #include "pianoelectrique_samples.h"
 #include "JR_bells_samples.h"
 #include "JR_vibraphone_samples.h"
-#include "SalL1_samples.h"
+#include "YDPiano_samples.h"
 
 #define MAX_SF2_INSTRUMENTS 4
 
@@ -11,7 +11,7 @@ static const char* SF2_Instrument_Names =
     "Piano Electrique\n"
     "JR Bells\n"
     "JR Vibraphone\n"
-    "Sal L1"
+    "YDP Piano"
 };
 
 // array of pointers to SF2 instrument samples
@@ -20,5 +20,5 @@ static const AudioSynthWavetable::instrument_data *SF2_InstrumentRef[MAX_SF2_INS
     &pianoelectrique,
     &JR_bells,
     &JR_vibraphone,
-    &SalL1
+    &YDPiano
 };
