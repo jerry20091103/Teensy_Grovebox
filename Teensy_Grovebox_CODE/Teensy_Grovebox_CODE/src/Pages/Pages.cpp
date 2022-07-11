@@ -82,7 +82,6 @@ void PageManager_::switchPage(uint8_t pageID)
 {
     Serial.println(pageID);
     navStack.push(pageID);
-    navStack.print();
     // set title text
     lv_label_set_text(title, PageArr[pageID]->pageName);
     PageArr[pageID]->configurePage();

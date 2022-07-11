@@ -25,12 +25,18 @@ extern float tempmonGetTemp(void);
 
 void checkAudioUsage()
 {
-    Serial.println("Memory:    " + String(AudioMemoryUsageMax()));
-    Serial.println("Processor: " + String(AudioProcessorUsageMax()));
-    Serial.print(tempmonGetTemp());
-    Serial.println("  C");
+    Serial.println("=======================");
+    Serial.println("Audio Memory:  " + String(AudioMemoryUsageMax()));
+    Serial.println("Audio CPU:     " + String(AudioProcessorUsageMax()) + " %");
+    Serial.println("CPU Temp:      " + String(tempmonGetTemp()) + " C");
     AudioMemoryUsageMaxReset();
     AudioProcessorUsageMaxReset();
+
+    lv_mem_monitor_t mon;
+    lv_mem_monitor(&mon);
+    Serial.println("lvgl mem free: " + String(mon.free_size) + " kB");
+    Serial.println("lvgl mem used: " + String(mon.used_pct) + " %");
+    Serial.println("lvgl mem frag: " + String(mon.frag_pct) + " %");
 }
 
 void readKeyVeloctiy()

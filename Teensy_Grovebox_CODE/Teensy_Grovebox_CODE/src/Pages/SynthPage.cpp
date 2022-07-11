@@ -215,8 +215,10 @@ void SynthPage::init()
     lv_obj_t *label;
     lv_obj_t *btn;
     // *Quick parameters
+    label = lv_label_create(selectArea);
+    lv_label_set_text(label, "Quick Parameters:\nIn Development");
+    lv_obj_set_style_text_color(label, color_Grey, 0);
     
-
     // *volume arc
     volArc = Gui_CreateParamArc(selectArea, 4, false);
     lv_obj_align(volArc, LV_ALIGN_TOP_RIGHT, -5, 20);
