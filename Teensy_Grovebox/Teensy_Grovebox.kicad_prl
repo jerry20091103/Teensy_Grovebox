@@ -62,7 +62,7 @@
       36
     ],
     "visible_layers": "7fffbff_80000001",
-    "zone_display_mode": 1
+    "zone_display_mode": 0
   },
   "meta": {
     "filename": "Teensy_Grovebox.kicad_prl",
