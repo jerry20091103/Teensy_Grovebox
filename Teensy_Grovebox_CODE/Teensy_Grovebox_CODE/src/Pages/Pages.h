@@ -14,6 +14,7 @@ enum PageID : uint8_t{
     PG_MIDI,
     PG_AUDIO,
     PG_WAVE,
+    PG_SYNTH,
     MAX_PAGE
 };
 

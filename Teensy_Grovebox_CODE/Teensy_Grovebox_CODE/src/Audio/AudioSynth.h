@@ -35,6 +35,7 @@ private:
     bool useVelocity = true;
     bool usePitchbend = false;
     float curPitchbend = 0;
+
 public:
     AudioSynth_();
     void noteOn(uint8_t note);
@@ -45,6 +46,7 @@ public:
     void setUseVelocity(bool value);
     void setUsePitchbend(bool value);
     void setSF2Instrument(uint8_t id);
+    void setVoiceMode(uint8_t mode);
 
     // set master output volume in dB
     void setMasterVol(int8_t vol);

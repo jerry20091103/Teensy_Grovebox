@@ -8,7 +8,7 @@ void HomePage::onBtnPressed(lv_event_t *e)
     switch (id)
     {
     case 0:
-        //PageManager.switchPage(PG_SYNTH);
+        PageManager.switchPage(PG_SYNTH);
         break;
     case 1:
         PageManager.switchPage(PG_WAVE);

@@ -43,20 +43,11 @@ AudioIO_::AudioIO_()
     outputMeterSWPeak[MasterTracks::USB_OUT][0] = &mixerSWPeakUsbL;
     outputMeterSWPeak[MasterTracks::USB_OUT][1] = &mixerSWPeakUsbR;
 
-    outputMeterSWRms[MasterTracks::ANALOG_OUT][0] = &mixerSWRmsI2sL;
-    outputMeterSWRms[MasterTracks::ANALOG_OUT][1] = &mixerSWRmsI2sR;
-    outputMeterSWRms[MasterTracks::USB_OUT][0] = &mixerSWRmsUsbL;
-    outputMeterSWRms[MasterTracks::USB_OUT][1] = &mixerSWRmsUsbR;
-
     outputPeak[MasterTracks::ANALOG_OUT][0] = &peakI2sL;
     outputPeak[MasterTracks::ANALOG_OUT][1] = &peakI2sR;
     outputPeak[MasterTracks::USB_OUT][0] = &peakUsbL;
     outputPeak[MasterTracks::USB_OUT][1] = &peakUsbR;
 
-    outputRms[MasterTracks::ANALOG_OUT][0] = &rmsI2sL;
-    outputRms[MasterTracks::ANALOG_OUT][1] = &rmsI2sR;
-    outputRms[MasterTracks::USB_OUT][0] = &rmsUsbL;
-    outputRms[MasterTracks::USB_OUT][1] = &rmsUsbR;
 }
 
 // level meter functions

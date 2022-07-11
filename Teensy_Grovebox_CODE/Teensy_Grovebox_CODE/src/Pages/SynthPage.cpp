@@ -1,43 +1,42 @@
-#include "WaveTablePage.h"
+#include "SynthPage.h"
 #include "Hardware.h"
 #include "Controls.h"
 #include "Audio/AudioSynth.h"
 #include "Audio/AudioIO.h"
 #include "Audio/AudioUtility.h"
-#include "SF2_Samples/SF2_Samples.h"
 
-void WaveTablePage::onVelocityBtnPressed(lv_event_t *e)
+void SynthPage::onVelocityBtnPressed(lv_event_t *e)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     instance->useVelocity = !instance->useVelocity;
     AudioSynth.setUseVelocity(instance->useVelocity);
 }
 
-void WaveTablePage::onPitchBtnPressed(lv_event_t *e)
+void SynthPage::onPitchBtnPressed(lv_event_t *e)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     instance->usePitchbend = !instance->usePitchbend;
     AudioSynth.setUsePitchbend(instance->usePitchbend);
 }
 
-void WaveTablePage::onPitchBtnHolded(lv_event_t *e)
+void SynthPage::onPitchBtnHolded(lv_event_t *e)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     lv_dropdown_open(instance->pitchDropdown);
 }
 
-void WaveTablePage::onPitchDropdownSelect(lv_event_t *e)
+void SynthPage::onPitchDropdownSelect(lv_event_t *e)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     lv_obj_t * dropdown = lv_event_get_target(e);
     uint8_t id = lv_dropdown_get_selected(dropdown);
     instance->pitchbendRange = id + 1;
     lv_label_set_text_fmt(instance->pitchText, "Pitch: %d", instance->pitchbendRange);
 }
 
-void WaveTablePage::onOctaveSelect(lv_event_t *e)
+void SynthPage::onOctaveSelect(lv_event_t *e)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     lv_obj_t *btn = lv_event_get_target(e);
     if (lv_obj_has_flag(btn, LV_OBJ_FLAG_USER_1))
     {
@@ -51,23 +50,16 @@ void WaveTablePage::onOctaveSelect(lv_event_t *e)
     }
 }
 
-void WaveTablePage::onSF2DropdownSelect(lv_event_t *e)
+void SynthPage::onVolArcPressed(lv_event_t *e)
 {
-    lv_obj_t * dropdown = lv_event_get_target(e);
-    uint8_t id = lv_dropdown_get_selected(dropdown);
-    AudioSynth.setSF2Instrument(id);
-}
-
-void WaveTablePage::onVolArcPressed(lv_event_t *e)
-{
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     lv_obj_t *arc = lv_event_get_target(e);
     uint8_t value = lv_arc_get_value(arc);
     enc[3]->setCurrentReading(value);
     instance->setVolume(value - VOL_OFFSET);
 }
 
-void WaveTablePage::onBtnPressed(uint8_t pin)
+void SynthPage::onBtnPressed(uint8_t pin)
 {
     int noteNum;
     uint8_t keyNum = PinToKeyNum(pin);
@@ -107,7 +99,7 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
     }
 }
 
-void WaveTablePage::onBtnHold(uint8_t pin)
+void SynthPage::onBtnHold(uint8_t pin)
 {
     switch (pin)
     {
@@ -117,7 +109,7 @@ void WaveTablePage::onBtnHold(uint8_t pin)
     }
 }
 
-void WaveTablePage::onBtnReleased(uint8_t pin)
+void SynthPage::onBtnReleased(uint8_t pin)
 {
     uint8_t noteNum;
     uint8_t keyNum = PinToKeyNum(pin);
@@ -137,7 +129,7 @@ void WaveTablePage::onBtnReleased(uint8_t pin)
     }
 }
 
-void WaveTablePage::onEncTurned(uint8_t id, int value)
+void SynthPage::onEncTurned(uint8_t id, int value)
 {
     switch (id)
     {
@@ -148,7 +140,7 @@ void WaveTablePage::onEncTurned(uint8_t id, int value)
     }
 }
 
-void WaveTablePage::onJoyUpdate(int joy_x, int joy_y)
+void SynthPage::onJoyUpdate(int joy_x, int joy_y)
 {
     if (usePitchbend)
     {
@@ -156,11 +148,11 @@ void WaveTablePage::onJoyUpdate(int joy_x, int joy_y)
     }
 }
 
-void WaveTablePage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
+void SynthPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
 {
 }
 
-void WaveTablePage::configurePage()
+void SynthPage::configurePage()
 {
     // setup micorphone for velocity sensing
     sgtl5000_1.inputSelect(AUDIO_INPUT_MIC);
@@ -175,10 +167,10 @@ void WaveTablePage::configurePage()
     // set reverb FX
     AudioFX.reverb.setWithMem(&reverbMem);
     // set voice mode for AudioSynth
-    AudioSynth.setVoiceMode(VOICE_MODE_WAVETABLE);
+    AudioSynth.setVoiceMode(VOICE_MODE_SYNTH);
 }
 
-void WaveTablePage::update()
+void SynthPage::update()
 {
     float temp_peak = AudioIO.getMixerPeak(MasterTracks::ANALOG_OUT, MixerTracks::INSTRUMENTS).l;
     if (temp_peak >= 0)
@@ -205,10 +197,10 @@ void WaveTablePage::update()
     }
 }
 
-void WaveTablePage::init()
+void SynthPage::init()
 {
-    pageID = PG_WAVE;
-    strcpy(pageName, "Wave Table Synth");
+    pageID = PG_SYNTH;
+    strcpy(pageName, "Synthesizer");
     // create screen
     screen = lv_obj_create(NULL);
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
@@ -222,18 +214,8 @@ void WaveTablePage::init()
     lv_obj_set_y(selectArea, 35);
     lv_obj_t *label;
     lv_obj_t *btn;
-    // *drop down menu for sound selection
-    sf2SelectDropdown = lv_dropdown_create(selectArea);
-    lv_obj_set_x(sf2SelectDropdown, 60);
-    lv_obj_set_width(sf2SelectDropdown, 170);
-    lv_obj_add_flag(sf2SelectDropdown, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
-    lv_dropdown_set_options_static(sf2SelectDropdown, SF2_Instrument_Names);
-    lv_obj_add_event_cb(sf2SelectDropdown, onSF2DropdownSelect, LV_EVENT_VALUE_CHANGED, this);
-    lv_dropdown_set_selected(sf2SelectDropdown, curInstrument);
-    AudioSynth.setSF2Instrument(curInstrument);
-    label = lv_label_create(sf2SelectDropdown);
-    lv_label_set_text(label, "Sound:");
-    lv_obj_align(label, LV_ALIGN_LEFT_MID, -70, 0);
+    // *Quick parameters
+    
 
     // *volume arc
     volArc = Gui_CreateParamArc(selectArea, 4, false);
@@ -325,7 +307,7 @@ void WaveTablePage::init()
     lv_obj_align(peakLed, LV_ALIGN_RIGHT_MID, 15, 0);
 }
 
-void WaveTablePage::setVolume(int8_t value)
+void SynthPage::setVolume(int8_t value)
 {
     volume = value;
     AudioSynth.setMasterVol(value);

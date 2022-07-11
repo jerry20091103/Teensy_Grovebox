@@ -43,15 +43,33 @@ AudioSynth_::AudioSynth_()
     voiceArr[6].waveTable = &wavetable6;
     voiceArr[7].waveTable = &wavetable7;
 
-    // set initial instrument
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setInstrument(*SF2_InstrumentRef[0]);
-    }
+    voiceArr[0].waveform = &waveform0;
+    voiceArr[1].waveform = &waveform1;
+    voiceArr[2].waveform = &waveform2;
+    voiceArr[3].waveform = &waveform3;
+    voiceArr[4].waveform = &waveform4;
+    voiceArr[5].waveform = &waveform5;
+    voiceArr[6].waveform = &waveform6;
+    voiceArr[7].waveform = &waveform7;
 
-    // put all voices in idle list
+    voiceArr[0].voiceSwitch = &voiceSwitch0;
+    voiceArr[1].voiceSwitch = &voiceSwitch1;
+    voiceArr[2].voiceSwitch = &voiceSwitch2;
+    voiceArr[3].voiceSwitch = &voiceSwitch3;
+    voiceArr[4].voiceSwitch = &voiceSwitch4;
+    voiceArr[5].voiceSwitch = &voiceSwitch5;
+    voiceArr[6].voiceSwitch = &voiceSwitch6;
+    voiceArr[7].voiceSwitch = &voiceSwitch7;
+
     for (int i = 0; i < MAX_VOICE; i++)
     {
+        // set initial instrument
+        voiceArr[i].setInstrument(*SF2_InstrumentRef[0]);
+        // set initial synth waveform
+        voiceArr[i].setSynthWaveform(WAVEFORM_TRIANGLE);
+        // switch to initial voice mode
+        voiceArr[i].setVoiceMode(VOICE_MODE_SYNTH);
+        // put voice in idle list
         idleNote.push_front(noteEntry(0, i));
     }
 }
@@ -203,5 +221,13 @@ void AudioSynth_::setSF2Instrument(uint8_t id)
         {
             voiceArr[i].setInstrument(*SF2_InstrumentRef[id]);
         }
+    }
+}
+
+void AudioSynth_::setVoiceMode(uint8_t mode)
+{
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setVoiceMode(mode);
     }
 }

@@ -1,5 +1,5 @@
-#ifndef WAVE_TABLE_PAGE_H
-#define WAVE_TABLE_PAGE_H
+#ifndef SYNTH_PAGE_H
+#define SYNTH_PAGE_H
 
 #include "Pages.h"
 #include "Audio/AudioFX.h"
@@ -7,15 +7,14 @@
 #define PEAK_AVG_TIME 2
 #define VOL_OFFSET 15
 
-// sf2 Wave table synth page
-class WaveTablePage : public Pages
+// Substractive synth page
+class SynthPage : public Pages
 {
 private:
     // *user data
     uint8_t octave = 4;
     int8_t volume = 0;
     uint8_t pitchbendRange = 2;
-    uint8_t curInstrument = 0;
     bool useVelocity = true;
     bool usePitchbend = false;
 
@@ -26,7 +25,6 @@ private:
     uint8_t peakHold = 0;
 
     // *lvgl object refs
-    lv_obj_t* sf2SelectDropdown;
     lv_obj_t* volArc;
     lv_obj_t* volText;
     lv_obj_t* volBar;
@@ -42,7 +40,6 @@ private:
     static void onPitchDropdownSelect(lv_event_t *e);
     static void onOctaveSelect(lv_event_t* e);
     static void onVolArcPressed(lv_event_t *e);
-    static void onSF2DropdownSelect(lv_event_t *e);
     // helper functions
     void setVolume(int8_t value);
 
