@@ -43,14 +43,22 @@ AudioSynth_::AudioSynth_()
     voiceArr[6].waveTable = &wavetable6;
     voiceArr[7].waveTable = &wavetable7;
 
-    voiceArr[0].waveform = &waveform0;
-    voiceArr[1].waveform = &waveform1;
-    voiceArr[2].waveform = &waveform2;
-    voiceArr[3].waveform = &waveform3;
-    voiceArr[4].waveform = &waveform4;
-    voiceArr[5].waveform = &waveform5;
-    voiceArr[6].waveform = &waveform6;
-    voiceArr[7].waveform = &waveform7;
+    voiceArr[0].waveform[0] = &waveform0_0;
+    voiceArr[0].waveform[1] = &waveform0_1;
+    voiceArr[1].waveform[0] = &waveform1_0;
+    voiceArr[1].waveform[1] = &waveform1_1;
+    voiceArr[2].waveform[0] = &waveform2_0;
+    voiceArr[2].waveform[1] = &waveform2_1;
+    voiceArr[3].waveform[0] = &waveform3_0;
+    voiceArr[3].waveform[1] = &waveform3_1;
+    voiceArr[4].waveform[0] = &waveform4_0;
+    voiceArr[4].waveform[1] = &waveform4_1;
+    voiceArr[5].waveform[0] = &waveform5_0;
+    voiceArr[5].waveform[1] = &waveform5_1;
+    voiceArr[6].waveform[0] = &waveform6_0;
+    voiceArr[6].waveform[1] = &waveform6_1;
+    voiceArr[7].waveform[0] = &waveform7_0;
+    voiceArr[7].waveform[1] = &waveform7_1;
 
     voiceArr[0].voiceSwitch = &voiceSwitch0;
     voiceArr[1].voiceSwitch = &voiceSwitch1;
@@ -61,12 +69,30 @@ AudioSynth_::AudioSynth_()
     voiceArr[6].voiceSwitch = &voiceSwitch6;
     voiceArr[7].voiceSwitch = &voiceSwitch7;
 
+    oscMixer0.gain(0, 1);
+    oscMixer0.gain(1, 1);
+    oscMixer1.gain(0, 1);
+    oscMixer1.gain(1, 1);
+    oscMixer2.gain(0, 1);
+    oscMixer2.gain(1, 1);
+    oscMixer3.gain(0, 1);
+    oscMixer3.gain(1, 1);
+    oscMixer4.gain(0, 1);
+    oscMixer4.gain(1, 1);
+    oscMixer5.gain(0, 1);
+    oscMixer5.gain(1, 1);
+    oscMixer6.gain(0, 1);
+    oscMixer6.gain(1, 1);
+    oscMixer7.gain(0, 1);
+    oscMixer7.gain(1, 1);
+
     for (int i = 0; i < MAX_VOICE; i++)
     {
         // set initial instrument
         voiceArr[i].setInstrument(*SF2_InstrumentRef[0]);
         // set initial synth waveform
-        voiceArr[i].setSynthWaveform(WAVEFORM_TRIANGLE);
+        voiceArr[i].setOscWaveform(0, WAVE_SINE);
+        voiceArr[i].setOscWaveform(1, WAVE_SINE);
         // switch to initial voice mode
         voiceArr[i].setVoiceMode(VOICE_MODE_SYNTH);
         // put voice in idle list
@@ -229,5 +255,58 @@ void AudioSynth_::setVoiceMode(uint8_t mode)
     for (int i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].setVoiceMode(mode);
+    }
+}
+
+void AudioSynth_::setOscWaveform(uint8_t id, uint8_t wave)
+{
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setOscWaveform(id, wave);
+    }
+}
+
+void AudioSynth_::setOscOctave(uint8_t id, int8_t value)
+{
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setOscOctave(id, value);
+    }
+}
+
+void AudioSynth_::setOscSemi(uint8_t id, int8_t value)
+{
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setOscSemi(id, value);
+    }
+}
+
+void AudioSynth_::setOscPwm(uint8_t id, uint8_t duty)
+{
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setOscPwm(id, duty);
+    }
+}
+
+void AudioSynth_::setOscDetune(uint8_t id, float amount)
+{
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setOscDetune(id, amount);
+    }
+}
+
+void AudioSynth_::setOscLevel(uint8_t id, uint8_t amount)
+{
+    float gain;
+    if(amount > 0)
+        gain = dBtoGain(amount * 0.5f - 50);
+    else
+        gain = 0;
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setOscLevel(id, gain);
     }
 }

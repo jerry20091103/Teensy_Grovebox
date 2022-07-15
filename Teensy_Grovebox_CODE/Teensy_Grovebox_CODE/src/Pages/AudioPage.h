@@ -79,7 +79,6 @@ private:
     void setPFL(bool flag);
     void updateInVol(InputTracks track, uint8_t newVal);
     void updateInputGain(uint8_t newVal);
-    void setArcFlag(lv_obj_t *&arcRef, uint8_t id);
     void updateMixerVol(MixerTracks track, uint8_t newVal);
 
 public:

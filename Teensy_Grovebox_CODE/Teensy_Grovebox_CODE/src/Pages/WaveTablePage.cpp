@@ -236,20 +236,11 @@ void WaveTablePage::init()
     lv_obj_align(label, LV_ALIGN_LEFT_MID, -70, 0);
 
     // *volume arc
-    volArc = Gui_CreateParamArc(selectArea, 4, false);
+    volArc = Gui_CreateParamArc(selectArea, 4, "Gain", "dB", false);
     lv_obj_align(volArc, LV_ALIGN_TOP_RIGHT, -5, 20);
-    label = lv_label_create(volArc);
-    lv_label_set_text(label, "Gain");
-    lv_obj_align(label, LV_ALIGN_TOP_MID, 0, -20);
     // gain text
     volText = lv_label_create(volArc);
-    lv_label_set_text(volText, "0");
     lv_obj_center(volText);
-    // dB text
-    label = lv_label_create(volArc);
-    lv_obj_set_style_text_font(label, font_small, 0);
-    lv_label_set_text(label, "dB");
-    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 0);
     // set value
     setVolume(volume);
     lv_arc_set_range(volArc, 0, 30);

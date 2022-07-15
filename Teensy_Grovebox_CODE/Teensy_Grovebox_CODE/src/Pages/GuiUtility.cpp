@@ -24,7 +24,7 @@ void Gui_InitStyles()
 }
 
 // create a standard parameter arc, with color = 1~4, 0 is the default color
-lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, bool padding)
+lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char* title, const char* unit, bool padding)
 {
     lv_obj_t *arc = lv_arc_create(parent);
     lv_arc_set_rotation(arc, 135);
@@ -39,6 +39,21 @@ lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, bool padding)
     lv_obj_add_style(arc, &style_paramArcInd, LV_PART_INDICATOR);
     lv_obj_add_style(arc, &style_paramArcKnob, LV_PART_KNOB);
     lv_obj_add_flag(arc, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+    // add title
+    if(title != NULL)
+    {
+        lv_obj_t *label = lv_label_create(arc);
+        lv_label_set_text(label, title);
+        lv_obj_align(label, LV_ALIGN_TOP_MID, 0, -20);
+    }
+    // add unit
+    if(unit != NULL)
+    {
+        lv_obj_t *label = lv_label_create(arc);
+        lv_label_set_text(label, unit);
+        lv_obj_set_style_text_font(label, font_small, 0);
+        lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 0);
+    }
     // set color
     switch (color)
     {
@@ -134,4 +149,38 @@ lv_obj_t *Gui_CreatePeakLed(lv_obj_t *parent, uint8_t w, uint8_t h)
     lv_obj_set_style_shadow_spread(led, 0, 0);
     lv_obj_set_style_bg_color(led, color_Red, 0);
     return led;
+}
+
+// use 4 user flags to store arc id
+void Gui_setArcIdFlag(lv_obj_t *&arcRef, uint8_t id)
+{
+    bool f1, f2, f3, f4;
+    f1 = id & 0b00000001;
+    f2 = id & 0b00000010;
+    f3 = id & 0b00000100;
+    f4 = id & 0b00001000;
+
+    if (f1)
+        lv_obj_add_flag(arcRef, LV_OBJ_FLAG_USER_1);
+    else
+        lv_obj_clear_flag(arcRef, LV_OBJ_FLAG_USER_1);
+    if (f2)
+        lv_obj_add_flag(arcRef, LV_OBJ_FLAG_USER_2);
+    else
+        lv_obj_clear_flag(arcRef, LV_OBJ_FLAG_USER_2);
+    if (f3)
+        lv_obj_add_flag(arcRef, LV_OBJ_FLAG_USER_3);
+    else
+        lv_obj_clear_flag(arcRef, LV_OBJ_FLAG_USER_3);
+    if (f4)
+        lv_obj_add_flag(arcRef, LV_OBJ_FLAG_USER_4);
+    else
+        lv_obj_clear_flag(arcRef, LV_OBJ_FLAG_USER_4);
+}
+uint8_t Gui_getArcIdFlag(lv_obj_t *&arcRef)
+{
+    return ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_1) << 0) + 
+           ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_2) << 1) + 
+           ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_3) << 2) + 
+           ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_4) << 3);
 }

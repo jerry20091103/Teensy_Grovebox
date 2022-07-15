@@ -28,7 +28,7 @@ void SynthPage::onPitchBtnHolded(lv_event_t *e)
 void SynthPage::onPitchDropdownSelect(lv_event_t *e)
 {
     SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
-    lv_obj_t * dropdown = lv_event_get_target(e);
+    lv_obj_t *dropdown = lv_event_get_target(e);
     uint8_t id = lv_dropdown_get_selected(dropdown);
     instance->pitchbendRange = id + 1;
     lv_label_set_text_fmt(instance->pitchText, "Pitch: %d", instance->pitchbendRange);
@@ -54,9 +54,138 @@ void SynthPage::onVolArcPressed(lv_event_t *e)
 {
     SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     lv_obj_t *arc = lv_event_get_target(e);
-    uint8_t value = lv_arc_get_value(arc);
-    enc[3]->setCurrentReading(value);
-    instance->setVolume(value - VOL_OFFSET);
+    int8_t value = lv_arc_get_value(arc);
+    if (enc[3] != NULL)
+        enc[3]->setCurrentReading(value + VOL_OFFSET);
+    instance->volume = value;
+    AudioSynth.setMasterVol(value);
+    lv_label_set_text_fmt(instance->volText, "%d", value);
+}
+
+// re-configure encoders when menu page has changed
+void SynthPage::onMenuPageChange(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    instance->configureEncoders();
+}
+
+void SynthPage::onOscWaveSelect(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    lv_obj_t *dropdown = lv_event_get_target(e);
+    uint8_t wave = lv_dropdown_get_selected(dropdown);
+    lv_obj_t *curMenu = lv_menu_get_cur_main_page(instance->menu);
+    uint8_t id = 0;
+    if (curMenu == instance->menu_osc[0])
+        id = 0;
+    else if (curMenu == instance->menu_osc[1])
+        id = 1;
+
+    AudioSynth.setOscWaveform(id, wave);
+    instance->oscWaveform[id] = id;
+    const lv_img_dsc_t *img = instance->getWaveImg(wave);
+    lv_img_set_src(instance->oscWaveImg[id], img);
+    lv_img_set_src(instance->oscWaveItemImg[id], img);
+}
+
+void SynthPage::onOscArcPressed(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    lv_obj_t *arc = lv_event_get_target(e);
+    int8_t value = lv_arc_get_value(arc);
+    uint8_t flag = Gui_getArcIdFlag(arc);
+    uint8_t id = 0;
+    lv_obj_t *curMenu = lv_menu_get_cur_main_page(instance->menu);
+    if (curMenu == instance->menu_osc[0])
+        id = 0;
+    else if (curMenu == instance->menu_osc[1])
+        id = 1;
+
+    switch (flag)
+    {
+    case 0:
+        // pwm
+        if (enc[0] != NULL)
+            enc[0]->setCurrentReading(value);
+        instance->oscPwm[id] = value;
+        AudioSynth.setOscPwm(id, value);
+        lv_label_set_text_fmt(instance->oscPwmText[id], "%d", value);
+        break;
+    case 1:
+        // detune
+        if (enc[1] != NULL)
+            enc[1]->setCurrentReading(value + 100);
+        instance->oscDetune[id] = value;
+        AudioSynth.setOscDetune(id, value * 0.01f);
+        lv_label_set_text_fmt(instance->oscDetuneText[id], "%d", value);
+        break;
+    case 2:
+        // level
+        if (enc[2] != NULL)
+            enc[2]->setCurrentReading(value);
+        instance->oscLevel[id] = value;
+        AudioSynth.setOscLevel(id, value);
+        lv_label_set_text_fmt(instance->oscLevelText[id], "%d", value);
+        break;
+    }
+}
+
+void SynthPage::onOscOctaveSelect(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    lv_obj_t *btn = lv_event_get_target(e);
+    lv_obj_t *curMenu = lv_menu_get_cur_main_page(instance->menu);
+    uint8_t id = 0;
+    if (curMenu == instance->menu_osc[0])
+        id = 0;
+    else if (curMenu == instance->menu_osc[1])
+        id = 1;
+
+    if (lv_obj_has_flag(btn, LV_OBJ_FLAG_USER_1))
+    {
+        // increase
+        instance->oscOctave[id]++;
+        if (instance->oscOctave[id] > 2)
+            instance->oscOctave[id] = 2;
+    }
+    else
+    {
+        // decrease
+        instance->oscOctave[id]--;
+        if (instance->oscOctave[id] < -2)
+            instance->oscOctave[id] = -2;
+    }
+    AudioSynth.setOscOctave(id, instance->oscOctave[id]);
+    lv_label_set_text_fmt(instance->oscOctaveText[id], "%d", instance->oscOctave[id]);
+}
+
+void SynthPage::onOscSemiSelect(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    lv_obj_t *btn = lv_event_get_target(e);
+    lv_obj_t *curMenu = lv_menu_get_cur_main_page(instance->menu);
+    uint8_t id = 0;
+    if (curMenu == instance->menu_osc[0])
+        id = 0;
+    else if (curMenu == instance->menu_osc[1])
+        id = 1;
+
+    if (lv_obj_has_flag(btn, LV_OBJ_FLAG_USER_1))
+    {
+        // increase
+        instance->oscSemi[id]++;
+        if (instance->oscSemi[id] > 12)
+            instance->oscSemi[id] = 12;
+    }
+    else
+    {
+        // decrease
+        instance->oscSemi[id]--;
+        if (instance->oscSemi[id] < -12)
+            instance->oscSemi[id] = -12;
+    }
+    AudioSynth.setOscSemi(id, instance->oscSemi[id]);
+    lv_label_set_text_fmt(instance->oscSemiText[id], "%d", instance->oscSemi[id]);
 }
 
 void SynthPage::onBtnPressed(uint8_t pin)
@@ -131,12 +260,49 @@ void SynthPage::onBtnReleased(uint8_t pin)
 
 void SynthPage::onEncTurned(uint8_t id, int value)
 {
-    switch (id)
+
+    lv_obj_t *curMenu = lv_menu_get_cur_main_page(menu);
+    if (curMenu == menu_main)
     {
-    case 3: // master out volume
-        setVolume(value - VOL_OFFSET);
-        lv_arc_set_value(volArc, value);
-        break;
+        switch (id)
+        {
+        case 3: // master out volume
+            lv_arc_set_value(volArc, value - VOL_OFFSET);
+            lv_event_send(volArc, LV_EVENT_VALUE_CHANGED, NULL);
+            break;
+        }
+    }
+    else if (curMenu == menu_osc[0])
+    {
+        switch (id)
+        {
+        case 0: // pwm
+            lv_arc_set_value(oscArc[0][id], value);
+            break;
+        case 1: // detune
+            lv_arc_set_value(oscArc[0][id], value - 100);
+            break;
+        case 2: // level
+            lv_arc_set_value(oscArc[0][id], value);
+            break;
+        }
+        lv_event_send(oscArc[0][id], LV_EVENT_VALUE_CHANGED, NULL);
+    }
+    else if (curMenu == menu_osc[1])
+    {
+        switch (id)
+        {
+        case 0: // pwm
+            lv_arc_set_value(oscArc[1][id], value);
+            break;
+        case 1: // detune
+            lv_arc_set_value(oscArc[1][id], value - 100);
+            break;
+        case 2: // level
+            lv_arc_set_value(oscArc[1][id], value);
+            break;
+        }
+        lv_event_send(oscArc[1][id], LV_EVENT_VALUE_CHANGED, NULL);
     }
 }
 
@@ -154,20 +320,50 @@ void SynthPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
 
 void SynthPage::configurePage()
 {
+    // configure encoders
+    configureEncoders();
     // setup micorphone for velocity sensing
     sgtl5000_1.inputSelect(AUDIO_INPUT_MIC);
     sgtl5000_1.micGain(40);
     AudioIO.setInputVolume(InputTracks::LINEMIC_IN, 0);
     // setup peak module for level meter
     AudioIO.setMixerLevelMode(LevelMeterMode::PRE_FADER);
-    setVolume(volume);
-    enc[3]->changePrecision(30, volume + VOL_OFFSET, false);
+    lv_arc_set_value(volArc, volume);
+    lv_event_send(volArc, LV_EVENT_VALUE_CHANGED, NULL);
     // update current velocity settings
     AudioSynth.setUseVelocity(useVelocity);
     // set reverb FX
     AudioFX.reverb.setWithMem(&reverbMem);
     // set voice mode for AudioSynth
     AudioSynth.setVoiceMode(VOICE_MODE_SYNTH);
+}
+
+// configure enocders for according to current menu page
+void SynthPage::configureEncoders()
+{
+    lv_obj_t *curMenu = lv_menu_get_cur_main_page(menu);
+    if (curMenu == menu_main)
+    {
+        enc[3]->changePrecision(30, volume + VOL_OFFSET, false);
+    }
+    else if (curMenu == menu_osc[0])
+    {
+        // pwm
+        enc[0]->changePrecision(100, oscPwm[0]); // use encoder callback here to set arc's initial value
+        // detune
+        enc[1]->changePrecision(200, oscDetune[0] + 100);
+        // level
+        enc[2]->changePrecision(100, oscLevel[0]);
+    }
+    else if (curMenu == menu_osc[1])
+    {
+        // pwm
+        enc[0]->changePrecision(100, oscPwm[1]);
+        // detune
+        enc[1]->changePrecision(200, oscDetune[1] + 100);
+        // level
+        enc[2]->changePrecision(100, oscLevel[1]);
+    }
 }
 
 void SynthPage::update()
@@ -205,40 +401,155 @@ void SynthPage::init()
     screen = lv_obj_create(NULL);
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
     // create lvgl objects
-    // *SELECT AREA-----------------------------------------------------------------
-    lv_obj_t *selectArea = lv_obj_create(screen);
+    lv_obj_t *label;
+    lv_obj_t *btn;
+    lv_obj_t *img;
+    // **MENU OBJECT
+    menu = lv_menu_create(screen);
+    lv_obj_set_style_bg_color(menu, lv_color_black(), 0);
+    lv_obj_set_style_pad_all(menu, 0, 0);
+    lv_obj_set_style_border_width(menu, 0, 0);
+    lv_obj_set_size(menu, 320, 205);
+    lv_obj_set_y(menu, 35);
+    btn = lv_menu_get_main_header_back_btn(menu);
+    lv_obj_set_size(btn, 25, 20);
+    Serial.println("OSC setup");
+    // *MENU OSC1 and 2-------------------------------------------------------------------
+    for (uint8_t id = 0; id < 2; id++)
+    {
+        char oscName[14];
+        strcpy(oscName, (String("Oscillator ") + String(id + 1)).c_str());
+        menu_osc[id] = lv_menu_page_create(menu, oscName);
+        lv_obj_t *menu_area = createItemMenuArea(menu_osc[id]);
+        lv_obj_add_flag(menu_osc[id], LV_OBJ_FLAG_SCROLLABLE);
+        // *waveform selector
+        label = lv_label_create(menu_area);
+        lv_label_set_text(label, "Waveform: ");
+        lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 10);
+        lv_obj_t *dropdown = lv_dropdown_create(menu_area);
+        lv_dropdown_set_options(dropdown, "Sine\nTriangle\nSawtooth\nSquare");
+        lv_obj_set_size(dropdown, 150, 35);
+        lv_obj_align(dropdown, LV_ALIGN_TOP_LEFT, 90, 0);
+        lv_obj_add_flag(dropdown, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+        lv_obj_add_event_cb(dropdown, onOscWaveSelect, LV_EVENT_VALUE_CHANGED, this);
+        lv_dropdown_set_selected(dropdown, oscWaveform[id]);
+        oscWaveImg[id] = lv_img_create(menu_area);
+        lv_img_set_src(oscWaveImg[id], &sin_wave);
+        lv_obj_align(oscWaveImg[id], LV_ALIGN_TOP_LEFT, 250, 5);
+        // *octave selector
+        label = lv_label_create(menu_area);
+        lv_label_set_text(label, "Octave: ");
+        lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 50);
+        // minus btn
+        btn = Gui_CreateButton(menu_area);
+        lv_obj_set_size(btn, 30, 30);
+        lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 65, 40);
+        lv_obj_add_event_cb(btn, onOscOctaveSelect, LV_EVENT_CLICKED, this);
+        label = lv_label_create(btn);
+        lv_label_set_text(label, LV_SYMBOL_MINUS);
+        lv_obj_center(label);
+        // octave text
+        oscOctaveText[id] = lv_label_create(menu_area);
+        lv_obj_set_style_text_font(oscOctaveText[id], font_large, 0);
+        lv_label_set_text_fmt(oscOctaveText[id], "%d", oscOctave[id]);
+        lv_obj_align(oscOctaveText[id], LV_ALIGN_TOP_LEFT, 105, 45);
+        // plus btn
+        btn = Gui_CreateButton(menu_area);
+        lv_obj_set_size(btn, 30, 30);
+        lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 130, 40);
+        lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
+        lv_obj_add_event_cb(btn, onOscOctaveSelect, LV_EVENT_CLICKED, this);
+        label = lv_label_create(btn);
+        lv_label_set_text(label, LV_SYMBOL_PLUS);
+        lv_obj_center(label);
+        // *semitone selector
+        label = lv_label_create(menu_area);
+        lv_label_set_text(label, "Semi: ");
+        lv_obj_align(label, LV_ALIGN_TOP_LEFT, 165, 50);
+        // minus btn
+        btn = Gui_CreateButton(menu_area);
+        lv_obj_set_size(btn, 30, 30);
+        lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 210, 40);
+        lv_obj_add_event_cb(btn, onOscSemiSelect, LV_EVENT_CLICKED, this);
+        label = lv_label_create(btn);
+        lv_label_set_text(label, LV_SYMBOL_MINUS);
+        lv_obj_center(label);
+        // semitone text
+        oscSemiText[id] = lv_label_create(menu_area);
+        lv_obj_set_style_text_font(oscSemiText[id], font_large, 0);
+        lv_label_set_text_fmt(oscSemiText[id], "%d", oscSemi[id]);
+        lv_obj_align(oscSemiText[id], LV_ALIGN_TOP_LEFT, 250, 45);
+        // plus btn
+        btn = Gui_CreateButton(menu_area);
+        lv_obj_set_size(btn, 30, 30);
+        lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 275, 40);
+        lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
+        lv_obj_add_event_cb(btn, onOscSemiSelect, LV_EVENT_CLICKED, this);
+        label = lv_label_create(btn);
+        lv_label_set_text(label, LV_SYMBOL_PLUS);
+        lv_obj_center(label);
+        // *pwm arc
+        oscArc[id][0] = Gui_CreateParamArc(menu_area, 1, "PWM", "%", false);
+        Gui_setArcIdFlag(oscArc[id][0], 0);
+        lv_obj_align(oscArc[id][0], LV_ALIGN_TOP_LEFT, 0, 100);
+        // pwm text
+        oscPwmText[id] = lv_label_create(oscArc[id][0]);
+        lv_obj_center(oscPwmText[id]);
+        // set value
+        lv_arc_set_range(oscArc[id][0], 0, 100);
+        lv_obj_add_event_cb(oscArc[id][0], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
+        lv_arc_set_value(oscArc[id][0], oscPwm[id]);
+        // *detune arc
+        oscArc[id][1] = Gui_CreateParamArc(menu_area, 2, "Detune", "cent", false);
+        Gui_setArcIdFlag(oscArc[id][1], 1);
+        lv_obj_align(oscArc[id][1], LV_ALIGN_TOP_LEFT, 80, 100);
+        // detune text
+        oscDetuneText[id] = lv_label_create(oscArc[id][1]);
+        lv_obj_center(oscDetuneText[id]);
+        // set value
+        lv_arc_set_range(oscArc[id][1], -100, 100);
+        lv_obj_add_event_cb(oscArc[id][1], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
+        lv_arc_set_value(oscArc[id][1], oscDetune[id]);
+        // *level arc
+        oscArc[id][2] = Gui_CreateParamArc(menu_area, 3, "Level", "%", false);
+        Gui_setArcIdFlag(oscArc[id][2], 2);
+        lv_obj_align(oscArc[id][2], LV_ALIGN_TOP_LEFT, 160, 100);
+        // level text
+        oscLevelText[id] = lv_label_create(oscArc[id][2]);
+        lv_obj_center(oscLevelText[id]);
+        // set value
+        lv_arc_set_range(oscArc[id][2], 0, 100);
+        lv_obj_add_event_cb(oscArc[id][2], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
+        lv_arc_set_value(oscArc[id][2], oscLevel[id]);
+    }
+    Serial.println("OSC setup end");
+    // *MENU MAIN-------------------------------------------------------------------
+    menu_main = lv_menu_page_create(menu, NULL);
+    lv_menu_set_page(menu, menu_main);
+    Serial.println("Select Area start");
+    // *SELECT AREA
+    lv_obj_t *selectArea = lv_obj_create(menu_main);
     // lv_obj_remove_style_all(selectArea);
     lv_obj_set_style_bg_color(selectArea, lv_color_black(), 0);
     lv_obj_set_style_pad_all(selectArea, 5, 0);
     lv_obj_set_size(selectArea, 320, 100);
     lv_obj_set_y(selectArea, 35);
-    lv_obj_t *label;
-    lv_obj_t *btn;
+
     // *Quick parameters
     label = lv_label_create(selectArea);
     lv_label_set_text(label, "Quick Parameters:\nIn Development");
     lv_obj_set_style_text_color(label, color_Grey, 0);
-    
+
     // *volume arc
-    volArc = Gui_CreateParamArc(selectArea, 4, false);
+    volArc = Gui_CreateParamArc(selectArea, 4, "Gain", "dB", false);
     lv_obj_align(volArc, LV_ALIGN_TOP_RIGHT, -5, 20);
-    label = lv_label_create(volArc);
-    lv_label_set_text(label, "Gain");
-    lv_obj_align(label, LV_ALIGN_TOP_MID, 0, -20);
     // gain text
     volText = lv_label_create(volArc);
-    lv_label_set_text(volText, "0");
     lv_obj_center(volText);
-    // dB text
-    label = lv_label_create(volArc);
-    lv_obj_set_style_text_font(label, font_small, 0);
-    lv_label_set_text(label, "dB");
-    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 0);
     // set value
-    setVolume(volume);
-    lv_arc_set_range(volArc, 0, 30);
-    lv_arc_set_value(volArc, volume + VOL_OFFSET);
+    lv_arc_set_range(volArc, -15, 15);
     lv_obj_add_event_cb(volArc, onVolArcPressed, LV_EVENT_VALUE_CHANGED, this);
+    lv_arc_set_value(volArc, volume + VOL_OFFSET);
 
     // *octave select
     label = lv_label_create(selectArea);
@@ -307,11 +618,97 @@ void SynthPage::init()
     lv_obj_align(volBar, LV_ALIGN_BOTTOM_LEFT, 100, -35);
     peakLed = Gui_CreatePeakLed(volBar, 10, 10);
     lv_obj_align(peakLed, LV_ALIGN_RIGHT_MID, 15, 0);
+
+    Serial.println("Item area start");
+    // *ITEM AREA
+    lv_obj_t *itemArea = lv_obj_create(menu_main);
+    lv_obj_remove_style_all(itemArea);
+    lv_obj_set_size(itemArea, 320, 105);
+    lv_obj_set_y(itemArea, 135);
+
+    // *column 1
+    lv_obj_t *col = lv_obj_create(itemArea);
+    lv_obj_remove_style_all(col);
+    lv_obj_set_size(col, 80, 105);
+    lv_obj_set_style_pad_all(col, 2, 0);
+    // osc1 button
+    btn = createItemBtn(col, "OSC 1");
+    oscWaveItemImg[0] = lv_img_create(btn);
+    lv_img_set_src(oscWaveItemImg[0], getWaveImg(oscWaveform[0]));
+    lv_obj_set_align(oscWaveItemImg[0], LV_ALIGN_LEFT_MID);
+    lv_menu_set_load_page_event(menu, btn, menu_osc[0]);
+    // osc2 button
+    btn = createItemBtn(col, "OSC2");
+    lv_obj_set_y(btn, 35);
+    oscWaveItemImg[1] = lv_img_create(btn);
+    lv_img_set_src(oscWaveItemImg[1], getWaveImg(oscWaveform[1]));
+    lv_obj_set_align(oscWaveItemImg[1], LV_ALIGN_LEFT_MID);
+    lv_menu_set_load_page_event(menu, btn, menu_osc[1]);
+
+    // *container 2
+    col = lv_obj_create(itemArea);
+    lv_obj_set_size(col, 80, 105);
+    lv_obj_set_style_bg_color(col, lv_color_black(), 0);
+    lv_obj_set_style_pad_all(col, 2, 0);
+    lv_obj_set_x(col, 80);
+
+    // *container 3
+    col = lv_obj_create(itemArea);
+    lv_obj_set_size(col, 80, 105);
+    lv_obj_set_style_bg_color(col, lv_color_black(), 0);
+    lv_obj_set_style_pad_all(col, 2, 0);
+    lv_obj_set_x(col, 160);
+
+    // *container 4
+    col = lv_obj_create(itemArea);
+    lv_obj_set_size(col, 80, 105);
+    lv_obj_set_style_bg_color(col, lv_color_black(), 0);
+    lv_obj_set_style_pad_all(col, 2, 0);
+    lv_obj_set_x(col, 240);
+
+    // *At last, add menu change callback
+    lv_obj_add_event_cb(menu, onMenuPageChange, LV_EVENT_VALUE_CHANGED, this);
 }
 
-void SynthPage::setVolume(int8_t value)
+lv_obj_t *SynthPage::createItemBtn(lv_obj_t *parent, const char *text)
 {
-    volume = value;
-    AudioSynth.setMasterVol(value);
-    lv_label_set_text_fmt(volText, "%d", value);
+    lv_obj_t *btn = Gui_CreateButton(parent);
+    lv_obj_set_size(btn, 76, 30);
+    lv_obj_set_style_pad_all(btn, 4, 0);
+    lv_obj_t *label = lv_label_create(btn);
+    lv_label_set_text(label, text);
+    lv_obj_set_align(label, LV_ALIGN_RIGHT_MID);
+
+    return btn;
+}
+
+lv_obj_t *SynthPage::createItemMenuArea(lv_obj_t *menu)
+{
+    lv_obj_t *menu_area = lv_obj_create(menu);
+    lv_obj_remove_style_all(menu_area);
+    lv_obj_set_style_pad_all(menu_area, 5, 0);
+    lv_obj_set_size(menu_area, 320, 175);
+
+    return menu_area;
+}
+
+const lv_img_dsc_t *SynthPage::getWaveImg(uint8_t id)
+{
+    const lv_img_dsc_t *img;
+    switch (id)
+    {
+    default:
+        img = &sin_wave;
+        break;
+    case 1:
+        img = &tri_wave;
+        break;
+    case 2:
+        img = &saw_wave;
+        break;
+    case 3:
+        img = &sqr_wave;
+        break;
+    }
+    return img;
 }

@@ -24,13 +24,21 @@ static const lv_font_t *font_extraSymbol = &symbol_extra_18;
 // * Extra symbols
 #define MY_HEADPHONE_SYMBOL "\xEF\x80\xA5"
 
+// * Images
+LV_IMG_DECLARE(rev_saw_wave);
+LV_IMG_DECLARE(saw_wave);
+LV_IMG_DECLARE(sqr_wave);
+LV_IMG_DECLARE(tri_wave);
+LV_IMG_DECLARE(sin_wave);
+LV_IMG_DECLARE(s_r_wave);
+
 // * Object Global styles and creator
 // Paramsters arc
 static lv_style_t style_paramArcMain;
 static lv_style_t style_paramArcMainNoPad;
 static lv_style_t style_paramArcInd;
 static lv_style_t style_paramArcKnob;
-lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color = 0, bool padding = true);
+lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color = 0, const char* title = NULL, const char* unit = NULL, bool padding = true);
 
 // Button
 lv_obj_t *Gui_CreateButton(lv_obj_t *parent, bool toggle = false, uint8_t color = 0);
@@ -42,3 +50,7 @@ lv_obj_t *Gui_CreateVolumeMeter(lv_obj_t *parent, uint8_t w, uint8_t h, uint8_t 
 lv_obj_t *Gui_CreatePeakLed(lv_obj_t *parent, uint8_t w, uint8_t h);
 
 void Gui_InitStyles();
+
+// helper functions
+void Gui_setArcIdFlag(lv_obj_t *&arcRef, uint8_t id);
+uint8_t Gui_getArcIdFlag(lv_obj_t *&arcRef);

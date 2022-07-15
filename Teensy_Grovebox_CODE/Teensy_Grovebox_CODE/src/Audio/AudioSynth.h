@@ -47,6 +47,12 @@ public:
     void setUsePitchbend(bool value);
     void setSF2Instrument(uint8_t id);
     void setVoiceMode(uint8_t mode);
+    void setOscWaveform(uint8_t id, uint8_t wave);
+    void setOscOctave(uint8_t id, int8_t value);
+    void setOscSemi(uint8_t id, int8_t value);
+    void setOscPwm(uint8_t id, uint8_t duty);
+    void setOscDetune(uint8_t id, float amount);
+    void setOscLevel(uint8_t id, uint8_t amount);
 
     // set master output volume in dB
     void setMasterVol(int8_t vol);

@@ -63,7 +63,7 @@ void AudioPage::onArcPressed(lv_event_t *e)
     AudioPage *instance = (AudioPage *)lv_event_get_user_data(e);
     lv_obj_t *arc = lv_event_get_target(e);
     // use user flags to determine which arc is pressed
-    uint8_t id = ((uint8_t)lv_obj_has_flag(arc, LV_OBJ_FLAG_USER_1) << 0) + ((uint8_t)lv_obj_has_flag(arc, LV_OBJ_FLAG_USER_2) << 1) + ((uint8_t)lv_obj_has_flag(arc, LV_OBJ_FLAG_USER_3) << 2) + ((uint8_t)lv_obj_has_flag(arc, LV_OBJ_FLAG_USER_4) << 3);
+    uint8_t id = Gui_getArcIdFlag(arc);
     Serial.println(id);
     uint8_t newVal = lv_arc_get_value(arc);
     switch (id)
@@ -423,7 +423,7 @@ void AudioPage::init()
         // set value
         updateOutVol((MasterTracks)i, OutVol[i]);
         lv_arc_set_value(OutArc[i], OutVol[i]);
-        setArcFlag(OutArc[i], i);
+        Gui_setArcIdFlag(OutArc[i], i);
         // set callback
         lv_obj_add_event_cb(OutArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
         // mixer button
@@ -439,7 +439,7 @@ void AudioPage::init()
     }
 
     // *hp volume
-    hpArc = Gui_CreateParamArc(tab1, 3, false);
+    hpArc = Gui_CreateParamArc(tab1, 3, NULL, "%", false);
     lv_obj_align(hpArc, LV_ALIGN_TOP_RIGHT, 0, 20);
     // headphone logo
     hpModeLabel = lv_label_create(hpArc);
@@ -449,15 +449,10 @@ void AudioPage::init()
     // volume text
     hpVolText = lv_label_create(hpArc);
     lv_obj_center(hpVolText);
-    // % text
-    label = lv_label_create(hpArc);
-    lv_obj_set_style_text_font(label, font_small, 0);
-    lv_label_set_text(label, "%");
-    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 0);
     // set value
     updateHpVol(hpVol);
     lv_arc_set_value(hpArc, hpVol);
-    setArcFlag(hpArc, 2);
+    Gui_setArcIdFlag(hpArc, 2);
     lv_obj_add_event_cb(hpArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
     // PFL button
@@ -488,26 +483,17 @@ void AudioPage::init()
         // set value
         updateInVol((InputTracks)i, InVol[i]);
         lv_arc_set_value(InArc[i], InVol[i]);
-        setArcFlag(InArc[i], i + 3);
+        Gui_setArcIdFlag(InArc[i], i + 3);
         // set callback
         lv_obj_add_event_cb(InArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
     }
 
     // *input gain
-    gainArc = Gui_CreateParamArc(tab2, 1, false);
+    gainArc = Gui_CreateParamArc(tab2, 1, "Gain", "dB", false);
     lv_obj_set_y(gainArc, 15);
-    // title
-    label = lv_label_create(gainArc);
-    lv_label_set_text(label, "Gain");
-    lv_obj_align(label, LV_ALIGN_TOP_MID, 0, -20);
     // gain text
     gainText = lv_label_create(gainArc);
     lv_obj_align(gainText, LV_ALIGN_CENTER, 0, 0);
-    // dB text
-    label = lv_label_create(gainArc);
-    lv_label_set_text(label, "dB");
-    lv_obj_set_style_text_font(label, font_small, 0);
-    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 0);
     // set value
     updateInputGain(gain[inputSource]);
     if (inputSource == 0)
@@ -516,7 +502,7 @@ void AudioPage::init()
         lv_arc_set_range(gainArc, 0, MIC_GAIN_MAX);
 
     lv_arc_set_value(gainArc, gain[inputSource]);
-    setArcFlag(gainArc, 5);
+    Gui_setArcIdFlag(gainArc, 5);
     lv_obj_add_event_cb(gainArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
     // *input source
@@ -599,7 +585,7 @@ void AudioPage::init()
         updateMixerVol((MixerTracks)i, mixerVol[MasterTracks::ANALOG_OUT][i]);
         updateMixerVol((MixerTracks)i, mixerVol[MasterTracks::USB_OUT][i]);
         lv_arc_set_value(mixerArc[i], mixerVol[currentMasterForMixer][i]);
-        setArcFlag(mixerArc[i], 6 + i);
+        Gui_setArcIdFlag(mixerArc[i], 6 + i);
         // set callback
         lv_obj_add_event_cb(mixerArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
     }
@@ -612,7 +598,7 @@ void AudioPage::createTrackGui(lv_obj_t *&parent, lv_obj_t *&arcRef, lv_obj_t *&
 {
     lv_obj_t *label;
     // create arc
-    arcRef = Gui_CreateParamArc(parent, color, false);
+    arcRef = Gui_CreateParamArc(parent, color, NULL, "dB", false);
     lv_arc_set_range(arcRef, 0, VOL_MAX);
     // title
     label = lv_label_create(arcRef);
@@ -621,11 +607,6 @@ void AudioPage::createTrackGui(lv_obj_t *&parent, lv_obj_t *&arcRef, lv_obj_t *&
     // volume text
     volTextRef = lv_label_create(arcRef);
     lv_obj_center(volTextRef);
-    // dB text
-    label = lv_label_create(arcRef);
-    lv_label_set_text(label, "dB");
-    lv_obj_set_style_text_font(label, font_small, 0);
-    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 0);
     // volume meter and peak led
     for (uint8_t i = 0; i < 2; i++)
     {
@@ -712,33 +693,6 @@ void AudioPage::updateInputGain(uint8_t newVal)
     gain[inputSource] = newVal;
     sgtl5000_1.micGain(newVal);
     lv_label_set_text(gainText, String(newVal).c_str());
-}
-
-// use 4 user flags to store arc id
-void AudioPage::setArcFlag(lv_obj_t *&arcRef, uint8_t id)
-{
-    bool f1, f2, f3, f4;
-    f1 = id & 0b00000001;
-    f2 = id & 0b00000010;
-    f3 = id & 0b00000100;
-    f4 = id & 0b00001000;
-
-    if (f1)
-        lv_obj_add_flag(arcRef, LV_OBJ_FLAG_USER_1);
-    else
-        lv_obj_clear_flag(arcRef, LV_OBJ_FLAG_USER_1);
-    if (f2)
-        lv_obj_add_flag(arcRef, LV_OBJ_FLAG_USER_2);
-    else
-        lv_obj_clear_flag(arcRef, LV_OBJ_FLAG_USER_2);
-    if (f3)
-        lv_obj_add_flag(arcRef, LV_OBJ_FLAG_USER_3);
-    else
-        lv_obj_clear_flag(arcRef, LV_OBJ_FLAG_USER_3);
-    if (f4)
-        lv_obj_add_flag(arcRef, LV_OBJ_FLAG_USER_4);
-    else
-        lv_obj_clear_flag(arcRef, LV_OBJ_FLAG_USER_4);
 }
 
 void AudioPage::updateMixerVol(MixerTracks track, uint8_t newVal)

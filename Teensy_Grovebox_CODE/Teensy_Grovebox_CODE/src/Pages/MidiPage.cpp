@@ -54,7 +54,7 @@ void MidiPage::onChannelInc(lv_event_t *e)
 {
     MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
     instance->midiChannel++;
-    if(instance->midiChannel > 16)
+    if (instance->midiChannel > 16)
         instance->midiChannel = 16;
     lv_label_set_text_fmt(instance->channelText, "%d", instance->midiChannel);
 }
@@ -63,7 +63,7 @@ void MidiPage::onChannelDec(lv_event_t *e)
 {
     MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
     instance->midiChannel--;
-    if(instance->midiChannel < 1)
+    if (instance->midiChannel < 1)
         instance->midiChannel = 1;
     lv_label_set_text_fmt(instance->channelText, "%d", instance->midiChannel);
 }
@@ -240,7 +240,7 @@ void MidiPage::init()
 
     for (uint8_t i = 0; i < 4; i++)
     {
-        ccArc[i] = Gui_CreateParamArc(arcGroup, i + 1);
+        ccArc[i] = Gui_CreateParamArc(arcGroup, i + 1, NULL, NULL);
         lv_arc_set_value(ccArc[i], storeCC[curCC[i] - CC_MIN]);
         lv_arc_set_range(ccArc[i], 0, 127);
         lv_obj_set_x(ccArc[i], lv_pct(25 * i));
@@ -258,7 +258,7 @@ void MidiPage::init()
     lv_obj_clear_flag(btnGroup, LV_OBJ_FLAG_SCROLLABLE);
     // pitchbend button
     lv_obj_t *btn = Gui_CreateButton(btnGroup, true);
-    if(usePitchbend)
+    if (usePitchbend)
         lv_obj_add_state(btn, LV_STATE_CHECKED);
     lv_obj_add_event_cb(btn, onTogglePitchbend, LV_EVENT_CLICKED, this);
     lv_obj_set_width(btn, 90);
@@ -267,7 +267,7 @@ void MidiPage::init()
     lv_obj_center(label);
     // mod button
     btn = Gui_CreateButton(btnGroup, true);
-    if(useModwheel)
+    if (useModwheel)
         lv_obj_add_state(btn, LV_STATE_CHECKED);
     lv_obj_add_event_cb(btn, onToggleModwheel, LV_EVENT_CLICKED, this);
     lv_obj_set_width(btn, 90);
@@ -300,7 +300,7 @@ void MidiPage::init()
     // channel select
     label = lv_label_create(btnGroup);
     lv_label_set_text(label, "Channel:");
-    lv_obj_set_pos(label, 105, 7+45);
+    lv_obj_set_pos(label, 105, 7 + 45);
 
     btn = Gui_CreateButton(btnGroup);
     lv_obj_set_pos(btn, 180, 45);
@@ -311,7 +311,7 @@ void MidiPage::init()
     channelText = lv_label_create(btnGroup);
     lv_obj_set_style_text_font(channelText, font_large, 0);
     lv_label_set_text_fmt(channelText, "%d", midiChannel);
-    lv_obj_set_pos(channelText, 232, 7+45);
+    lv_obj_set_pos(channelText, 232, 7 + 45);
 
     btn = Gui_CreateButton(btnGroup);
     lv_obj_set_pos(btn, 260, 45);
