@@ -32,24 +32,28 @@ LV_IMG_DECLARE(tri_wave);
 LV_IMG_DECLARE(sin_wave);
 LV_IMG_DECLARE(s_r_wave);
 
-// * Object Global styles and creator
+// * Object Global styles and object creator
 // Paramsters arc
 static lv_style_t style_paramArcMain;
 static lv_style_t style_paramArcMainNoPad;
 static lv_style_t style_paramArcInd;
 static lv_style_t style_paramArcKnob;
-lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color = 0, const char* title = NULL, const char* unit = NULL, bool padding = true);
+PROGMEM lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color = 0, const char* title = NULL, const char* unit = NULL, bool padding = true);
 
 // Button
-lv_obj_t *Gui_CreateButton(lv_obj_t *parent, bool toggle = false, uint8_t color = 0);
+PROGMEM lv_obj_t *Gui_CreateButton(lv_obj_t *parent, bool toggle = false, uint8_t color = 0);
 
 // Volume meter bar
-lv_obj_t *Gui_CreateVolumeMeter(lv_obj_t *parent, uint8_t w, uint8_t h, uint8_t color = 0);
+PROGMEM lv_obj_t *Gui_CreateVolumeMeter(lv_obj_t *parent, uint8_t w, uint8_t h, uint8_t color = 0);
 
 // Peak led
-lv_obj_t *Gui_CreatePeakLed(lv_obj_t *parent, uint8_t w, uint8_t h);
+PROGMEM lv_obj_t *Gui_CreatePeakLed(lv_obj_t *parent, uint8_t w, uint8_t h);
 
-void Gui_InitStyles();
+// ADSR Envelope graph
+PROGMEM lv_obj_t *Gui_CreateEnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h);
+void Gui_SetEnvelopeGraph(lv_obj_t *graph, lv_point_t *points, float delay, float attack, float decay, float sustain, float release);
+
+PROGMEM void Gui_InitStyles();
 
 // helper functions
 void Gui_setArcIdFlag(lv_obj_t *&arcRef, uint8_t id);

@@ -115,6 +115,104 @@ lv_obj_t *Gui_CreateButton(lv_obj_t *parent, bool toggle, uint8_t color)
     return button;
 }
 
+// create a ADSR envelope graph 
+lv_obj_t *Gui_CreateEnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h)
+{
+    lv_obj_t* graph = lv_obj_create(parent);
+    lv_obj_remove_style_all(graph);
+    lv_obj_set_size(graph, w, h);
+    lv_obj_set_style_pad_all(graph, 5, 0);
+    lv_obj_set_align(graph, LV_ALIGN_TOP_LEFT);
+
+    static lv_style_t style_line;
+    lv_style_init(&style_line);
+    lv_style_set_line_width(&style_line, 8);
+    lv_style_set_line_rounded(&style_line, true);
+
+    lv_obj_t* line = lv_line_create(graph);
+    lv_obj_set_style_line_color(line, lv_color_white(), 0);   // delay
+    lv_obj_add_style(line, &style_line, 0);
+    lv_line_set_y_invert(line, true);
+    line = lv_line_create(graph);
+    lv_obj_set_style_line_color(line, color_Red, 0);    // attack
+    lv_obj_add_style(line, &style_line, 0);
+    lv_line_set_y_invert(line, true);
+    line = lv_line_create(graph);
+    lv_obj_set_style_line_color(line, color_Yellow, 0); // decay
+    lv_obj_add_style(line, &style_line, 0);
+    lv_line_set_y_invert(line, true);
+    line = lv_line_create(graph);
+    lv_obj_set_style_line_color(line, color_Blue, 0);   // sustain
+    lv_obj_add_style(line, &style_line, 0);
+    lv_line_set_y_invert(line, true);
+    line = lv_line_create(graph);
+    lv_obj_set_style_line_color(line, color_Green, 0);  // release
+    lv_obj_add_style(line, &style_line, 0);
+    lv_line_set_y_invert(line, true);
+
+    return graph;
+}
+
+// set the graph curve with DADSR values, in ms (sustain is 0~1)
+void Gui_SetEnvelopeGraph(lv_obj_t *graph, lv_point_t *points, float delay, float attack, float decay, float sustain, float release)
+{
+    int16_t w = lv_obj_get_width(graph) - 20; // minus the padding
+    int16_t h = lv_obj_get_height(graph) - 10;
+    Serial.println(w);
+    Serial.println(h);
+    // get the total length in ms 
+    float total = delay + attack + decay + release;
+    // add padding if the total length is less than 200ms
+    if(total < 200)
+    {
+        total = 200;
+    }
+    // get absolute pos
+    int16_t sustain_abs = w/5 - total/40000 * w/10; // sustain_abs is between w/5 and w/10, it gets smaller as total time increases
+    int16_t w_remain = w - sustain_abs;
+    int16_t delay_abs = delay / total * w_remain;
+    int16_t attack_abs = attack / total * w_remain;
+    int16_t decay_abs = decay / total * w_remain;
+    int16_t release_abs = release / total * w_remain;
+    // *draw the graph
+    lv_obj_t *line;
+    points[0] = {0, 0};
+    points[1] = {delay_abs, 0};
+    points[2] = {0, 0};
+    points[3] = {attack_abs, h};
+    points[4] = {0, h}; 
+    points[5] = {decay_abs, (int16_t)(sustain * h)};
+    points[6] = {0, (int16_t)(sustain * h)};
+    points[7] = {sustain_abs, (int16_t)(sustain * h)};
+    points[8] = {0, (int16_t)(sustain * h)};
+    points[9] = {release_abs, 0};
+    // delay line
+    line = lv_obj_get_child(graph, 0);
+    lv_obj_set_size(line, delay_abs, h);
+    lv_line_set_points(line, &points[0], 2);
+    // attack line
+    line = lv_obj_get_child(graph, 1);
+    lv_obj_set_size(line, attack_abs, h);
+    lv_line_set_points(line, &points[2], 2);
+    lv_obj_set_x(line, delay_abs);
+    // decay line
+    line = lv_obj_get_child(graph, 2);
+    lv_obj_set_size(line, decay_abs, h);
+    lv_line_set_points(line, &points[4], 2);
+    lv_obj_set_x(line, delay_abs + attack_abs);
+    // sustain line
+    line = lv_obj_get_child(graph, 3);
+    lv_obj_set_size(line, sustain_abs, h);
+    lv_line_set_points(line, &points[6], 2);
+    lv_obj_set_x(line, delay_abs + attack_abs + decay_abs);
+    // release line
+    line = lv_obj_get_child(graph, 4);
+    lv_obj_set_size(line, release_abs, h);
+    lv_line_set_points(line, &points[8], 2);
+    lv_obj_set_x(line, delay_abs + attack_abs + decay_abs + sustain_abs);
+}
+
+
 // create a volume meter bar, with color = 0 or 1
 lv_obj_t *Gui_CreateVolumeMeter(lv_obj_t *parent, uint8_t w, uint8_t h, uint8_t color)
 {

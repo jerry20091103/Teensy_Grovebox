@@ -21,8 +21,7 @@ void AudioVoice::noteOn(float freq, float amp)
     case VOICE_MODE_SYNTH:
         setOscFreq(0, freq);
         setOscFreq(1, freq);
-        waveform[0]->amplitude(amp);
-        waveform[1]->amplitude(amp);
+        ampEnv->noteOn();
         break;
 
     case VOICE_MODE_WAVETABLE:
@@ -37,8 +36,7 @@ void AudioVoice::noteOff()
     switch (curVoiceMode)
     {
     case VOICE_MODE_SYNTH:
-        waveform[0]->amplitude(0);
-        waveform[1]->amplitude(0);
+        ampEnv->noteOff();
         break;
 
     case VOICE_MODE_WAVETABLE:
@@ -132,4 +130,14 @@ void AudioVoice::setOscLevel(uint8_t id, float amount)
 {
     
     waveform[id]->amplitude(amount);
+}
+
+void AudioVoice::setAmpEnvelope(float delay, float attack, float decay, float sustain, float release)
+{
+    ampEnv->delay(delay);
+    ampEnv->attack(attack);
+    ampEnv->hold(0);
+    ampEnv->decay(decay);
+    ampEnv->sustain(sustain);
+    ampEnv->release(release);
 }

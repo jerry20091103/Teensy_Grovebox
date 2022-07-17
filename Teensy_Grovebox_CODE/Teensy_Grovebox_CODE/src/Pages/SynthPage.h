@@ -6,11 +6,15 @@
 
 #define PEAK_AVG_TIME 2
 #define VOL_OFFSET 15
+#define ENV_VAL_MAX 190
+#define ENV_VAL_INCREMENT 1.05f
 
 // Substractive synth page
 class SynthPage : public Pages
 {
 private:
+    // todo: add memory
+    // ! also need new load user data function in pages class
     // *user data
     uint8_t octave = 4;
     int8_t volume = 0;
@@ -21,9 +25,11 @@ private:
     uint8_t oscWaveform[2] = {0, 0};
     int8_t oscOctave[2] = {0, 0};
     int8_t oscSemi[2] = {0, 0};
-    uint8_t oscPwm[2] = {50, 50};
+    uint8_t oscPwm[2] = {0, 50};
     int8_t oscDetune[2] = {0, 0};
-    uint8_t oscLevel[2] = {90, 90};
+    uint8_t oscLevel[2] = {90, 80};
+    // amp env
+    uint8_t ampEnvVal[5] = {0, 0, 0, 100, 0};
 
 
     // *class variables
@@ -35,6 +41,7 @@ private:
     lv_obj_t* menu;
     lv_obj_t* menu_main;
     lv_obj_t* menu_osc[2];
+    lv_obj_t* menu_ampenv;
     lv_obj_t* volArc;
     lv_obj_t* volText;
     lv_obj_t* volBar;
@@ -51,6 +58,11 @@ private:
     lv_obj_t* oscPwmText[2];
     lv_obj_t* oscDetuneText[2];
     lv_obj_t* oscLevelText[2];
+    // amp env
+    lv_obj_t* ampEnvGraph;
+    lv_point_t ampEnvPoints[10];
+    lv_obj_t* ampEnvText[5];
+    lv_obj_t* ampEnvArc[5];
 
     // *lvgl gui callbacks
     static void onVelocityBtnPressed(lv_event_t* e);
@@ -65,6 +77,8 @@ private:
     static void onOscArcPressed(lv_event_t *e);
     static void onOscOctaveSelect(lv_event_t* e);
     static void onOscSemiSelect(lv_event_t* e);
+    // amp env
+    static void onAmpEnvArcPressed(lv_event_t *e);
 
     // *helper functions
     void configureEncoders();
@@ -82,7 +96,7 @@ public:
     void configurePage();
 
     void update();
-    void init();
+    PROGMEM void init();
     
     // *user data
     FXFreeverb_Mem reverbMem;

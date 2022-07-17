@@ -36,10 +36,12 @@ public:
     void setOscPwm(uint8_t id, uint8_t duty);
     void setOscDetune(uint8_t id, float amount);
     void setOscLevel(uint8_t id, float amount);
+    void setAmpEnvelope(float delay, float attack, float decay, float sustain, float release);
     
     AudioMixer4 *voiceSwitch;
     AudioSynthWavetable *waveTable;
     AudioSynthWaveform *waveform[2];
+    AudioEffectEnvelope *ampEnv;
     float frequency;
     uint8_t curVoiceMode;
     bool isNoteOn = false;

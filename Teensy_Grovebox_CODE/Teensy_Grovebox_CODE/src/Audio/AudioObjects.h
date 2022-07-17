@@ -8,38 +8,46 @@
 #include <SerialFlash.h>
 
 // GUItool: begin automatically generated code
-extern AudioSynthWaveform       waveform5_1; //xy=197.99996185302734,1340.2726669311523
-extern AudioSynthWaveform       waveform5_0; //xy=199,1302.1817626953125
-extern AudioSynthWaveform       waveform6_1; //xy=207.99996185302734,1517.9091415405273
-extern AudioSynthWaveform       waveform6_0; //xy=209,1479.8182373046875
-extern AudioSynthWaveform       waveform7_1; //xy=211.99996185302734,1705.9091415405273
-extern AudioSynthWaveform       waveform7_0; //xy=213,1667.8182373046875
-extern AudioSynthWaveform       waveform3_1; //xy=219.99996948242188,952.5454940795898
-extern AudioSynthWaveform       waveform3_0; //xy=221.00000762939453,914.45458984375
-extern AudioSynthWaveform       waveform4_1;  //xy=222.99996185302734,1123.4545516967773
-extern AudioSynthWaveform       waveform2_0; //xy=224.99999618530273,714.5454654693604
-extern AudioSynthWaveform       waveform2_1; //xy=224.99996948242188,752.6362857818604
-extern AudioSynthWaveform       waveform4_0; //xy=224,1085.3636474609375
-extern AudioSynthWaveform       waveform1_0; //xy=239,534.5454425811768
-extern AudioSynthWaveform       waveform1_1; //xy=238.99997329711914,572.6362628936768
-extern AudioSynthWaveform       waveform0_0; //xy=262.00004959106445,340.4546432495117
-extern AudioSynthWaveform       waveform0_1; //xy=262.0000228881836,378.5454635620117
+extern AudioSynthWaveform       waveform4_1;  //xy=132.99996948242188,1122.454517364502
+extern AudioSynthWaveform       waveform4_0; //xy=134.00000762939453,1084.363613128662
+extern AudioSynthWaveform       waveform5_1; //xy=138.99996948242188,1338.2726726531982
+extern AudioSynthWaveform       waveform5_0; //xy=140.00000762939453,1300.1817684173584
+extern AudioSynthWaveform       waveform6_1; //xy=139.99996948242188,1517.9092407226562
+extern AudioSynthWaveform       waveform6_0; //xy=141.00000762939453,1479.8183364868164
+extern AudioSynthWaveform       waveform3_1; //xy=143.9999771118164,944.5454597473145
+extern AudioSynthWaveform       waveform3_0; //xy=145.00001525878906,906.4545555114746
+extern AudioSynthWaveform       waveform7_1; //xy=141.99996948242188,1708.9091572761536
+extern AudioSynthWaveform       waveform7_0; //xy=143.00000762939453,1670.8182530403137
+extern AudioSynthWaveform       waveform1_0; //xy=148.00001525878906,532.5454406738281
+extern AudioSynthWaveform       waveform1_1; //xy=147.9999885559082,570.6362609863281
+extern AudioSynthWaveform       waveform0_0; //xy=152.0000457763672,347.4546432495117
+extern AudioSynthWaveform       waveform0_1; //xy=152.00001907348633,385.5454635620117
+extern AudioSynthWaveform       waveform2_0; //xy=151.00000762939453,712.5454635620117
+extern AudioSynthWaveform       waveform2_1; //xy=150.99998092651367,750.6362838745117
+extern AudioMixer4              oscMixer4; //xy=291.99998474121094,1105.454433441162
+extern AudioMixer4              oscMixer5; //xy=299.99998474121094,1324.2725887298584
+extern AudioMixer4              oscMixer6; //xy=299.9999694824219,1499.9091567993164
+extern AudioMixer4              oscMixer0;         //xy=305.00000762939453,365.54548263549805
+extern AudioMixer4              oscMixer1; //xy=304.99998474121094,553.6362838745117
+extern AudioMixer4              oscMixer3; //xy=303.9999694824219,922.5454635620117
+extern AudioMixer4              oscMixer7; //xy=303.9999694824219,1684.9091606140137
+extern AudioMixer4              oscMixer2; //xy=308.0000114440918,740.6362838745117
 extern AudioSynthWavetable      wavetable5; //xy=417.5715637207031,1258.8959884643555
-extern AudioMixer4              oscMixer2; //xy=420.00000762939453,755.6362838745117
-extern AudioSynthWavetable      wavetable2; //xy=425.57157135009766,693.1688365936279
-extern AudioMixer4              oscMixer5; //xy=423.99996185302734,1318.2725830078125
 extern AudioSynthWavetable      wavetable6; //xy=423.5715637207031,1442.8961715698242
 extern AudioSynthWavetable      wavetable7; //xy=432.5715675354004,1627.8961925506592
-extern AudioMixer4              oscMixer6; //xy=433.99996185302734,1495.9090576171875
 extern AudioSynthWavetable      wavetable3; //xy=440.5715637207031,870.1688995361328
-extern AudioMixer4              oscMixer7; //xy=437.99996185302734,1683.9090576171875
-extern AudioMixer4              oscMixer3; //xy=445.9999694824219,930.54541015625
 extern AudioSynthWavetable      wavetable4; //xy=447.5715637207031,1047.1689567565918
-extern AudioMixer4              oscMixer4; //xy=448.99996185302734,1101.4544677734375
-extern AudioMixer4              oscMixer1; //xy=464.9999580383301,555.6362648010254
+extern AudioEffectEnvelope      ampEnvelope5; //xy=463,1315
 extern AudioSynthWavetable      wavetable1; //xy=468.5715675354004,497.168909072876
+extern AudioEffectEnvelope      ampEnvelope4; //xy=467,1105.1817626953125
+extern AudioSynthWavetable      wavetable2; //xy=473.5715637207031,682.1688213348389
+extern AudioEffectEnvelope      ampEnvelope0;      //xy=475.00001525878906,357.81818771362305
+extern AudioEffectEnvelope      ampEnvelope3; //xy=474,921.4545288085938
+extern AudioEffectEnvelope      ampEnvelope6; //xy=472,1489.9090576171875
+extern AudioEffectEnvelope      ampEnvelope7; //xy=474.000057220459,1680.7273445129395
+extern AudioEffectEnvelope      ampEnvelope2; //xy=478,739.6363525390625
+extern AudioEffectEnvelope      ampEnvelope1; //xy=479.00001525878906,549.818193435669
 extern AudioSynthWavetable      wavetable0;     //xy=487.5489692687988,301.4570827484131
-extern AudioMixer4              oscMixer0;         //xy=488.00000762939453,361.54546546936035
 extern AudioMixer4              voiceSwitch5; //xy=649.0000610351562,1267.1820640563965
 extern AudioMixer4              voiceSwitch6; //xy=654.0000610351562,1455.1822471618652
 extern AudioMixer4              voiceSwitch1; //xy=661.0000190734863,546.0908737182617
@@ -98,5 +106,4 @@ extern AudioAnalyzePeak         peakUsbR; //xy=2747.4927940368652,930.1670408248
 extern AudioAnalyzePeak         peakUsbL; //xy=2765.4929809570312,721.1670360565186
 extern AudioControlSGTL5000     sgtl5000_1;     //xy=1499.5834312438965,339.1668577194214
 // GUItool: end automatically generated code
-
 #endif

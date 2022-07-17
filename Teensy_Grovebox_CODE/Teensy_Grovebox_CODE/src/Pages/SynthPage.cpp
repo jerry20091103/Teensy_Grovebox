@@ -188,6 +188,83 @@ void SynthPage::onOscSemiSelect(lv_event_t *e)
     lv_label_set_text_fmt(instance->oscSemiText[id], "%d", instance->oscSemi[id]);
 }
 
+void SynthPage::onAmpEnvArcPressed(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    lv_obj_t *arc = lv_event_get_target(e);
+    int16_t value = lv_arc_get_value(arc);
+    uint8_t flag = Gui_getArcIdFlag(arc);
+    switch (flag)
+    {
+    case 0:
+        // delay
+        instance->ampEnvVal[flag] = value;
+        break;
+    case 1:
+        // attack
+        if (enc[0] != NULL)
+            enc[0]->setCurrentReading(value);
+        instance->ampEnvVal[flag] = value;
+        break;
+    case 2:
+        // decay
+        if (enc[1] != NULL)
+            enc[1]->setCurrentReading(value);
+        instance->ampEnvVal[flag] = value;
+        break;
+    case 3:
+        // sustain
+        if (enc[2] != NULL)
+            enc[2]->setCurrentReading(value);
+        instance->ampEnvVal[flag] = value;
+        break;
+    case 4:
+        // release
+        if (enc[3] != NULL)
+            enc[3]->setCurrentReading(value);
+        instance->ampEnvVal[flag] = value;
+        break;
+    }
+    float envParam[5];
+    envParam[0] = powf(ENV_VAL_INCREMENT, instance->ampEnvVal[0]) - 1; // delay
+    envParam[1] = powf(ENV_VAL_INCREMENT, instance->ampEnvVal[1]) - 1; // attack
+    envParam[2] = powf(ENV_VAL_INCREMENT, instance->ampEnvVal[2]) - 1; // decay
+    envParam[3] = instance->ampEnvVal[3] * 0.01f;                      // sustain
+    envParam[4] = powf(ENV_VAL_INCREMENT, instance->ampEnvVal[4]) - 1; // release
+
+    AudioSynth.setAmpEnvelope(envParam[0], envParam[1], envParam[2], envParam[3], envParam[4]);
+    Gui_SetEnvelopeGraph(instance->ampEnvGraph, instance->ampEnvPoints, envParam[0], envParam[1], envParam[2], envParam[3], envParam[4]);
+
+    int decimal;
+    for (uint8_t i = 0; i < 5; i++)
+    {
+        if (i != 3)
+        {
+            if (envParam[i] >= 1000)
+            {
+                envParam[i] /= 1000.0f;
+                lv_label_set_text(lv_obj_get_child(instance->ampEnvArc[i], 1), "S");
+            }
+            else
+            {
+                lv_label_set_text(lv_obj_get_child(instance->ampEnvArc[i], 1), "ms");
+            }
+
+            if (envParam[i] < 10)
+                decimal = 2;
+            else if (envParam[i] < 100)
+                decimal = 1;
+            else
+                decimal = 0;
+            lv_label_set_text_fmt(instance->ampEnvText[i], "%.*f", decimal, envParam[i]);
+        }
+        else // sustain
+        {
+            lv_label_set_text_fmt(instance->ampEnvText[i], "%d", instance->ampEnvVal[i]);
+        }
+    }
+}
+
 void SynthPage::onBtnPressed(uint8_t pin)
 {
     int noteNum;
@@ -304,6 +381,11 @@ void SynthPage::onEncTurned(uint8_t id, int value)
         }
         lv_event_send(oscArc[1][id], LV_EVENT_VALUE_CHANGED, NULL);
     }
+    else if (curMenu == menu_ampenv)
+    {
+        lv_arc_set_value(ampEnvArc[id + 1], value);
+        lv_event_send(ampEnvArc[id + 1], LV_EVENT_VALUE_CHANGED, NULL);
+    }
 }
 
 void SynthPage::onJoyUpdate(int joy_x, int joy_y)
@@ -336,6 +418,8 @@ void SynthPage::configurePage()
     AudioFX.reverb.setWithMem(&reverbMem);
     // set voice mode for AudioSynth
     AudioSynth.setVoiceMode(VOICE_MODE_SYNTH);
+
+    Gui_SetEnvelopeGraph(ampEnvGraph, ampEnvPoints, 10000, 10000, 10000, 0.5, 10000);
 }
 
 // configure enocders for according to current menu page
@@ -349,20 +433,31 @@ void SynthPage::configureEncoders()
     else if (curMenu == menu_osc[0])
     {
         // pwm
-        enc[0]->changePrecision(100, oscPwm[0]); // use encoder callback here to set arc's initial value
+        enc[0]->changePrecision(100, oscPwm[0], false);
         // detune
-        enc[1]->changePrecision(200, oscDetune[0] + 100);
+        enc[1]->changePrecision(200, oscDetune[0] + 100, false);
         // level
-        enc[2]->changePrecision(100, oscLevel[0]);
+        enc[2]->changePrecision(100, oscLevel[0], false);
     }
     else if (curMenu == menu_osc[1])
     {
         // pwm
-        enc[0]->changePrecision(100, oscPwm[1]);
+        enc[0]->changePrecision(100, oscPwm[1], false);
         // detune
-        enc[1]->changePrecision(200, oscDetune[1] + 100);
+        enc[1]->changePrecision(200, oscDetune[1] + 100, false);
         // level
-        enc[2]->changePrecision(100, oscLevel[1]);
+        enc[2]->changePrecision(100, oscLevel[1], false);
+    }
+    else if (curMenu == menu_ampenv)
+    {
+        // attack
+        enc[0]->changePrecision(ENV_VAL_MAX, ampEnvVal[1], false);
+        // decay
+        enc[1]->changePrecision(ENV_VAL_MAX, ampEnvVal[2], false);
+        // sustain
+        enc[2]->changePrecision(100, ampEnvVal[3], false);
+        // release
+        enc[3]->changePrecision(ENV_VAL_MAX, ampEnvVal[4], false);
     }
 }
 
@@ -413,7 +508,6 @@ void SynthPage::init()
     lv_obj_set_y(menu, 35);
     btn = lv_menu_get_main_header_back_btn(menu);
     lv_obj_set_size(btn, 25, 20);
-    Serial.println("OSC setup");
     // *MENU OSC1 and 2-------------------------------------------------------------------
     for (uint8_t id = 0; id < 2; id++)
     {
@@ -421,7 +515,6 @@ void SynthPage::init()
         strcpy(oscName, (String("Oscillator ") + String(id + 1)).c_str());
         menu_osc[id] = lv_menu_page_create(menu, oscName);
         lv_obj_t *menu_area = createItemMenuArea(menu_osc[id]);
-        lv_obj_add_flag(menu_osc[id], LV_OBJ_FLAG_SCROLLABLE);
         // *waveform selector
         label = lv_label_create(menu_area);
         lv_label_set_text(label, "Waveform: ");
@@ -433,6 +526,7 @@ void SynthPage::init()
         lv_obj_add_flag(dropdown, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
         lv_obj_add_event_cb(dropdown, onOscWaveSelect, LV_EVENT_VALUE_CHANGED, this);
         lv_dropdown_set_selected(dropdown, oscWaveform[id]);
+        // lv_event_send(dropdown, LV_EVENT_VALUE_CHANGED, NULL);
         oscWaveImg[id] = lv_img_create(menu_area);
         lv_img_set_src(oscWaveImg[id], &sin_wave);
         lv_obj_align(oscWaveImg[id], LV_ALIGN_TOP_LEFT, 250, 5);
@@ -522,18 +616,39 @@ void SynthPage::init()
         lv_obj_add_event_cb(oscArc[id][2], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
         lv_arc_set_value(oscArc[id][2], oscLevel[id]);
     }
-    Serial.println("OSC setup end");
+    // *MENU AMPENV-----------------------------------------------------------------
+    menu_ampenv = lv_menu_page_create(menu, "Amp Envelope");
+    lv_obj_t *menu_area = createItemMenuArea(menu_ampenv);
+    lv_obj_clear_flag(menu_area, LV_OBJ_FLAG_SCROLLABLE);
+    // *envelope graph
+    ampEnvGraph = Gui_CreateEnvelopeGraph(menu_area, 320, 90);
+    // *5 envelope arcs
+    const char *envTitle[] = {"Delay", "Attack", "Decay", "Sustain", "Release"};
+    for (uint8_t i = 0; i < 5; i++)
+    {
+        ampEnvArc[i] = Gui_CreateParamArc(menu_area, i, envTitle[i], i == 3 ? "%" : "ms", false);
+        lv_obj_set_size(ampEnvArc[i], 55, 55);
+        lv_obj_align(ampEnvArc[i], LV_ALIGN_BOTTOM_MID, -126 + 63 * i, 0);
+        Gui_setArcIdFlag(ampEnvArc[i], i);
+        if (i == 3) // sustain arc
+            lv_arc_set_range(ampEnvArc[i], 0, 100);
+        else // everything else
+            lv_arc_set_range(ampEnvArc[i], 0, ENV_VAL_MAX);
+        lv_arc_set_value(ampEnvArc[i], ampEnvVal[i]);
+        lv_obj_add_event_cb(ampEnvArc[i], onAmpEnvArcPressed, LV_EVENT_VALUE_CHANGED, this);
+        ampEnvText[i] = lv_label_create(ampEnvArc[i]);
+        lv_obj_center(ampEnvText[i]);
+    }
+
     // *MENU MAIN-------------------------------------------------------------------
     menu_main = lv_menu_page_create(menu, NULL);
     lv_menu_set_page(menu, menu_main);
-    Serial.println("Select Area start");
     // *SELECT AREA
     lv_obj_t *selectArea = lv_obj_create(menu_main);
     // lv_obj_remove_style_all(selectArea);
     lv_obj_set_style_bg_color(selectArea, lv_color_black(), 0);
     lv_obj_set_style_pad_all(selectArea, 5, 0);
     lv_obj_set_size(selectArea, 320, 100);
-    lv_obj_set_y(selectArea, 35);
 
     // *Quick parameters
     label = lv_label_create(selectArea);
@@ -619,7 +734,6 @@ void SynthPage::init()
     peakLed = Gui_CreatePeakLed(volBar, 10, 10);
     lv_obj_align(peakLed, LV_ALIGN_RIGHT_MID, 15, 0);
 
-    Serial.println("Item area start");
     // *ITEM AREA
     lv_obj_t *itemArea = lv_obj_create(menu_main);
     lv_obj_remove_style_all(itemArea);
@@ -645,12 +759,16 @@ void SynthPage::init()
     lv_obj_set_align(oscWaveItemImg[1], LV_ALIGN_LEFT_MID);
     lv_menu_set_load_page_event(menu, btn, menu_osc[1]);
 
-    // *container 2
+    // *column 2
     col = lv_obj_create(itemArea);
+    lv_obj_remove_style_all(col);
     lv_obj_set_size(col, 80, 105);
-    lv_obj_set_style_bg_color(col, lv_color_black(), 0);
     lv_obj_set_style_pad_all(col, 2, 0);
     lv_obj_set_x(col, 80);
+    // ampenv button
+    btn = createItemBtn(col, "AMPENV");
+    lv_obj_center(lv_obj_get_child(btn, 0));
+    lv_menu_set_load_page_event(menu, btn, menu_ampenv);
 
     // *container 3
     col = lv_obj_create(itemArea);
@@ -687,7 +805,7 @@ lv_obj_t *SynthPage::createItemMenuArea(lv_obj_t *menu)
     lv_obj_t *menu_area = lv_obj_create(menu);
     lv_obj_remove_style_all(menu_area);
     lv_obj_set_style_pad_all(menu_area, 5, 0);
-    lv_obj_set_size(menu_area, 320, 175);
+    lv_obj_set_size(menu_area, 320, 180);
 
     return menu_area;
 }
