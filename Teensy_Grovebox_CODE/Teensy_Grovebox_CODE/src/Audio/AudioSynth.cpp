@@ -69,6 +69,15 @@ AudioSynth_::AudioSynth_()
     voiceArr[6].voiceSwitch = &voiceSwitch6;
     voiceArr[7].voiceSwitch = &voiceSwitch7;
 
+    voiceArr[0].ampEnv = &ampEnvelope0;
+    voiceArr[1].ampEnv = &ampEnvelope1;
+    voiceArr[2].ampEnv = &ampEnvelope2;
+    voiceArr[3].ampEnv = &ampEnvelope3;
+    voiceArr[4].ampEnv = &ampEnvelope4;
+    voiceArr[5].ampEnv = &ampEnvelope5;
+    voiceArr[6].ampEnv = &ampEnvelope6;
+    voiceArr[7].ampEnv = &ampEnvelope7;
+
     oscMixer0.gain(0, 1);
     oscMixer0.gain(1, 1);
     oscMixer1.gain(0, 1);
@@ -308,5 +317,14 @@ void AudioSynth_::setOscLevel(uint8_t id, uint8_t amount)
     for (int i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].setOscLevel(id, gain);
+    }
+}
+
+// set the amplitude envelope of the voice in ms (max 10000). Sustain is 0~1.
+void AudioSynth_::setAmpEnvelope(float delay, float attack, float decay, float sustain, float release)
+{
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setAmpEnvelope(delay, attack, decay, sustain, release);
     }
 }
