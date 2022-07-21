@@ -84,20 +84,6 @@ floatStereo AudioIO_::getInputPeak(InputTracks track)
     }
     return temp;
 }
-floatStereo AudioIO_::getMasterRMS(MasterTracks track)
-{
-    floatStereo temp;
-    if (outputRms[track][0]->available() && outputRms[track][1]->available())
-    {
-        temp.l = outputRms[track][0]->read();
-        temp.r = outputRms[track][1]->read();
-    }
-    else
-    {
-        temp.l = temp.r = -1;
-    }
-    return temp;
-}
 floatStereo AudioIO_::getMasterPeak(MasterTracks track)
 {
     floatStereo temp;
@@ -120,8 +106,6 @@ void AudioIO_::setMasterLevelMode(LevelMeterMode mode)
         {
             outputMeterSWPeak[i][j]->gain(mode, 1);
             outputMeterSWPeak[i][j]->gain(1-mode, 0);
-            outputMeterSWRms[i][j]->gain(mode, 1);
-            outputMeterSWRms[i][j]->gain(1-mode, 0);
         }
     }
 }

@@ -53,16 +53,13 @@ private:
     AudioAmplifier *outputFader[2][2];
     AudioAnalyzePeak * mixerPeak[4][2];
     AudioMixer4 *outputMeterSWPeak[2][2];
-    AudioMixer4 *outputMeterSWRms[2][2];
     AudioAnalyzePeak *outputPeak[2][2];
-    AudioAnalyzeRMS *outputRms[2][2];
 
 public:
     AudioIO_();
     // level meter functions
     floatStereo getMixerPeak(MasterTracks output, MixerTracks track);
     floatStereo getInputPeak(InputTracks track);
-    floatStereo getMasterRMS(MasterTracks track);
     floatStereo getMasterPeak(MasterTracks track);
     void setMasterLevelMode(LevelMeterMode mode);
     void setMixerLevelMode(LevelMeterMode mode);
