@@ -1,22 +1,36 @@
 #include "AudioObjects.h"
 
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
+
 // GUItool: begin automatically generated code
-AudioSynthWaveform       waveform4_1;  //xy=132.99996948242188,1122.454517364502
-AudioSynthWaveform       waveform4_0; //xy=134.00000762939453,1084.363613128662
-AudioSynthWaveform       waveform5_1; //xy=138.99996948242188,1338.2726726531982
-AudioSynthWaveform       waveform5_0; //xy=140.00000762939453,1300.1817684173584
-AudioSynthWaveform       waveform6_1; //xy=139.99996948242188,1517.9092407226562
-AudioSynthWaveform       waveform6_0; //xy=141.00000762939453,1479.8183364868164
-AudioSynthWaveform       waveform3_1; //xy=143.9999771118164,944.5454597473145
-AudioSynthWaveform       waveform3_0; //xy=145.00001525878906,906.4545555114746
-AudioSynthWaveform       waveform7_1; //xy=141.99996948242188,1708.9091572761536
-AudioSynthWaveform       waveform7_0; //xy=143.00000762939453,1670.8182530403137
-AudioSynthWaveform       waveform1_0; //xy=148.00001525878906,532.5454406738281
-AudioSynthWaveform       waveform1_1; //xy=147.9999885559082,570.6362609863281
-AudioSynthWaveform       waveform0_0; //xy=152.0000457763672,347.4546432495117
-AudioSynthWaveform       waveform0_1; //xy=152.00001907348633,385.5454635620117
-AudioSynthWaveform       waveform2_0; //xy=151.00000762939453,712.5454635620117
-AudioSynthWaveform       waveform2_1; //xy=150.99998092651367,750.6362838745117
+AudioSynthNoiseWhite     noise4; //xy=116,1124.272705078125
+AudioSynthNoiseWhite     noise1;  //xy=123,574.9091186523438
+AudioSynthNoiseWhite     noise2; //xy=123,754.727294921875
+AudioSynthNoiseWhite     noise3; //xy=124,934.5454711914062
+AudioSynthNoiseWhite     noise5; //xy=123,1338.0909423828125
+AudioSynthNoiseWhite     noise0;         //xy=127,382.72759532928467
+AudioSynthNoiseWhite     noise6; //xy=123,1511.8182373046875
+AudioSynthNoiseWhite     noise7; //xy=124.00000381469727,1697.8182878494263
+AudioSynthWaveform       waveform4_1;  //xy=137.99996948242188,1086.4545230865479
+AudioSynthWaveform       waveform4_0; //xy=139.00000762939453,1048.363618850708
+AudioSynthWaveform       waveform6_1; //xy=137.99996948242188,1471.9091911315918
+AudioSynthWaveform       waveform6_0; //xy=139.00000762939453,1433.818286895752
+AudioSynthWaveform       waveform0_0; //xy=144.0000457763672,310.4546604156494
+AudioSynthWaveform       waveform3_1; //xy=141.9999771118164,898.5454940795898
+AudioSynthWaveform       waveform5_1; //xy=140.99996948242188,1299.2727661132812
+AudioSynthWaveform       waveform0_1; //xy=145.0000228881836,346.5454807281494
+AudioSynthWaveform       waveform3_0; //xy=143.00001525878906,860.45458984375
+AudioSynthWaveform       waveform1_0; //xy=145.00001907348633,499.54541969299316
+AudioSynthWaveform       waveform5_0; //xy=142.00000762939453,1261.1818618774414
+AudioSynthWaveform       waveform1_1; //xy=144.99998474121094,537.6362419128418
+AudioSynthWaveform       waveform2_0; //xy=145.00000381469727,679.5454654693604
+AudioSynthWaveform       waveform2_1; //xy=144.9999771118164,717.6362857818604
+AudioSynthWaveform       waveform7_1; //xy=142.99996948242188,1659.9091300964355
+AudioSynthWaveform       waveform7_0; //xy=144.00000762939453,1621.8182258605957
 AudioMixer4              oscMixer4; //xy=291.99998474121094,1105.454433441162
 AudioMixer4              oscMixer5; //xy=299.99998474121094,1324.2725887298584
 AudioMixer4              oscMixer6; //xy=299.9999694824219,1499.9091567993164
@@ -97,119 +111,128 @@ AudioAnalyzePeak         peakI2sL;          //xy=2725.492706298828,377.166829109
 AudioAnalyzePeak         peakI2sR;          //xy=2734.4929809570312,532.1669578552246
 AudioAnalyzePeak         peakUsbR; //xy=2747.4927940368652,930.1670408248901
 AudioAnalyzePeak         peakUsbL; //xy=2765.4929809570312,721.1670360565186
-AudioConnection          patchCord1(waveform4_1, 0, oscMixer4, 1);
-AudioConnection          patchCord2(waveform4_0, 0, oscMixer4, 0);
-AudioConnection          patchCord3(waveform5_1, 0, oscMixer5, 1);
-AudioConnection          patchCord4(waveform5_0, 0, oscMixer5, 0);
-AudioConnection          patchCord5(waveform6_1, 0, oscMixer6, 1);
-AudioConnection          patchCord6(waveform6_0, 0, oscMixer6, 0);
-AudioConnection          patchCord7(waveform3_1, 0, oscMixer3, 1);
-AudioConnection          patchCord8(waveform3_0, 0, oscMixer3, 0);
-AudioConnection          patchCord9(waveform7_1, 0, oscMixer7, 1);
-AudioConnection          patchCord10(waveform7_0, 0, oscMixer7, 0);
-AudioConnection          patchCord11(waveform1_0, 0, oscMixer1, 0);
-AudioConnection          patchCord12(waveform1_1, 0, oscMixer1, 1);
+AudioConnection          patchCord1(noise4, 0, oscMixer4, 2);
+AudioConnection          patchCord2(noise1, 0, oscMixer1, 2);
+AudioConnection          patchCord3(noise2, 0, oscMixer2, 2);
+AudioConnection          patchCord4(noise3, 0, oscMixer3, 2);
+AudioConnection          patchCord5(noise5, 0, oscMixer5, 2);
+AudioConnection          patchCord6(noise0, 0, oscMixer0, 2);
+AudioConnection          patchCord7(noise6, 0, oscMixer6, 2);
+AudioConnection          patchCord8(noise7, 0, oscMixer7, 2);
+AudioConnection          patchCord9(waveform4_1, 0, oscMixer4, 1);
+AudioConnection          patchCord10(waveform4_0, 0, oscMixer4, 0);
+AudioConnection          patchCord11(waveform6_1, 0, oscMixer6, 1);
+AudioConnection          patchCord12(waveform6_0, 0, oscMixer6, 0);
 AudioConnection          patchCord13(waveform0_0, 0, oscMixer0, 0);
-AudioConnection          patchCord14(waveform0_1, 0, oscMixer0, 1);
-AudioConnection          patchCord15(waveform2_0, 0, oscMixer2, 0);
-AudioConnection          patchCord16(waveform2_1, 0, oscMixer2, 1);
-AudioConnection          patchCord17(oscMixer4, ampEnvelope4);
-AudioConnection          patchCord18(oscMixer5, ampEnvelope5);
-AudioConnection          patchCord19(oscMixer6, ampEnvelope6);
-AudioConnection          patchCord20(oscMixer0, ampEnvelope0);
-AudioConnection          patchCord21(oscMixer1, ampEnvelope1);
-AudioConnection          patchCord22(oscMixer3, ampEnvelope3);
-AudioConnection          patchCord23(oscMixer7, ampEnvelope7);
-AudioConnection          patchCord24(oscMixer2, ampEnvelope2);
-AudioConnection          patchCord25(wavetable5, 0, voiceSwitch5, 0);
-AudioConnection          patchCord26(wavetable6, 0, voiceSwitch6, 0);
-AudioConnection          patchCord27(wavetable7, 0, voiceSwitch7, 0);
-AudioConnection          patchCord28(wavetable3, 0, voiceSwitch3, 0);
-AudioConnection          patchCord29(wavetable4, 0, voiceSwitch4, 0);
-AudioConnection          patchCord30(ampEnvelope5, 0, voiceSwitch5, 1);
-AudioConnection          patchCord31(wavetable1, 0, voiceSwitch1, 0);
-AudioConnection          patchCord32(ampEnvelope4, 0, voiceSwitch4, 1);
-AudioConnection          patchCord33(wavetable2, 0, voiceSwitch2, 0);
-AudioConnection          patchCord34(ampEnvelope0, 0, voiceSwitch0, 1);
-AudioConnection          patchCord35(ampEnvelope3, 0, voiceSwitch3, 1);
-AudioConnection          patchCord36(ampEnvelope6, 0, voiceSwitch6, 1);
-AudioConnection          patchCord37(ampEnvelope7, 0, voiceSwitch7, 1);
-AudioConnection          patchCord38(ampEnvelope2, 0, voiceSwitch2, 1);
-AudioConnection          patchCord39(ampEnvelope1, 0, voiceSwitch1, 1);
-AudioConnection          patchCord40(wavetable0, 0, voiceSwitch0, 0);
-AudioConnection          patchCord41(voiceSwitch5, 0, voiceMixer0_1, 1);
-AudioConnection          patchCord42(voiceSwitch6, 0, voiceMixer0_1, 2);
-AudioConnection          patchCord43(voiceSwitch1, 0, voiceMixer0_0, 1);
-AudioConnection          patchCord44(voiceSwitch2, 0, voiceMixer0_0, 2);
-AudioConnection          patchCord45(voiceSwitch3, 0, voiceMixer0_0, 3);
-AudioConnection          patchCord46(voiceSwitch4, 0, voiceMixer0_1, 0);
-AudioConnection          patchCord47(voiceSwitch0, 0, voiceMixer0_0, 0);
-AudioConnection          patchCord48(voiceSwitch7, 0, voiceMixer0_1, 3);
-AudioConnection          patchCord49(voiceMixer0_1, 0, voiceMixer1_0, 1);
-AudioConnection          patchCord50(voiceMixer0_0, 0, voiceMixer1_0, 0);
-AudioConnection          patchCord51(voiceMixer1_0, 0, freeverbMixerL, 0);
-AudioConnection          patchCord52(voiceMixer1_0, 0, freeverbMixerR, 0);
-AudioConnection          patchCord53(freeverbBiquadL, 0, freeverbMixerL, 1);
-AudioConnection          patchCord54(freeverbBiquadR, 0, freeverbMixerR, 1);
-AudioConnection          patchCord55(freeverbMixerL, ampInsOutL);
-AudioConnection          patchCord56(freeverbMixerR, ampInsOutR);
-AudioConnection          patchCord57(i2sIN, 0, ampI2sInL, 0);
-AudioConnection          patchCord58(i2sIN, 0, mixerSWPeakLmInL, 1);
-AudioConnection          patchCord59(i2sIN, 0, peakVelocity, 0);
-AudioConnection          patchCord60(i2sIN, 1, ampI2sInR, 0);
-AudioConnection          patchCord61(i2sIN, 1, mixerSWPeakLmInR, 1);
-AudioConnection          patchCord62(usbIN, 0, ampUsbInL, 0);
-AudioConnection          patchCord63(usbIN, 0, mixerSWPeakUsbInL, 1);
-AudioConnection          patchCord64(usbIN, 1, ampUsbInR, 0);
-AudioConnection          patchCord65(usbIN, 1, mixerSWPeakUsbInR, 1);
-AudioConnection          patchCord66(ampI2sInR, 0, mixerSWPeakLmInR, 0);
-AudioConnection          patchCord67(ampI2sInR, 0, mixerOutI2sR, 0);
-AudioConnection          patchCord68(ampI2sInR, 0, mixerOutUsbR, 0);
-AudioConnection          patchCord69(ampI2sInR, peakMixerLmR);
-AudioConnection          patchCord70(ampI2sInL, 0, mixerSWPeakLmInL, 0);
-AudioConnection          patchCord71(ampI2sInL, 0, mixerOutI2sL, 0);
-AudioConnection          patchCord72(ampI2sInL, 0, mixerOutUsbL, 0);
-AudioConnection          patchCord73(ampI2sInL, peakMixerLmL);
-AudioConnection          patchCord74(ampUsbInR, 0, mixerSWPeakUsbInR, 0);
-AudioConnection          patchCord75(ampUsbInR, 0, mixerOutI2sR, 1);
-AudioConnection          patchCord76(ampUsbInR, 0, mixerOutUsbR, 1);
-AudioConnection          patchCord77(ampUsbInR, peakMixerUsbR);
-AudioConnection          patchCord78(ampUsbInL, 0, mixerSWPeakUsbInL, 0);
-AudioConnection          patchCord79(ampUsbInL, 0, mixerOutI2sL, 1);
-AudioConnection          patchCord80(ampUsbInL, 0, mixerOutUsbL, 1);
-AudioConnection          patchCord81(ampUsbInL, peakMixerUsbL);
-AudioConnection          patchCord82(ampInsOutL, peakMixerInsL);
-AudioConnection          patchCord83(ampInsOutL, 0, mixerOutUsbL, 2);
-AudioConnection          patchCord84(ampInsOutL, 0, mixerOutI2sL, 2);
-AudioConnection          patchCord85(ampInsOutR, peakMixerInsR);
-AudioConnection          patchCord86(ampInsOutR, 0, mixerOutUsbR, 2);
-AudioConnection          patchCord87(ampInsOutR, 0, mixerOutI2sR, 2);
-AudioConnection          patchCord88(mixerSWPeakUsbInL, peakUsbInL);
-AudioConnection          patchCord89(mixerSWPeakUsbInR, peakUsbInR);
-AudioConnection          patchCord90(mixerSWPeakLmInL, peakLmInL);
-AudioConnection          patchCord91(mixerSWPeakLmInR, peakLmInR);
-AudioConnection          patchCord92(mixerOutI2sL, ampMasterOutI2sL);
-AudioConnection          patchCord93(mixerOutI2sL, 0, mixerSWPeakI2sL, 1);
-AudioConnection          patchCord94(mixerOutI2sR, ampMasterOutI2sR);
-AudioConnection          patchCord95(mixerOutI2sR, 0, mixerSWPeakI2sR, 1);
-AudioConnection          patchCord96(mixerOutUsbR, ampMasterOutUsbR);
-AudioConnection          patchCord97(mixerOutUsbR, 0, mixerSWPeakUsbR, 1);
-AudioConnection          patchCord98(mixerOutUsbL, ampMasterOutUsbL);
-AudioConnection          patchCord99(mixerOutUsbL, 0, mixerSWPeakUsbL, 1);
-AudioConnection          patchCord100(ampMasterOutI2sL, 0, i2sOUT, 0);
-AudioConnection          patchCord101(ampMasterOutI2sL, 0, mixerSWPeakI2sL, 0);
-AudioConnection          patchCord102(ampMasterOutI2sR, 0, i2sOUT, 1);
-AudioConnection          patchCord103(ampMasterOutI2sR, 0, mixerSWPeakI2sR, 0);
-AudioConnection          patchCord104(ampMasterOutUsbL, 0, usbOUT, 0);
-AudioConnection          patchCord105(ampMasterOutUsbL, 0, mixerSWPeakUsbL, 0);
-AudioConnection          patchCord106(ampMasterOutUsbR, 0, usbOUT, 1);
-AudioConnection          patchCord107(ampMasterOutUsbR, 0, mixerSWPeakUsbR, 0);
-AudioConnection          patchCord108(mixerSWPeakI2sL, peakI2sL);
-AudioConnection          patchCord109(mixerSWPeakI2sR, peakI2sR);
-AudioConnection          patchCord110(mixerSWPeakUsbR, peakUsbR);
-AudioConnection          patchCord111(mixerSWPeakUsbL, peakUsbL);
-AudioControlSGTL5000     sgtl5000_1;     //xy=1499.5834312438965,339.1668577194214
+AudioConnection          patchCord14(waveform3_1, 0, oscMixer3, 1);
+AudioConnection          patchCord15(waveform5_1, 0, oscMixer5, 1);
+AudioConnection          patchCord16(waveform0_1, 0, oscMixer0, 1);
+AudioConnection          patchCord17(waveform3_0, 0, oscMixer3, 0);
+AudioConnection          patchCord18(waveform1_0, 0, oscMixer1, 0);
+AudioConnection          patchCord19(waveform5_0, 0, oscMixer5, 0);
+AudioConnection          patchCord20(waveform1_1, 0, oscMixer1, 1);
+AudioConnection          patchCord21(waveform2_0, 0, oscMixer2, 0);
+AudioConnection          patchCord22(waveform2_1, 0, oscMixer2, 1);
+AudioConnection          patchCord23(waveform7_1, 0, oscMixer7, 1);
+AudioConnection          patchCord24(waveform7_0, 0, oscMixer7, 0);
+AudioConnection          patchCord25(oscMixer4, ampEnvelope4);
+AudioConnection          patchCord26(oscMixer5, ampEnvelope5);
+AudioConnection          patchCord27(oscMixer6, ampEnvelope6);
+AudioConnection          patchCord28(oscMixer0, ampEnvelope0);
+AudioConnection          patchCord29(oscMixer1, ampEnvelope1);
+AudioConnection          patchCord30(oscMixer3, ampEnvelope3);
+AudioConnection          patchCord31(oscMixer7, ampEnvelope7);
+AudioConnection          patchCord32(oscMixer2, ampEnvelope2);
+AudioConnection          patchCord33(wavetable5, 0, voiceSwitch5, 0);
+AudioConnection          patchCord34(wavetable6, 0, voiceSwitch6, 0);
+AudioConnection          patchCord35(wavetable7, 0, voiceSwitch7, 0);
+AudioConnection          patchCord36(wavetable3, 0, voiceSwitch3, 0);
+AudioConnection          patchCord37(wavetable4, 0, voiceSwitch4, 0);
+AudioConnection          patchCord38(ampEnvelope5, 0, voiceSwitch5, 1);
+AudioConnection          patchCord39(wavetable1, 0, voiceSwitch1, 0);
+AudioConnection          patchCord40(ampEnvelope4, 0, voiceSwitch4, 1);
+AudioConnection          patchCord41(wavetable2, 0, voiceSwitch2, 0);
+AudioConnection          patchCord42(ampEnvelope0, 0, voiceSwitch0, 1);
+AudioConnection          patchCord43(ampEnvelope3, 0, voiceSwitch3, 1);
+AudioConnection          patchCord44(ampEnvelope6, 0, voiceSwitch6, 1);
+AudioConnection          patchCord45(ampEnvelope7, 0, voiceSwitch7, 1);
+AudioConnection          patchCord46(ampEnvelope2, 0, voiceSwitch2, 1);
+AudioConnection          patchCord47(ampEnvelope1, 0, voiceSwitch1, 1);
+AudioConnection          patchCord48(wavetable0, 0, voiceSwitch0, 0);
+AudioConnection          patchCord49(voiceSwitch5, 0, voiceMixer0_1, 1);
+AudioConnection          patchCord50(voiceSwitch6, 0, voiceMixer0_1, 2);
+AudioConnection          patchCord51(voiceSwitch1, 0, voiceMixer0_0, 1);
+AudioConnection          patchCord52(voiceSwitch2, 0, voiceMixer0_0, 2);
+AudioConnection          patchCord53(voiceSwitch3, 0, voiceMixer0_0, 3);
+AudioConnection          patchCord54(voiceSwitch4, 0, voiceMixer0_1, 0);
+AudioConnection          patchCord55(voiceSwitch0, 0, voiceMixer0_0, 0);
+AudioConnection          patchCord56(voiceSwitch7, 0, voiceMixer0_1, 3);
+AudioConnection          patchCord57(voiceMixer0_1, 0, voiceMixer1_0, 1);
+AudioConnection          patchCord58(voiceMixer0_0, 0, voiceMixer1_0, 0);
+AudioConnection          patchCord59(voiceMixer1_0, 0, freeverbMixerL, 0);
+AudioConnection          patchCord60(voiceMixer1_0, 0, freeverbMixerR, 0);
+AudioConnection          patchCord61(freeverbBiquadL, 0, freeverbMixerL, 1);
+AudioConnection          patchCord62(freeverbBiquadR, 0, freeverbMixerR, 1);
+AudioConnection          patchCord63(freeverbMixerL, ampInsOutL);
+AudioConnection          patchCord64(freeverbMixerR, ampInsOutR);
+AudioConnection          patchCord65(i2sIN, 0, ampI2sInL, 0);
+AudioConnection          patchCord66(i2sIN, 0, mixerSWPeakLmInL, 1);
+AudioConnection          patchCord67(i2sIN, 0, peakVelocity, 0);
+AudioConnection          patchCord68(i2sIN, 1, ampI2sInR, 0);
+AudioConnection          patchCord69(i2sIN, 1, mixerSWPeakLmInR, 1);
+AudioConnection          patchCord70(usbIN, 0, ampUsbInL, 0);
+AudioConnection          patchCord71(usbIN, 0, mixerSWPeakUsbInL, 1);
+AudioConnection          patchCord72(usbIN, 1, ampUsbInR, 0);
+AudioConnection          patchCord73(usbIN, 1, mixerSWPeakUsbInR, 1);
+AudioConnection          patchCord74(ampI2sInR, 0, mixerSWPeakLmInR, 0);
+AudioConnection          patchCord75(ampI2sInR, 0, mixerOutI2sR, 0);
+AudioConnection          patchCord76(ampI2sInR, 0, mixerOutUsbR, 0);
+AudioConnection          patchCord77(ampI2sInR, peakMixerLmR);
+AudioConnection          patchCord78(ampI2sInL, 0, mixerSWPeakLmInL, 0);
+AudioConnection          patchCord79(ampI2sInL, 0, mixerOutI2sL, 0);
+AudioConnection          patchCord80(ampI2sInL, 0, mixerOutUsbL, 0);
+AudioConnection          patchCord81(ampI2sInL, peakMixerLmL);
+AudioConnection          patchCord82(ampUsbInR, 0, mixerSWPeakUsbInR, 0);
+AudioConnection          patchCord83(ampUsbInR, 0, mixerOutI2sR, 1);
+AudioConnection          patchCord84(ampUsbInR, 0, mixerOutUsbR, 1);
+AudioConnection          patchCord85(ampUsbInR, peakMixerUsbR);
+AudioConnection          patchCord86(ampUsbInL, 0, mixerSWPeakUsbInL, 0);
+AudioConnection          patchCord87(ampUsbInL, 0, mixerOutI2sL, 1);
+AudioConnection          patchCord88(ampUsbInL, 0, mixerOutUsbL, 1);
+AudioConnection          patchCord89(ampUsbInL, peakMixerUsbL);
+AudioConnection          patchCord90(ampInsOutL, peakMixerInsL);
+AudioConnection          patchCord91(ampInsOutL, 0, mixerOutUsbL, 2);
+AudioConnection          patchCord92(ampInsOutL, 0, mixerOutI2sL, 2);
+AudioConnection          patchCord93(ampInsOutR, peakMixerInsR);
+AudioConnection          patchCord94(ampInsOutR, 0, mixerOutUsbR, 2);
+AudioConnection          patchCord95(ampInsOutR, 0, mixerOutI2sR, 2);
+AudioConnection          patchCord96(mixerSWPeakUsbInL, peakUsbInL);
+AudioConnection          patchCord97(mixerSWPeakUsbInR, peakUsbInR);
+AudioConnection          patchCord98(mixerSWPeakLmInL, peakLmInL);
+AudioConnection          patchCord99(mixerSWPeakLmInR, peakLmInR);
+AudioConnection          patchCord100(mixerOutI2sL, ampMasterOutI2sL);
+AudioConnection          patchCord101(mixerOutI2sL, 0, mixerSWPeakI2sL, 1);
+AudioConnection          patchCord102(mixerOutI2sR, ampMasterOutI2sR);
+AudioConnection          patchCord103(mixerOutI2sR, 0, mixerSWPeakI2sR, 1);
+AudioConnection          patchCord104(mixerOutUsbR, ampMasterOutUsbR);
+AudioConnection          patchCord105(mixerOutUsbR, 0, mixerSWPeakUsbR, 1);
+AudioConnection          patchCord106(mixerOutUsbL, ampMasterOutUsbL);
+AudioConnection          patchCord107(mixerOutUsbL, 0, mixerSWPeakUsbL, 1);
+AudioConnection          patchCord108(ampMasterOutI2sL, 0, i2sOUT, 0);
+AudioConnection          patchCord109(ampMasterOutI2sL, 0, mixerSWPeakI2sL, 0);
+AudioConnection          patchCord110(ampMasterOutI2sR, 0, i2sOUT, 1);
+AudioConnection          patchCord111(ampMasterOutI2sR, 0, mixerSWPeakI2sR, 0);
+AudioConnection          patchCord112(ampMasterOutUsbL, 0, usbOUT, 0);
+AudioConnection          patchCord113(ampMasterOutUsbL, 0, mixerSWPeakUsbL, 0);
+AudioConnection          patchCord114(ampMasterOutUsbR, 0, usbOUT, 1);
+AudioConnection          patchCord115(ampMasterOutUsbR, 0, mixerSWPeakUsbR, 0);
+AudioConnection          patchCord116(mixerSWPeakI2sL, peakI2sL);
+AudioConnection          patchCord117(mixerSWPeakI2sR, peakI2sR);
+AudioConnection          patchCord118(mixerSWPeakUsbR, peakUsbR);
+AudioConnection          patchCord119(mixerSWPeakUsbL, peakUsbL);
+AudioControlSGTL5000     sgtl5000_1;     //xy=1400.583396911621,306.16686820983887
 // GUItool: end automatically generated code
+
 
 
 

@@ -37,10 +37,12 @@ public:
     void setOscDetune(uint8_t id, float amount);
     void setOscLevel(uint8_t id, float amount);
     void setAmpEnvelope(float delay, float attack, float decay, float sustain, float release);
+    void setNoiseLevel(float amount);
     
     AudioMixer4 *voiceSwitch;
     AudioSynthWavetable *waveTable;
     AudioSynthWaveform *waveform[2];
+    AudioSynthNoiseWhite *noise;
     AudioEffectEnvelope *ampEnv;
     float frequency;
     uint8_t curVoiceMode;

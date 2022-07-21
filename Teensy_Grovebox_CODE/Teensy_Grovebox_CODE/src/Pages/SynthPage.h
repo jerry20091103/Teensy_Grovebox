@@ -27,6 +27,8 @@ private:
     uint8_t oscPwm[2] = {50, 50};
     int8_t oscDetune[2] = {0, 0};
     uint8_t oscLevel[2] = {90, 90};
+    // noise
+    uint8_t noiseLevel = 0;
     // amp env
     uint8_t ampEnvVal[5] = {0, 0, 0, 100, 0};
 
@@ -40,6 +42,7 @@ private:
     lv_obj_t* menu;
     lv_obj_t* menu_main;
     lv_obj_t* menu_osc[2];
+    lv_obj_t* menu_noise;
     lv_obj_t* menu_ampenv;
     lv_obj_t* volArc;
     lv_obj_t* volText;
@@ -60,6 +63,9 @@ private:
     lv_obj_t* oscPwmText[2];
     lv_obj_t* oscDetuneText[2];
     lv_obj_t* oscLevelText[2];
+    // noise
+    lv_obj_t *noiseArc;
+    lv_obj_t *noiseLevelText;
     // amp env
     lv_obj_t* ampEnvGraph;
     lv_point_t ampEnvPoints[10];
@@ -79,6 +85,8 @@ private:
     static void onOscArcPressed(lv_event_t *e);
     static void onOscOctaveSelect(lv_event_t* e);
     static void onOscSemiSelect(lv_event_t* e);
+    // noise
+    static void onNoiseArcPressed(lv_event_t *e);
     // amp env
     static void onAmpEnvArcPressed(lv_event_t *e);
 

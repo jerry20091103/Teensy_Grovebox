@@ -141,3 +141,8 @@ void AudioVoice::setAmpEnvelope(float delay, float attack, float decay, float su
     ampEnv->sustain(sustain);
     ampEnv->release(release);
 }
+
+void AudioVoice::setNoiseLevel(float amount)
+{
+    noise->amplitude(amount);
+}

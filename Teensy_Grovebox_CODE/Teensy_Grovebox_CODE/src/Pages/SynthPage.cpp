@@ -188,6 +188,18 @@ void SynthPage::onOscSemiSelect(lv_event_t *e)
     lv_label_set_text_fmt(instance->oscSemiText[id], "%d", instance->oscSemi[id]);
 }
 
+void SynthPage::onNoiseArcPressed(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    lv_obj_t *arc = lv_event_get_target(e);
+    int16_t value = lv_arc_get_value(arc);
+
+    enc[0]->setCurrentReading(value);
+    instance->noiseLevel = value;
+    AudioSynth.setNoiseLevel(value);
+    lv_label_set_text_fmt(instance->noiseLevelText, "%d", value);
+}
+
 void SynthPage::onAmpEnvArcPressed(lv_event_t *e)
 {
     SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
@@ -381,6 +393,16 @@ void SynthPage::onEncTurned(uint8_t id, int value)
         }
         lv_event_send(oscArc[1][id], LV_EVENT_VALUE_CHANGED, NULL);
     }
+    else if (curMenu == menu_noise)
+    {
+        switch (id)
+        {
+        case 0: // level
+            lv_arc_set_value(noiseArc, value);
+            break;
+        }
+        lv_event_send(noiseArc, LV_EVENT_VALUE_CHANGED, NULL);
+    }
     else if (curMenu == menu_ampenv)
     {
         lv_arc_set_value(ampEnvArc[id + 1], value);
@@ -446,6 +468,11 @@ void SynthPage::configureEncoders()
         // level
         enc[2]->changePrecision(100, oscLevel[1], false);
     }
+    else if (curMenu == menu_noise)
+    {
+        // level
+        enc[0]->changePrecision(100, noiseLevel, false);
+    }
     else if (curMenu == menu_ampenv)
     {
         // attack
@@ -504,6 +531,11 @@ void SynthPage::setUserData()
         AudioSynth.setOscLevel(id, oscLevel[id]);
         lv_label_set_text_fmt(oscLevelText[id], "%d", oscLevel[id]);
     }
+
+    // noise menu
+    lv_arc_set_value(noiseArc, noiseLevel);
+    AudioSynth.setNoiseLevel(noiseLevel);
+    lv_label_set_text_fmt(noiseLevelText, "%d", noiseLevel);
 
     // amp env menu
     for (uint8_t id=0; id<5; id++)
@@ -662,9 +694,21 @@ void SynthPage::init()
         lv_arc_set_range(oscArc[id][2], 0, 100);
         lv_obj_add_event_cb(oscArc[id][2], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
     }
+    // *MENU NOISE------------------------------------------------------------------
+    menu_noise = lv_menu_page_create(menu, "Noise Generator");
+    lv_obj_t *menu_area = createItemMenuArea(menu_noise);
+    // *level arc
+    noiseArc = Gui_CreateParamArc(menu_area, 1, "Level", "%", false);
+    lv_obj_align(noiseArc, LV_ALIGN_TOP_LEFT, 0, 100);
+    // level text
+    noiseLevelText = lv_label_create(noiseArc);
+    lv_obj_center(noiseLevelText);
+    // set value
+    lv_arc_set_range(noiseArc, 0, 100);
+    lv_obj_add_event_cb(noiseArc, onNoiseArcPressed, LV_EVENT_VALUE_CHANGED, this);
     // *MENU AMPENV-----------------------------------------------------------------
     menu_ampenv = lv_menu_page_create(menu, "Amp Envelope");
-    lv_obj_t *menu_area = createItemMenuArea(menu_ampenv);
+    menu_area = createItemMenuArea(menu_ampenv);
     lv_obj_clear_flag(menu_area, LV_OBJ_FLAG_SCROLLABLE);
     // *envelope graph
     ampEnvGraph = Gui_CreateEnvelopeGraph(menu_area, 320, 90);
@@ -789,6 +833,11 @@ void SynthPage::init()
     oscWaveItemImg[1] = lv_img_create(btn);
     lv_obj_set_align(oscWaveItemImg[1], LV_ALIGN_LEFT_MID);
     lv_menu_set_load_page_event(menu, btn, menu_osc[1]);
+    // noise button
+    btn = createItemBtn(col, "Noise");
+    lv_obj_set_y(btn, 70);
+    lv_obj_center(lv_obj_get_child(btn, 0));
+    lv_menu_set_load_page_event(menu, btn, menu_noise);
 
     // *column 2
     col = lv_obj_create(itemArea);
@@ -801,14 +850,14 @@ void SynthPage::init()
     lv_obj_center(lv_obj_get_child(btn, 0));
     lv_menu_set_load_page_event(menu, btn, menu_ampenv);
 
-    // *container 3
+    // *column 3
     col = lv_obj_create(itemArea);
     lv_obj_set_size(col, 80, 105);
     lv_obj_set_style_bg_color(col, lv_color_black(), 0);
     lv_obj_set_style_pad_all(col, 2, 0);
     lv_obj_set_x(col, 160);
 
-    // *container 4
+    // *column 4
     col = lv_obj_create(itemArea);
     lv_obj_set_size(col, 80, 105);
     lv_obj_set_style_bg_color(col, lv_color_black(), 0);

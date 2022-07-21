@@ -33,7 +33,8 @@ AudioSynth_::AudioSynth_()
     mainVolume[0] = &ampInsOutL;
     mainVolume[1] = &ampInsOutR;
 
-    // initiailze all voices
+    // *initiailze all voices
+    // wavetable synth
     voiceArr[0].waveTable = &wavetable0;
     voiceArr[1].waveTable = &wavetable1;
     voiceArr[2].waveTable = &wavetable2;
@@ -42,7 +43,7 @@ AudioSynth_::AudioSynth_()
     voiceArr[5].waveTable = &wavetable5;
     voiceArr[6].waveTable = &wavetable6;
     voiceArr[7].waveTable = &wavetable7;
-
+    // 2 waveforms
     voiceArr[0].waveform[0] = &waveform0_0;
     voiceArr[0].waveform[1] = &waveform0_1;
     voiceArr[1].waveform[0] = &waveform1_0;
@@ -59,7 +60,16 @@ AudioSynth_::AudioSynth_()
     voiceArr[6].waveform[1] = &waveform6_1;
     voiceArr[7].waveform[0] = &waveform7_0;
     voiceArr[7].waveform[1] = &waveform7_1;
-
+    // noise generator
+    voiceArr[0].noise = &noise0;
+    voiceArr[1].noise = &noise1;
+    voiceArr[2].noise = &noise2;
+    voiceArr[3].noise = &noise3;
+    voiceArr[4].noise = &noise4;
+    voiceArr[5].noise = &noise5;
+    voiceArr[6].noise = &noise6;
+    voiceArr[7].noise = &noise7;
+    // voice mode switch
     voiceArr[0].voiceSwitch = &voiceSwitch0;
     voiceArr[1].voiceSwitch = &voiceSwitch1;
     voiceArr[2].voiceSwitch = &voiceSwitch2;
@@ -68,7 +78,7 @@ AudioSynth_::AudioSynth_()
     voiceArr[5].voiceSwitch = &voiceSwitch5;
     voiceArr[6].voiceSwitch = &voiceSwitch6;
     voiceArr[7].voiceSwitch = &voiceSwitch7;
-
+    // amp envelope
     voiceArr[0].ampEnv = &ampEnvelope0;
     voiceArr[1].ampEnv = &ampEnvelope1;
     voiceArr[2].ampEnv = &ampEnvelope2;
@@ -77,23 +87,31 @@ AudioSynth_::AudioSynth_()
     voiceArr[5].ampEnv = &ampEnvelope5;
     voiceArr[6].ampEnv = &ampEnvelope6;
     voiceArr[7].ampEnv = &ampEnvelope7;
-
+    // osc mixer
     oscMixer0.gain(0, 1);
     oscMixer0.gain(1, 1);
+    oscMixer0.gain(2, 1);
     oscMixer1.gain(0, 1);
     oscMixer1.gain(1, 1);
+    oscMixer1.gain(2, 1);
     oscMixer2.gain(0, 1);
     oscMixer2.gain(1, 1);
+    oscMixer2.gain(2, 1);
     oscMixer3.gain(0, 1);
     oscMixer3.gain(1, 1);
+    oscMixer3.gain(2, 1);
     oscMixer4.gain(0, 1);
     oscMixer4.gain(1, 1);
+    oscMixer4.gain(2, 1);
     oscMixer5.gain(0, 1);
     oscMixer5.gain(1, 1);
+    oscMixer5.gain(2, 1);
     oscMixer6.gain(0, 1);
     oscMixer6.gain(1, 1);
+    oscMixer6.gain(2, 1);
     oscMixer7.gain(0, 1);
     oscMixer7.gain(1, 1);
+    oscMixer7.gain(2, 1);
 
     for (int i = 0; i < MAX_VOICE; i++)
     {
@@ -326,5 +344,18 @@ void AudioSynth_::setAmpEnvelope(float delay, float attack, float decay, float s
     for (int i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].setAmpEnvelope(delay, attack, decay, sustain, release);
+    }
+}
+
+void AudioSynth_::setNoiseLevel(float amount)
+{
+    float gain;
+    if(amount > 0)
+        gain = dBtoGain(amount * 0.5f - 50);
+    else
+        gain = 0;
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setNoiseLevel(gain);
     }
 }
