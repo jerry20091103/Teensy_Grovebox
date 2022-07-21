@@ -13,8 +13,7 @@
 class SynthPage : public Pages
 {
 private:
-    // todo: add memory
-    // ! also need new load user data function in pages class
+    // todo: add permenant memory
     // *user data
     uint8_t octave = 4;
     int8_t volume = 0;
@@ -25,9 +24,9 @@ private:
     uint8_t oscWaveform[2] = {0, 0};
     int8_t oscOctave[2] = {0, 0};
     int8_t oscSemi[2] = {0, 0};
-    uint8_t oscPwm[2] = {0, 50};
+    uint8_t oscPwm[2] = {50, 50};
     int8_t oscDetune[2] = {0, 0};
-    uint8_t oscLevel[2] = {90, 80};
+    uint8_t oscLevel[2] = {90, 90};
     // amp env
     uint8_t ampEnvVal[5] = {0, 0, 0, 100, 0};
 
@@ -49,7 +48,10 @@ private:
     lv_obj_t* octaveText;
     lv_obj_t* pitchDropdown;
     lv_obj_t* pitchText;
+    lv_obj_t* pitchBtn;
+    lv_obj_t* velocityBtn;
     // osc
+    lv_obj_t *oscWaveDropdown[2];
     lv_obj_t* oscWaveImg[2];
     lv_obj_t* oscWaveItemImg[2];
     lv_obj_t* oscOctaveText[2];
@@ -94,6 +96,7 @@ public:
     void onJoyUpdate(int joy_x, int joy_y);
     void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value);
     void configurePage();
+    void setUserData();
 
     void update();
     PROGMEM void init();

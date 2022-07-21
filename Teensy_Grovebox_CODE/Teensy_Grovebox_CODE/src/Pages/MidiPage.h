@@ -21,6 +21,8 @@ private:
     lv_obj_t *ccArc[4];
     lv_obj_t *octaveText;
     lv_obj_t *channelText;
+    lv_obj_t *pitchBtn;
+    lv_obj_t *modBtn;
 
     // user data
     uint8_t curCC[4] = {11, 12, 13, 14}; // stores the current CC number each encoder is set to
@@ -52,6 +54,7 @@ public:
     void onJoyUpdate(int joy_x, int joy_y);
     void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value);
     void configurePage();
+    void setUserData();
 
     void update();
     PROGMEM void init(); 

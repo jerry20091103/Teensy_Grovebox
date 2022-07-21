@@ -72,15 +72,21 @@ void PageManager_::Init()
         i->init();
         Serial.println("Page init" + String(i->pageID));
     }
+}
 
-
-    // switch to the first page
-    PageManager.switchPage(PG_HOME);
+void PageManager_::setUserData()
+{
+    for(auto i : PageArr)
+    {
+        if(i == nullptr)
+            continue;
+        i->setUserData();
+        Serial.println("Page setUserData" + String(i->pageID));
+    }
 }
 
 void PageManager_::switchPage(uint8_t pageID)
 {
-    Serial.println(pageID);
     navStack.push(pageID);
     // set title text
     lv_label_set_text(title, PageArr[pageID]->pageName);

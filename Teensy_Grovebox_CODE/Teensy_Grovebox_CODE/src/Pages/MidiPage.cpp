@@ -241,13 +241,11 @@ void MidiPage::init()
     for (uint8_t i = 0; i < 4; i++)
     {
         ccArc[i] = Gui_CreateParamArc(arcGroup, i + 1, NULL, NULL);
-        lv_arc_set_value(ccArc[i], storeCC[curCC[i] - CC_MIN]);
         lv_arc_set_range(ccArc[i], 0, 127);
         lv_obj_set_x(ccArc[i], lv_pct(25 * i));
         lv_obj_add_event_cb(ccArc[i], onArcValueChanged, LV_EVENT_VALUE_CHANGED, this);
         ccText[i] = lv_label_create(ccArc[i]);
         lv_obj_center(ccText[i]);
-        lv_label_set_text_fmt(ccText[i], "%d", curCC[i]);
     }
     // button group
     lv_obj_t *btnGroup = lv_obj_create(screen);
@@ -257,22 +255,18 @@ void MidiPage::init()
     lv_obj_set_pos(btnGroup, 0, 105);
     lv_obj_clear_flag(btnGroup, LV_OBJ_FLAG_SCROLLABLE);
     // pitchbend button
-    lv_obj_t *btn = Gui_CreateButton(btnGroup, true);
-    if (usePitchbend)
-        lv_obj_add_state(btn, LV_STATE_CHECKED);
-    lv_obj_add_event_cb(btn, onTogglePitchbend, LV_EVENT_CLICKED, this);
-    lv_obj_set_width(btn, 90);
-    lv_obj_t *label = lv_label_create(btn);
+    pitchBtn = Gui_CreateButton(btnGroup, true);
+    lv_obj_add_event_cb(pitchBtn, onTogglePitchbend, LV_EVENT_CLICKED, this);
+    lv_obj_set_width(pitchBtn, 90);
+    lv_obj_t *label = lv_label_create(pitchBtn);
     lv_label_set_text(label, "PitchBend");
     lv_obj_center(label);
     // mod button
-    btn = Gui_CreateButton(btnGroup, true);
-    if (useModwheel)
-        lv_obj_add_state(btn, LV_STATE_CHECKED);
-    lv_obj_add_event_cb(btn, onToggleModwheel, LV_EVENT_CLICKED, this);
-    lv_obj_set_width(btn, 90);
-    lv_obj_set_y(btn, 45);
-    label = lv_label_create(btn);
+    modBtn = Gui_CreateButton(btnGroup, true);
+    lv_obj_add_event_cb(modBtn, onToggleModwheel, LV_EVENT_CLICKED, this);
+    lv_obj_set_width(modBtn, 90);
+    lv_obj_set_y(modBtn, 45);
+    label = lv_label_create(modBtn);
     lv_label_set_text(label, "ModWheel");
     lv_obj_center(label);
     // octave select
@@ -280,7 +274,7 @@ void MidiPage::init()
     lv_label_set_text(label, "Octave:");
     lv_obj_set_pos(label, 110, 7);
 
-    btn = Gui_CreateButton(btnGroup);
+    lv_obj_t *btn = Gui_CreateButton(btnGroup);
     lv_obj_set_x(btn, 180);
     lv_obj_add_event_cb(btn, onOctaveDec, LV_EVENT_CLICKED, this);
     label = lv_label_create(btn);
@@ -288,7 +282,6 @@ void MidiPage::init()
 
     octaveText = lv_label_create(btnGroup);
     lv_obj_set_style_text_font(octaveText, font_large, 0);
-    lv_label_set_text_fmt(octaveText, "%d", octave);
     lv_obj_set_pos(octaveText, 232, 7);
 
     btn = Gui_CreateButton(btnGroup);
@@ -310,7 +303,6 @@ void MidiPage::init()
 
     channelText = lv_label_create(btnGroup);
     lv_obj_set_style_text_font(channelText, font_large, 0);
-    lv_label_set_text_fmt(channelText, "%d", midiChannel);
     lv_obj_set_pos(channelText, 232, 7 + 45);
 
     btn = Gui_CreateButton(btnGroup);
@@ -446,4 +438,26 @@ void MidiPage::configurePage()
             switches.changeEncoderPrecision(i, 127, storeCC[curCC[i] - CC_MIN], false);
         }
     }
+}
+
+void MidiPage::setUserData()
+{
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        lv_arc_set_value(ccArc[i], storeCC[curCC[i] - CC_MIN]);
+        lv_label_set_text_fmt(ccText[i], "%d", curCC[i]);
+    }
+
+    lv_label_set_text_fmt(octaveText, "%d", octave);
+    lv_label_set_text_fmt(channelText, "%d", midiChannel);
+
+    if (usePitchbend)
+        lv_obj_add_state(pitchBtn, LV_STATE_CHECKED);
+    else
+        lv_obj_clear_state(pitchBtn, LV_STATE_CHECKED);
+    
+    if (useModwheel)
+        lv_obj_add_state(modBtn, LV_STATE_CHECKED);
+    else
+        lv_obj_clear_state(modBtn, LV_STATE_CHECKED);
 }

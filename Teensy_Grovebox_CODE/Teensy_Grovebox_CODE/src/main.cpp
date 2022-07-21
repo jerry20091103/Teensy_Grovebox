@@ -75,6 +75,9 @@ void setup()
 
     // Initialize hardware
     HardwareSetup();
+    // set GUI data and switch to first page
+    PageManager.setUserData();
+    PageManager.switchPage(PG_HOME);
     // Schedule regular tasks
     taskManager.scheduleFixedRate(5, updateGui);
     taskManager.scheduleFixedRate(30, updatePage);

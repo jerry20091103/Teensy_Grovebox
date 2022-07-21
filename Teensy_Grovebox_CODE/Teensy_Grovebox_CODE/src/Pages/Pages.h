@@ -35,8 +35,10 @@ public:
     virtual void onJoyUpdate(int joy_x, int joy_y) = 0;
     // Page MIDI control change signal received callback
     virtual void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value) = 0;
-    // Configure a page before swithcing to it. Sets encoders and prepare variables.
+    // Configure a page before swithcing to it. Sets encoders and prepare variables. This function should be called after HardwareSetup().
     virtual void configurePage() = 0;
+    // set user data to GUI elements. This function should be called after HardwareSetup().
+    virtual void setUserData() = 0;
 
     // this updates the page approximately every frame
     virtual void update() = 0;
@@ -70,6 +72,8 @@ public:
     void showPowerPopup();
     // Go back to previous page
     void goBack();
+    // set user data to GUI elements in all pages. This function should be called after HardwareSetup().
+    void setUserData();
     // a global pointer variable for parameter passing when switching pages
     void *pageParam;
 private:

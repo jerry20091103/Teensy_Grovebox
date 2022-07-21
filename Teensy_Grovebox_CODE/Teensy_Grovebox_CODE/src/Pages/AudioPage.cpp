@@ -55,6 +55,7 @@ void AudioPage::onInputSwitch(lv_event_t *e)
         lv_arc_set_range(instance->gainArc, 0, MIC_GAIN_MAX);
         lv_arc_set_value(instance->gainArc, instance->gain[1]);
     }
+    instance->updateInputGain(instance->gain[instance->inputSource]);
 }
 
 // update encoder value and variables when arc is pressed
@@ -283,13 +284,65 @@ void AudioPage::configurePage()
     }
 }
 
+void AudioPage::setUserData()
+{
+    // output tab
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        updateOutVol((MasterTracks)i, OutVol[i]);
+        lv_arc_set_value(OutArc[i], OutVol[i]);
+    }
+    updateHpVol(hpVol);
+    lv_arc_set_value(hpArc, hpVol);
+    setPFL(usePFL);
+    if (usePFL)
+        lv_obj_add_state(OutPflBtn, LV_STATE_CHECKED);
+    else
+        lv_obj_clear_state(OutPflBtn, LV_STATE_CHECKED);
+    // input tab
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        updateInVol((InputTracks)i, InVol[i]);
+        lv_arc_set_value(InArc[i], InVol[i]);
+    }
+    updateInputGain(gain[inputSource]);
+    if (inputSource == 0)
+    {
+        lv_arc_set_range(gainArc, 0, LINE_GAIN_MAX);
+        lv_obj_add_state(lineBtn, LV_STATE_CHECKED);
+        lv_obj_clear_state(micBtn, LV_STATE_CHECKED);
+        sgtl5000_1.inputSelect(AUDIO_INPUT_LINEIN);
+    }
+    else
+    {
+        lv_arc_set_range(gainArc, 0, MIC_GAIN_MAX);
+        lv_obj_add_state(micBtn, LV_STATE_CHECKED);
+        lv_obj_clear_state(lineBtn, LV_STATE_CHECKED);
+        sgtl5000_1.inputSelect(AUDIO_INPUT_MIC);
+    }
+    lv_arc_set_value(gainArc, gain[inputSource]);
+    if (usePFL)
+        lv_obj_add_state(InPflBtn, LV_STATE_CHECKED);
+    else
+        lv_obj_clear_state(InPflBtn, LV_STATE_CHECKED);
+    // post-dsp tab
+
+    // output mixer window
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        updateMixerVol((MixerTracks)i, mixerVol[MasterTracks::ANALOG_OUT][i]);
+        updateMixerVol((MixerTracks)i, mixerVol[MasterTracks::USB_OUT][i]);
+        lv_arc_set_value(mixerArc[i], mixerVol[currentMasterForMixer][i]);
+    }
+}
+
 void AudioPage::update()
 {
     floatStereo inFS, outFS, mixerFS;
     float in_peak[2];
     float out_peak[2];
     float mixer_peak[2];
-    // input and output
+    // input
     for (uint8_t i = 0; i < 2; i++)
     {
         inFS = AudioIO.getInputPeak((InputTracks)i);
@@ -421,8 +474,6 @@ void AudioPage::init()
         // set arc position
         lv_obj_set_y(OutArc[i], i * 80);
         // set value
-        updateOutVol((MasterTracks)i, OutVol[i]);
-        lv_arc_set_value(OutArc[i], OutVol[i]);
         Gui_setArcIdFlag(OutArc[i], i);
         // set callback
         lv_obj_add_event_cb(OutArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
@@ -450,15 +501,11 @@ void AudioPage::init()
     hpVolText = lv_label_create(hpArc);
     lv_obj_center(hpVolText);
     // set value
-    updateHpVol(hpVol);
-    lv_arc_set_value(hpArc, hpVol);
     Gui_setArcIdFlag(hpArc, 2);
     lv_obj_add_event_cb(hpArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
     // PFL button
     OutPflBtn = Gui_CreateButton(hpArc, true);
-    if (usePFL)
-        lv_obj_add_state(OutPflBtn, LV_STATE_CHECKED);
     lv_obj_add_event_cb(OutPflBtn, onPFLBtnPressed, LV_EVENT_CLICKED, this);
     lv_obj_set_width(OutPflBtn, 60);
     lv_obj_align(OutPflBtn, LV_ALIGN_BOTTOM_MID, 0, 40);
@@ -481,8 +528,6 @@ void AudioPage::init()
         // set arc position
         lv_obj_set_pos(InArc[i], 90, i * 80);
         // set value
-        updateInVol((InputTracks)i, InVol[i]);
-        lv_arc_set_value(InArc[i], InVol[i]);
         Gui_setArcIdFlag(InArc[i], i + 3);
         // set callback
         lv_obj_add_event_cb(InArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
@@ -495,13 +540,6 @@ void AudioPage::init()
     gainText = lv_label_create(gainArc);
     lv_obj_align(gainText, LV_ALIGN_CENTER, 0, 0);
     // set value
-    updateInputGain(gain[inputSource]);
-    if (inputSource == 0)
-        lv_arc_set_range(gainArc, 0, LINE_GAIN_MAX);
-    else
-        lv_arc_set_range(gainArc, 0, MIC_GAIN_MAX);
-
-    lv_arc_set_value(gainArc, gain[inputSource]);
     Gui_setArcIdFlag(gainArc, 5);
     lv_obj_add_event_cb(gainArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
@@ -528,18 +566,11 @@ void AudioPage::init()
     label = lv_label_create(micBtn);
     lv_label_set_text(label, "MIC");
     lv_obj_center(label);
-    // set initial input
-    if (inputSource == 0)
-        lv_obj_add_state(lineBtn, LV_STATE_CHECKED);
-    else
-        lv_obj_add_state(micBtn, LV_STATE_CHECKED);
 
     // PFL button
     InPflBtn = Gui_CreateButton(tab2, true);
     lv_obj_set_pos(InPflBtn, 250, 0);
     lv_obj_add_event_cb(InPflBtn, onPFLBtnPressed, LV_EVENT_CLICKED, this);
-    if (usePFL)
-        lv_obj_add_state(InPflBtn, LV_STATE_CHECKED);
     lv_obj_set_height(InPflBtn, 25);
     label = lv_label_create(InPflBtn);
     lv_label_set_text(label, "PFL");
@@ -582,9 +613,6 @@ void AudioPage::init()
         // set arc position
         lv_obj_set_y(mixerArc[i], i * 75);
         // set value
-        updateMixerVol((MixerTracks)i, mixerVol[MasterTracks::ANALOG_OUT][i]);
-        updateMixerVol((MixerTracks)i, mixerVol[MasterTracks::USB_OUT][i]);
-        lv_arc_set_value(mixerArc[i], mixerVol[currentMasterForMixer][i]);
         Gui_setArcIdFlag(mixerArc[i], 6 + i);
         // set callback
         lv_obj_add_event_cb(mixerArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);

@@ -34,6 +34,8 @@ private:
     lv_obj_t* octaveText;
     lv_obj_t* pitchDropdown;
     lv_obj_t* pitchText;
+    lv_obj_t* pitchBtn;
+    lv_obj_t* velocityBtn;
 
     // lvgl gui callbacks
     static void onVelocityBtnPressed(lv_event_t* e);
@@ -54,6 +56,7 @@ public:
     void onJoyUpdate(int joy_x, int joy_y);
     void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value);
     void configurePage();
+    void setUserData();
 
     void update();
     PROGMEM void init();

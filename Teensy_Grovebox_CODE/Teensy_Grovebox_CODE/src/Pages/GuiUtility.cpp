@@ -158,8 +158,6 @@ void Gui_SetEnvelopeGraph(lv_obj_t *graph, lv_point_t *points, float delay, floa
 {
     int16_t w = lv_obj_get_width(graph) - 20; // minus the padding
     int16_t h = lv_obj_get_height(graph) - 10;
-    Serial.println(w);
-    Serial.println(h);
     // get the total length in ms 
     float total = delay + attack + decay + release;
     // add padding if the total length is less than 200ms
