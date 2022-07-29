@@ -15,18 +15,18 @@ class AudioSynth_
 private:
     struct noteEntry
     {
-        noteEntry(){}
+        noteEntry() {}
         noteEntry(uint8_t note, uint8_t voiceInd) : note(note), voiceIndex(voiceInd) {}
-        uint8_t note; // the MIDI note number
+        uint8_t note;       // the MIDI note number
         uint8_t voiceIndex; // the assigned voice in the voiceArr[] array
     };
-    
+
     std::list<noteEntry> playingNote;
     std::list<noteEntry> idleNote;
-    
+
     AudioVoice voiceArr[MAX_VOICE];
 
-    AudioMixer4 *voiceMixer[MAX_VOICE/4];
+    AudioMixer4 *voiceMixer[MAX_VOICE / 4];
     AudioMixer4 *voiceFinalMixer;
 
     AudioAmplifier *mainVolume[2];
@@ -37,7 +37,7 @@ private:
     float curPitchbend = 0;
 
 public:
-    AudioSynth_();
+    PROGMEM AudioSynth_();
     void noteOn(uint8_t note);
     void noteOff(uint8_t note);
     void sustainOn();
@@ -55,18 +55,17 @@ public:
     void setOscLevel(uint8_t id, uint8_t amount);
     void setAmpEnvelope(float delay, float attack, float decay, float sustain, float release);
     void setNoiseLevel(float amount);
+    void setLadderFreq(float freq);
+    void setLadderResonance(float amount);
+    void setLadderDrive(float amount);
+    void setLadderPassbandGain(float amount);
 
     // set master output volume in dB
     void setMasterVol(int8_t vol);
 
     float velocity = 0;
-
 };
 
 extern AudioSynth_ AudioSynth;
-
-
-
-
 
 #endif

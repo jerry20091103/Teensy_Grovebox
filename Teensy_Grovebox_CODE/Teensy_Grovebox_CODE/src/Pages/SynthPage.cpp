@@ -277,6 +277,51 @@ void SynthPage::onAmpEnvArcPressed(lv_event_t *e)
     }
 }
 
+void SynthPage::onFilterArcPressed(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    lv_obj_t *arc = lv_event_get_target(e);
+    int16_t value = lv_arc_get_value(arc);
+    uint8_t flag = Gui_getArcIdFlag(arc);
+    enc[flag]->setCurrentReading(value);
+    instance->filterVal[flag] = value;
+    float freq;
+    int decimal;
+    switch (flag)
+    {
+    case 0: // cut off
+        freq = pow10f(value / 100.0f) * 20.0f;
+        AudioSynth.setLadderFreq(freq);
+        if (freq >= 1000)
+        {
+            freq /= 1000.0f;
+            lv_label_set_text(lv_obj_get_child(arc, 1), "kHz");
+        }
+        else
+        {
+            lv_label_set_text(lv_obj_get_child(arc, 1), "Hz");
+        }
+        if (freq < 100)
+            decimal = 2;
+        else
+            decimal = 1;
+        lv_label_set_text_fmt(instance->filterText[flag], "%.*f", decimal, freq);
+        break;
+    case 1: // resonance
+        AudioSynth.setLadderResonance(value / 100.0f);
+        lv_label_set_text_fmt(instance->filterText[flag], "%d", value);
+        break;
+    case 2: // drive
+        AudioSynth.setLadderDrive(value / 100.0f);
+        lv_label_set_text_fmt(instance->filterText[flag], "%d", value);
+        break;
+    case 3: // passband gain
+        AudioSynth.setLadderPassbandGain(value / 100.0f);
+        lv_label_set_text_fmt(instance->filterText[flag], "%d", value);
+        break;
+    }
+}
+
 void SynthPage::onBtnPressed(uint8_t pin)
 {
     int noteNum;
@@ -408,6 +453,11 @@ void SynthPage::onEncTurned(uint8_t id, int value)
         lv_arc_set_value(ampEnvArc[id + 1], value);
         lv_event_send(ampEnvArc[id + 1], LV_EVENT_VALUE_CHANGED, NULL);
     }
+    else if (curMenu == menu_filter)
+    {
+        lv_arc_set_value(filterArc[id], value);
+        lv_event_send(filterArc[id], LV_EVENT_VALUE_CHANGED, NULL);
+    }
 }
 
 void SynthPage::onJoyUpdate(int joy_x, int joy_y)
@@ -484,6 +534,17 @@ void SynthPage::configureEncoders()
         // release
         enc[3]->changePrecision(ENV_VAL_MAX, ampEnvVal[4], false);
     }
+    else if (curMenu == menu_filter)
+    {
+        // cut off
+        enc[0]->changePrecision(300, filterVal[0], false);
+        // resonance
+        enc[1]->changePrecision(100, filterVal[1], false);
+        // drive
+        enc[2]->changePrecision(100, filterVal[2], false);
+        // passband gain
+        enc[3]->changePrecision(100, filterVal[3], false);
+    }
 }
 
 void SynthPage::setUserData()
@@ -508,7 +569,7 @@ void SynthPage::setUserData()
     lv_img_set_src(oscWaveItemImg[1], getWaveImg(oscWaveform[1]));
 
     // osc1 and osc2 menu
-    for (uint8_t id=0; id<2; id++)
+    for (uint8_t id = 0; id < 2; id++)
     {
         lv_dropdown_set_selected(oscWaveDropdown[id], oscWaveform[id]);
         lv_event_send(oscWaveDropdown[id], LV_EVENT_VALUE_CHANGED, NULL);
@@ -538,12 +599,17 @@ void SynthPage::setUserData()
     lv_label_set_text_fmt(noiseLevelText, "%d", noiseLevel);
 
     // amp env menu
-    for (uint8_t id=0; id<5; id++)
+    for (uint8_t id = 0; id < 5; id++)
     {
         lv_arc_set_value(ampEnvArc[id], ampEnvVal[id]);
         lv_event_send(ampEnvArc[id], LV_EVENT_VALUE_CHANGED, NULL);
     }
-    
+    // filter menu
+    for (uint8_t id = 0; id < 4; id++)
+    {
+        lv_arc_set_value(filterArc[id], filterVal[id]);
+        lv_event_send(filterArc[id], LV_EVENT_VALUE_CHANGED, NULL);
+    }
 }
 
 void SynthPage::update()
@@ -729,6 +795,33 @@ void SynthPage::init()
         lv_obj_center(ampEnvText[i]);
     }
 
+    // *MENU FILTER-----------------------------------------------------------------
+    menu_filter = lv_menu_page_create(menu, "Low Pass Filter");
+    menu_area = createItemMenuArea(menu_filter);
+    // * 4 filter arcs
+    const char *filterTitle[] = {"Cutoff", "Resonance", "Drive", "Passband\nGain"};
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        switch (i)
+        {
+        case 0: // cut off
+            filterArc[i] = Gui_CreateParamArc(menu_area, i + 1, filterTitle[i], "Hz", false);
+            lv_arc_set_range(filterArc[i], 0, 300);
+            break;
+        case 1: // resonance
+        case 2: // drive
+        case 3: // passband gain
+            filterArc[i] = Gui_CreateParamArc(menu_area, i + 1, filterTitle[i], "%", false);
+            lv_arc_set_range(filterArc[i], 0, 100);
+            break;
+        }
+        lv_obj_align(filterArc[i], LV_ALIGN_BOTTOM_MID, -120 + 80 * i, 0);
+        Gui_setArcIdFlag(filterArc[i], i);
+        lv_obj_add_event_cb(filterArc[i], onFilterArcPressed, LV_EVENT_VALUE_CHANGED, this);
+        filterText[i] = lv_label_create(filterArc[i]);
+        lv_obj_center(filterText[i]);
+    }
+
     // *MENU MAIN-------------------------------------------------------------------
     menu_main = lv_menu_page_create(menu, NULL);
     lv_menu_set_page(menu, menu_main);
@@ -852,10 +945,14 @@ void SynthPage::init()
 
     // *column 3
     col = lv_obj_create(itemArea);
+    lv_obj_remove_style_all(col);
     lv_obj_set_size(col, 80, 105);
-    lv_obj_set_style_bg_color(col, lv_color_black(), 0);
     lv_obj_set_style_pad_all(col, 2, 0);
     lv_obj_set_x(col, 160);
+    // filter button
+    btn = createItemBtn(col, "Filter");
+    lv_obj_center(lv_obj_get_child(btn, 0));
+    lv_menu_set_load_page_event(menu, btn, menu_filter);
 
     // *column 4
     col = lv_obj_create(itemArea);

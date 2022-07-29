@@ -45,11 +45,6 @@ void AudioVoice::noteOff()
     }
 }
 
-void AudioVoice::setInstrument(const AudioSynthWavetable::instrument_data &instrument)
-{
-    waveTable->setInstrument(instrument);
-}
-
 // set the amount of pitch bend in semitones
 void AudioVoice::setPitchbend(float semitone)
 {
@@ -115,21 +110,10 @@ void AudioVoice::setOscSemi(uint8_t id, int8_t value)
     setOscFreq(id, frequency);
 }
 
-void AudioVoice::setOscPwm(uint8_t id, uint8_t duty)
-{
-    waveform[id]->pulseWidth(duty * 0.01f);
-}
-
 void AudioVoice::setOscDetune(uint8_t id, float amount)
 {
     oscDetune[id] = amount;
     setOscFreq(id, frequency);
-}
-
-void AudioVoice::setOscLevel(uint8_t id, float amount)
-{
-    
-    waveform[id]->amplitude(amount);
 }
 
 void AudioVoice::setAmpEnvelope(float delay, float attack, float decay, float sustain, float release)
@@ -140,9 +124,4 @@ void AudioVoice::setAmpEnvelope(float delay, float attack, float decay, float su
     ampEnv->decay(decay);
     ampEnv->sustain(sustain);
     ampEnv->release(release);
-}
-
-void AudioVoice::setNoiseLevel(float amount)
-{
-    noise->amplitude(amount);
 }

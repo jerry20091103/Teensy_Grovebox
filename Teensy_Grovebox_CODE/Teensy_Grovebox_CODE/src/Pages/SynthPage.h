@@ -31,7 +31,8 @@ private:
     uint8_t noiseLevel = 0;
     // amp env
     uint8_t ampEnvVal[5] = {0, 0, 0, 100, 0};
-
+    // filter
+    uint16_t filterVal[4] = {300, 0, 0, 0};
 
     // *class variables
     // gslc_tsElemRef *peakBox;
@@ -44,6 +45,7 @@ private:
     lv_obj_t* menu_osc[2];
     lv_obj_t* menu_noise;
     lv_obj_t* menu_ampenv;
+    lv_obj_t* menu_filter;
     lv_obj_t* volArc;
     lv_obj_t* volText;
     lv_obj_t* volBar;
@@ -71,6 +73,9 @@ private:
     lv_point_t ampEnvPoints[10];
     lv_obj_t* ampEnvText[5];
     lv_obj_t* ampEnvArc[5];
+    // filter
+    lv_obj_t* filterArc[4];
+    lv_obj_t* filterText[4];
 
     // *lvgl gui callbacks
     static void onVelocityBtnPressed(lv_event_t* e);
@@ -89,6 +94,8 @@ private:
     static void onNoiseArcPressed(lv_event_t *e);
     // amp env
     static void onAmpEnvArcPressed(lv_event_t *e);
+    // filter
+    static void onFilterArcPressed(lv_event_t *e);
 
     // *helper functions
     void configureEncoders();

@@ -23,27 +23,33 @@ class AudioVoice
 {
 private:
     void setOscFreq(uint8_t id, float freq);
+
 public:
     AudioVoice();
     void noteOn(float freq, float amp = 0.9);
     void noteOff();
     void setPitchbend(float semitone);
-    void setInstrument(const AudioSynthWavetable::instrument_data &instrument);
+    inline void setInstrument(const AudioSynthWavetable::instrument_data &instrument) { waveTable->setInstrument(instrument); }
     void setVoiceMode(uint8_t mode);
     void setOscWaveform(uint8_t id, uint8_t wave);
     void setOscOctave(uint8_t id, int8_t value);
     void setOscSemi(uint8_t id, int8_t value);
-    void setOscPwm(uint8_t id, uint8_t duty);
+    inline void setOscPwm(uint8_t id, uint8_t duty) { waveform[id]->pulseWidth(duty * 0.01f); }
     void setOscDetune(uint8_t id, float amount);
-    void setOscLevel(uint8_t id, float amount);
+    inline void setOscLevel(uint8_t id, float amount) { waveform[id]->amplitude(amount); }
     void setAmpEnvelope(float delay, float attack, float decay, float sustain, float release);
-    void setNoiseLevel(float amount);
-    
+    inline void setNoiseLevel(float amount) { noise->amplitude(amount); }
+    inline void setLadderFreq(float freq) { ladderFilter->frequency(freq); }
+    inline void setLadderResonance(float amount) { ladderFilter->resonance(amount); }
+    inline void setLadderDrive(float amount) { ladderFilter->inputDrive(amount); }
+    inline void setLadderPassbandGain(float amount) { ladderFilter->passbandGain(amount); }
+
     AudioMixer4 *voiceSwitch;
     AudioSynthWavetable *waveTable;
     AudioSynthWaveform *waveform[2];
     AudioSynthNoiseWhite *noise;
     AudioEffectEnvelope *ampEnv;
+    AudioFilterLadder *ladderFilter;
     float frequency;
     uint8_t curVoiceMode;
     bool isNoteOn = false;

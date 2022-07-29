@@ -44,7 +44,8 @@ lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char* title,
     {
         lv_obj_t *label = lv_label_create(arc);
         lv_label_set_text(label, title);
-        lv_obj_align(label, LV_ALIGN_TOP_MID, 0, -20);
+        lv_obj_align(label, LV_ALIGN_CENTER, 0, -42);
+        lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
     }
     // add unit
     if(unit != NULL)

@@ -87,6 +87,15 @@ AudioSynth_::AudioSynth_()
     voiceArr[5].ampEnv = &ampEnvelope5;
     voiceArr[6].ampEnv = &ampEnvelope6;
     voiceArr[7].ampEnv = &ampEnvelope7;
+    // ladder filter
+    voiceArr[0].ladderFilter = &ladder0;
+    voiceArr[1].ladderFilter = &ladder1;
+    voiceArr[2].ladderFilter = &ladder2;
+    voiceArr[3].ladderFilter = &ladder3;
+    voiceArr[4].ladderFilter = &ladder4;
+    voiceArr[5].ladderFilter = &ladder5;
+    voiceArr[6].ladderFilter = &ladder6;
+    voiceArr[7].ladderFilter = &ladder7;
     // osc mixer
     oscMixer0.gain(0, 1);
     oscMixer0.gain(1, 1);
@@ -329,7 +338,7 @@ void AudioSynth_::setOscLevel(uint8_t id, uint8_t amount)
 {
     float gain;
     if(amount > 0)
-        gain = dBtoGain(amount * 0.5f - 50);
+        gain = dBtoGain(amount * 0.5f - 60); // the max level is -10 dB, to prevent clipping.
     else
         gain = 0;
     for (int i = 0; i < MAX_VOICE; i++)
@@ -351,11 +360,49 @@ void AudioSynth_::setNoiseLevel(float amount)
 {
     float gain;
     if(amount > 0)
-        gain = dBtoGain(amount * 0.5f - 50);
+        gain = dBtoGain(amount * 0.5f - 60); // the max level is -10 dB, to prevent clipping.
     else
         gain = 0;
     for (int i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].setNoiseLevel(gain);
+    }
+}
+
+void AudioSynth_::setLadderFreq(float freq)
+{
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setLadderFreq(freq);
+    }
+}
+
+// set the ladder filter resonance. range 0~1.
+void AudioSynth_::setLadderResonance(float amount)
+{
+    float res = map(amount, 0, 1, 0, 1.8);
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setLadderResonance(res);
+    }
+}
+
+// set the ladder filter drive. range 0~1.
+void AudioSynth_::setLadderDrive(float amount)
+{
+    float drive = map(amount, 0, 1, 1, 4);
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setLadderDrive(drive);
+    }
+}
+
+// set the ladder filter passband gain. range 0~1.
+void AudioSynth_::setLadderPassbandGain(float amount)
+{
+    float gain = map(amount, 0, 1, 0, 0.5);
+    for (int i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setLadderPassbandGain(gain);
     }
 }
