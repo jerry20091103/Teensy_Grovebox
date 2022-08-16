@@ -1,5 +1,3 @@
-
-
 template <class T, uint8_t i>
 class SimpleStack
 {

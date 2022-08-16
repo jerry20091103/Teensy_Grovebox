@@ -5737,22 +5737,18 @@ value  frequency
 		<tr class=odd><td align=center>In 0</td><td>Input signal</td></tr>
 	</table>
 	<h3>Functions</h3>
-	<p class=func><span class=keyword>gain</span>(level);</p>
-	<p class=desc>Adjust the amplification or attenuation.
-		"level" may be any floating point number from 0 to 32767.0.
-		1.0 passes the signal through directly.  Level of 0 shuts the channel
-		off completely.  Between 0 to 1.0 attenuates the signal, and above
-		1.0 amplifies it.  Negative numbers may also be used, to invert the
-		signal.
+	<p class=func><span class=keyword>available</span>();</p>
+	<p class=desc>Returns whether a sample is available.
+	</p>
+	<p class=func><span class=keyword>readSample</span>();</p>
+	<p class=desc>Returns a sample (int16_t) if available.
 	</p>
 	<!--<h3>Examples</h3>
 	<p class=exam>File &gt; Examples &gt; Audio &gt; SamplePlayer
 	</p>-->
 	<h3>Notes</h3>
-	<p>Gain of 0 and 1.0 are handled efficiently as special cases.  Zero
-		discards data without processing.  1.0 passes data directly, with
-		minimal overhead</p>
-	<p>Signal clipping can occur when any channel has gain greater than 1.0</p>
+	<p></p>
+	<p></p>
 </script>
 <script type="text/x-red" data-template-name="AudioRecordSample">
 	<div class="form-row">

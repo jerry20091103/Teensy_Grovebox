@@ -5,6 +5,7 @@
 #include <list>
 
 #define MAX_VOICE 8
+#define MAX_MODULATION_COUNT 127
 
 // converts midi note number to pitch frequency
 float noteToFreq(uint8_t note);
@@ -33,18 +34,20 @@ private:
 
     bool isSustain = false;
     bool useVelocity = true;
-    bool usePitchbend = false;
-    float curPitchbend = 0;
+
+    std::list<ModulationEntry> modList;
 
 public:
     PROGMEM AudioSynth_();
+    // * play functions
     void noteOn(uint8_t note);
     void noteOff(uint8_t note);
     void sustainOn();
     void sustainOff();
-    void pitchbend(float semitone);
+    void pitchbend(float semitone, float amount);
+    void modwheel(float amount);
+    // * set parameters
     void setUseVelocity(bool value);
-    void setUsePitchbend(bool value);
     void setSF2Instrument(uint8_t id);
     void setVoiceMode(uint8_t mode);
     void setOscWaveform(uint8_t id, uint8_t wave);
@@ -59,9 +62,37 @@ public:
     void setLadderResonance(float amount);
     void setLadderDrive(float amount);
     void setLadderPassbandGain(float amount);
+    void setLfoWaveform(uint8_t id, uint8_t wave);
+    void setLfoFreq(uint8_t id, float freq);
+    void setLfoLevel(uint8_t id, float level);
+    void setEnvelope(uint8_t id, float delay, float attack, float decay, float sustain, float release);
+    // *modulation
+    int8_t addModulation(uint8_t source, uint8_t target);
+    void setModulationAmount(uint8_t id, float amount);
+    void setModulationSource(uint8_t id, uint8_t source);
+    void setModulationTarget(uint8_t id, uint8_t target);
+    void removeModulation(uint8_t id);
+    void updateModulation();
 
     // set master output volume in dB
     void setMasterVol(int8_t vol);
+
+    // synth parameter storage for modulation
+    struct synthParam
+    {
+        // the osc freq is stored in each voice instead.
+        float oscLevel[2];     // 0.0f to 1.0f
+        float oscPwm[2];       // 0.0f to 1.0f (duty cycle)
+        float noiseLevel;      // 0.0f to 1.0f
+        float ladderFreq;      // Hz
+        float ladderResonance; // 0.0f to 1.0f
+        float lfoFreq[2];      // Hz
+        float lfoLevel[2];     // 0.0f to 1.0f
+        float ampEnvVal[5];    // delay, attack, decay, sustain, release. In ms.
+        float envVal[2][5];    // delay, attack, decay, sustain, release. In ms.
+    };
+
+    synthParam curSynthParam;
 
     float velocity = 0;
 };

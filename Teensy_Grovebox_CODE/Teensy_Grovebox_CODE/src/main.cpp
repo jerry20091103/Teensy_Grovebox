@@ -10,7 +10,11 @@ int bar_test;
 int batt_level;
 unsigned long lastBarUpdate;
 
-// update GUI
+void updateSynthModulation()
+{
+    AudioSynth.updateModulation();
+}
+
 void updateGui()
 {
     lv_timer_handler();
@@ -79,9 +83,10 @@ void setup()
     PageManager.setUserData();
     PageManager.switchPage(PG_HOME);
     // Schedule regular tasks
+    taskManager.scheduleFixedRate(3, updateSynthModulation);
     taskManager.scheduleFixedRate(5, updateGui);
     taskManager.scheduleFixedRate(30, updatePage);
-    taskManager.scheduleFixedRate(15, UpdateJoystick);
+    taskManager.scheduleFixedRate(10, UpdateJoystick);
     taskManager.scheduleFixedRate(15, readKeyVeloctiy);
 
     // unmute amp

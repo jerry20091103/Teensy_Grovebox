@@ -56,5 +56,5 @@ void Gui_SetEnvelopeGraph(lv_obj_t *graph, lv_point_t *points, float delay, floa
 PROGMEM void Gui_InitStyles();
 
 // helper functions
-void Gui_setArcIdFlag(lv_obj_t *&arcRef, uint8_t id);
-uint8_t Gui_getArcIdFlag(lv_obj_t *&arcRef);
+void Gui_setObjIdFlag(lv_obj_t *&arcRef, uint8_t id);
+uint8_t Gui_getObjIdFlag(lv_obj_t *&arcRef);

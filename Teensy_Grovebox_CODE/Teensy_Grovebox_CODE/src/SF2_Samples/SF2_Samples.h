@@ -9,7 +9,7 @@
 static const char* SF2_Instrument_Names =
 {
     "Piano Electrique\n"
-    "JR Bells\n"
+    //"JR Bells\n"
     "JR Vibraphone\n"
     //"YDP Piano"
 };
@@ -18,7 +18,7 @@ static const char* SF2_Instrument_Names =
 static const AudioSynthWavetable::instrument_data *SF2_InstrumentRef[MAX_SF2_INSTRUMENTS] = 
 {
     &pianoelectrique,
-    &JR_bells,
+    //&JR_bells,
     &JR_vibraphone,
     //&YDPiano
 };

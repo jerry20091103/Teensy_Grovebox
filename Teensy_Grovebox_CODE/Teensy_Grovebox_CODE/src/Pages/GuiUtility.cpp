@@ -248,8 +248,8 @@ lv_obj_t *Gui_CreatePeakLed(lv_obj_t *parent, uint8_t w, uint8_t h)
     return led;
 }
 
-// use 4 user flags to store arc id
-void Gui_setArcIdFlag(lv_obj_t *&arcRef, uint8_t id)
+// use 4 user flags to store custom object id
+void Gui_setObjIdFlag(lv_obj_t *&arcRef, uint8_t id)
 {
     bool f1, f2, f3, f4;
     f1 = id & 0b00000001;
@@ -274,7 +274,7 @@ void Gui_setArcIdFlag(lv_obj_t *&arcRef, uint8_t id)
     else
         lv_obj_clear_flag(arcRef, LV_OBJ_FLAG_USER_4);
 }
-uint8_t Gui_getArcIdFlag(lv_obj_t *&arcRef)
+uint8_t Gui_getObjIdFlag(lv_obj_t *&arcRef)
 {
     return ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_1) << 0) + 
            ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_2) << 1) + 

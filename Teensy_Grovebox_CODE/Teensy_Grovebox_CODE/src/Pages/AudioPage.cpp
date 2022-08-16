@@ -64,8 +64,7 @@ void AudioPage::onArcPressed(lv_event_t *e)
     AudioPage *instance = (AudioPage *)lv_event_get_user_data(e);
     lv_obj_t *arc = lv_event_get_target(e);
     // use user flags to determine which arc is pressed
-    uint8_t id = Gui_getArcIdFlag(arc);
-    Serial.println(id);
+    uint8_t id = Gui_getObjIdFlag(arc);
     uint8_t newVal = lv_arc_get_value(arc);
     switch (id)
     {
@@ -474,7 +473,7 @@ void AudioPage::init()
         // set arc position
         lv_obj_set_y(OutArc[i], i * 80);
         // set value
-        Gui_setArcIdFlag(OutArc[i], i);
+        Gui_setObjIdFlag(OutArc[i], i);
         // set callback
         lv_obj_add_event_cb(OutArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
         // mixer button
@@ -501,7 +500,7 @@ void AudioPage::init()
     hpVolText = lv_label_create(hpArc);
     lv_obj_center(hpVolText);
     // set value
-    Gui_setArcIdFlag(hpArc, 2);
+    Gui_setObjIdFlag(hpArc, 2);
     lv_obj_add_event_cb(hpArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
     // PFL button
@@ -528,7 +527,7 @@ void AudioPage::init()
         // set arc position
         lv_obj_set_pos(InArc[i], 90, i * 80);
         // set value
-        Gui_setArcIdFlag(InArc[i], i + 3);
+        Gui_setObjIdFlag(InArc[i], i + 3);
         // set callback
         lv_obj_add_event_cb(InArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
     }
@@ -540,7 +539,7 @@ void AudioPage::init()
     gainText = lv_label_create(gainArc);
     lv_obj_align(gainText, LV_ALIGN_CENTER, 0, 0);
     // set value
-    Gui_setArcIdFlag(gainArc, 5);
+    Gui_setObjIdFlag(gainArc, 5);
     lv_obj_add_event_cb(gainArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
     // *input source
@@ -613,7 +612,7 @@ void AudioPage::init()
         // set arc position
         lv_obj_set_y(mixerArc[i], i * 75);
         // set value
-        Gui_setArcIdFlag(mixerArc[i], 6 + i);
+        Gui_setObjIdFlag(mixerArc[i], 6 + i);
         // set callback
         lv_obj_add_event_cb(mixerArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
     }

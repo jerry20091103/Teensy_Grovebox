@@ -1,20 +1,18 @@
 #include "Controls.h"
 #include "Pages/Pages.h"
 
-int lastJoyX, lastJoyY;
-
 void UpdateJoystick()
 {
-    // TODO: joystick centering
+    // TODO: joystick deadzone tuning
     int joyX, joyY;
     joyX = analogRead(40);
     joyY = analogRead(41);
-    lastJoyX = (lastJoyX + joyX) / 2;
-    lastJoyY = (lastJoyY + joyY) / 2;
-    if (joyX > lastJoyX + JOY_THRES || joyX < lastJoyX - JOY_THRES || joyY > lastJoyY + JOY_THRES || joyY < lastJoyY - JOY_THRES)
+    if (joyX > 500 && joyX < 520 && joyY > 500 && joyY < 520)
     {
-        PageManager.PageArr[PageManager.getCurPage()]->onJoyUpdate(lastJoyX, lastJoyY);
+        joyX = 510;
+        joyY = 510;
     }
+    PageManager.PageArr[PageManager.getCurPage()]->onJoyUpdate(joyX, joyY);
     usbMIDI.read();
 }
 

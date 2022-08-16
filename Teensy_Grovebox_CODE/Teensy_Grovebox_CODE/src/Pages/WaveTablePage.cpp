@@ -17,7 +17,8 @@ void WaveTablePage::onPitchBtnPressed(lv_event_t *e)
 {
     WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
     instance->usePitchbend = !instance->usePitchbend;
-    AudioSynth.setUsePitchbend(instance->usePitchbend);
+    if(!instance->usePitchbend)
+        AudioSynth.pitchbend(0, 0);
 }
 
 void WaveTablePage::onPitchBtnHolded(lv_event_t *e)
@@ -77,7 +78,6 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
     {
         noteNum = keyNum - 1 + 12 * octave;
         AudioSynth.noteOn(noteNum);
-        Serial.println(noteNum);
     }
     else
     {
@@ -154,7 +154,7 @@ void WaveTablePage::onJoyUpdate(int joy_x, int joy_y)
 {
     if (usePitchbend)
     {
-        AudioSynth.pitchbend(map((float)joy_x, 0, 1019, pitchbendRange, -pitchbendRange));
+        AudioSynth.pitchbend(map((float)joy_x, 0, 1019, pitchbendRange, -pitchbendRange), joy_x);
     }
 }
 
@@ -195,7 +195,6 @@ void WaveTablePage::setUserData()
         lv_obj_add_state(velocityBtn, LV_STATE_CHECKED);
     else
         lv_obj_clear_state(velocityBtn, LV_STATE_CHECKED);
-    AudioSynth.setUsePitchbend(usePitchbend);
     if (usePitchbend)
         lv_obj_add_state(pitchBtn, LV_STATE_CHECKED);
     else
