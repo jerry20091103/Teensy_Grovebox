@@ -56,15 +56,16 @@ void AudioVoice::noteOff()
 void AudioVoice::setPitchbend(float semitone, float amount)
 {
     curPitchbend = amount;
+    curPitchbendSemiPow = powf(2.0f, semitone / 12.0f);
     switch (curVoiceMode)
     {
     case VOICE_MODE_SYNTH:
-        setOscFreq(0, frequency * powf(2.0f, semitone / 12.0f));
-        setOscFreq(1, frequency * powf(2.0f, semitone / 12.0f));
+        setOscFreq(0, frequency * curPitchbendSemiPow);
+        setOscFreq(1, frequency * curPitchbendSemiPow);
         break;
 
     case VOICE_MODE_WAVETABLE:
-        waveTable->setFrequency(frequency * powf(2.0f, semitone / 12.0f));
+        waveTable->setFrequency(frequency * curPitchbendSemiPow);
         break;
     }
 }
@@ -238,7 +239,7 @@ void AudioVoice::updateModulation()
             {
             case MOD_TGT_OSC1_FREQ:
                 // the modulation range is 4 octaves
-                setOscFreq(0, frequency * powf(2, modTgtValue[i] * 4.0f));
+                setOscFreq(0, frequency * powf(2, modTgtValue[i] * 4.0f) * curPitchbendSemiPow);
                 break;
             case MOD_TGT_OSC1_LEVEL:
                 setOscLevel(0, AudioSynth.curSynthParam.oscLevel[0] + modTgtValue[i]);
@@ -247,7 +248,7 @@ void AudioVoice::updateModulation()
                 setOscPwm(0, AudioSynth.curSynthParam.oscPwm[0] + modTgtValue[i]);
                 break;
             case MOD_TGT_OSC2_FREQ:
-                setOscFreq(1, frequency * powf(2, modTgtValue[i] * 4.0f));
+                setOscFreq(1, frequency * powf(2, modTgtValue[i] * 4.0f) * curPitchbendSemiPow);
                 break;
             case MOD_TGT_OSC2_LEVEL:
                 setOscLevel(1, AudioSynth.curSynthParam.oscLevel[1] + modTgtValue[i]);

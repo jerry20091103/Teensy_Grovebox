@@ -146,6 +146,7 @@ public:
     float curAmp = 0;
     float curModwheel = 0;
     float curPitchbend = 0;
+    float curPitchbendSemiPow = 0;
     u_int8_t curNote;
     uint8_t curVoiceMode;
     bool isNoteOn = false;
