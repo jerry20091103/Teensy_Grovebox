@@ -9,6 +9,18 @@
 - `Teensy_Grovebox.kicad_pcb`
 - Use Kicad 6.
 
+<img src=../images/pcb_main_diagram.png>
+
+*PCB diagram in Kicad*
+
+<img src=../images/pcb_main_front.png>
+
+*Front view of the PCB*
+
+<img src=../images/pcb_main_back.png>
+
+*Back view of the PCB*
+
 ## Case
 - Currently we have a simple top and bottom plate as a make shift case.
 - The cutout for the joystick is not correct. You may just omit it.

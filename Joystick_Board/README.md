@@ -1,5 +1,7 @@
 # Joystick Board
-// TODO: Add a picture of the board
+<img src=../images/pcb_joystick_front.png width=200>
+<img src=../images/pcb_joystick_diagram.png width=200>
+
 ## Overview
 - This is a simple joystick board that takes standard ALPS joystick modules. (like the ones in PlayStation and Xbox controllers)
 - The overall thickness of the Teensy Grovebox would be too thick if the joystick module was mounted on the main PCB. So the joystick board is a separate board that connects into the Teensy Grovebox PCB.

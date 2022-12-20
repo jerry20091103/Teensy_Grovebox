@@ -1,4 +1,6 @@
 # Teensy Grovebox
+<img src=./images/front_photo.jpg width = 800/>
+
 - An all in one music multi-tool in  a 25 key MIDI keyboard form factor.
 - Made with Teensy 4.2 and Teensy Audio Board.
 ## Hardware Features
@@ -30,3 +32,5 @@
     - Uses platformio.
 - `Joystick_Board`
     - Kicad schematic and PCB files for the joystick board used in the Teensy Grovebox.
+
+<img src=./images/front_hardware_photo.jpg width=800>
