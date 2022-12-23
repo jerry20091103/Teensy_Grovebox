@@ -1,13 +1,13 @@
 # Teensy Grovebox
 <img src=./images/front_photo.jpg width = 800/>
 
-- An all in one music multi-tool in  a 25 key MIDI keyboard form factor.
+- An all-in-one music multi-tool in a 25-key MIDI keyboard form factor.
 - Made with Teensy 4.2 and Teensy Audio Board.
 ## Hardware Features
-- 25 key MIDI keyboard with mechanical key switches.
+- 25-key MIDI keyboard with mechanical key switches.
 - 4 encoder knobs and a joystick.
 - 3.5 inch TFT touch screen.
-- Built-in audio interface with stereo line input / output, and headphone output.
+- Built-in audio interface with stereo line input/output, and headphone output.
 - Onboard speaker and microphone.
 - 10+ hours of battery life.
 - USB-C charging and data transfer.
@@ -29,7 +29,7 @@
     - 3D files for the case.
 - `Teensy_Grovebox_CODE`
     - Arduino code for the Teensy 4.2.
-    - Uses platformio.
+    - Uses PlatformIO.
 - `Joystick_Board`
     - Kicad schematic and PCB files for the joystick board used in the Teensy Grovebox.
 

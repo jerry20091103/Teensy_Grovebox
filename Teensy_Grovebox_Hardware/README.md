@@ -22,7 +22,7 @@
 *Back view of the PCB*
 
 ## Case
-- Currently we have a simple top and bottom plate as a make shift case.
+- Currently we have a simple top and bottom plate as a makeshift case.
 - The cutout for the joystick is not correct. You may just omit it.
 - A full 3D print enclosure will be available in the future
 
