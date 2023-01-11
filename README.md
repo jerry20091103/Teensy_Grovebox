@@ -3,6 +3,7 @@
 
 - An all-in-one music multi-tool in a 25-key MIDI keyboard form factor.
 - Made with Teensy 4.1 and Teensy Audio Board.
+- Here is a [small demo video for the synth function.](https://www.youtube.com/watch?v=64bXlY2FwMQ)
 ## Hardware Features
 - 25-key MIDI keyboard with mechanical key switches.
 - 4 encoder knobs and a joystick.
