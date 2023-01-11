@@ -8452,7 +8452,7 @@
     (property "Reference" "U10" (id 0) (at 532.13 213.3599 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "Pololu_5v_booster" (id 1) (at 532.13 215.8999 0)
+    (property "Value" "Pololu_5v_booster_U1V11F5" (id 1) (at 532.13 215.8999 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "OTHER:POLOLU_5V_BOOST" (id 2) (at 524.51 203.2 0)
@@ -12332,7 +12332,7 @@
       (reference "U9") (unit 1) (value "TP4056") (footprint "Package_SO:SOIC-8-1EP_3.9x4.9mm_P1.27mm_EP2.41x3.3mm_ThermalVias")
     )
     (path "/286a35d1-1b8e-46db-8579-f61f4c470a7a"
-      (reference "U10") (unit 1) (value "Pololu_5v_booster") (footprint "OTHER:POLOLU_5V_BOOST")
+      (reference "U10") (unit 1) (value "Pololu_5v_booster_U1V11F5") (footprint "OTHER:POLOLU_5V_BOOST")
     )
     (path "/96c75bfb-082e-4283-b7dd-656219c78d93"
       (reference "U11") (unit 1) (value "AMS1117-3.3") (footprint "Package_TO_SOT_SMD:SOT-223-3_TabPin2")
