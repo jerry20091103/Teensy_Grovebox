@@ -149,6 +149,8 @@ public:
     float curPitchbend = 0.0f;
     float curPitchbendMult = 1.0f;
 
+    uint8_t curVoiceMode = 0;
+
     int8_t oscOctave[2] = {0, 0};
     int8_t oscSemi[2] = {0, 0};
     float oscDetune[2] = {0.0f, 0.0f};

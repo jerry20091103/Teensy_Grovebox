@@ -19,9 +19,10 @@ void AudioVoice::noteOn(uint8_t note, float amp)
     switch (curVoiceMode)
     {
     case VOICE_MODE_SYNTH:
-        // todo: amplitude for synth mode
         setOscFreq(0, frequency);
         setOscFreq(1, frequency);
+        waveform[0]->amplitude(amp);
+        waveform[1]->amplitude(amp);
         env[0]->noteOn();
         env[1]->noteOn();
         env[2]->noteOn();
@@ -69,7 +70,6 @@ void AudioVoice::setPitchbend(float pitchMult)
 // use the audio mixer to select voice mode (soucre of voice)
 void AudioVoice::setVoiceMode(uint8_t mode)
 {
-    // todo: disable unused audio objects to save cpu
     curVoiceMode = mode;
     for (uint8_t i = 0; i < 4; i++)
     {

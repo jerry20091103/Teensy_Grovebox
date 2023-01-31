@@ -228,7 +228,7 @@ AudioSynth_::AudioSynth_()
     setSF2Instrument(0);
     setOscWaveform(0, WAVE_OSC_SINE);
     setOscWaveform(1, WAVE_OSC_SINE);
-    setVoiceMode(VOICE_MODE_SYNTH);
+    setVoiceMode(VOICE_MODE_WAVETABLE);
 
     for (int i = 0; i < MAX_VOICE; i++)
     {
@@ -301,7 +301,7 @@ void AudioSynth_::noteOff(uint8_t note)
             uint8_t voiceInd = it->voiceIndex;
             voiceArr[voiceInd].isNoteOn = false;
             // If sustaining, set isNoteOn = false, and let it play in playingNote (don't stop it)
-            if (isSustain)
+            // Stop the note if not sustaining.
             if (!isSustain)
             {
                 playingNote.erase(it);
@@ -387,6 +387,23 @@ void AudioSynth_::setSF2Instrument(uint8_t id)
 
 void AudioSynth_::setVoiceMode(uint8_t mode)
 {
+    curVoiceMode = mode;
+    if (mode == VOICE_MODE_SYNTH)
+    {
+        // turn on the oscillators
+        modParamList.oscLevel[0].set(modParamList.oscLevel[0].get());
+        modParamList.oscLevel[1].set(modParamList.oscLevel[1].get());
+    }
+    else
+    {
+        // turn off synth oscillators to save cpu
+        for (int i = 0; i < MAX_VOICE; i++)
+        {
+            voiceArr[i].waveform[0]->amplitude(0);
+            voiceArr[i].waveform[1]->amplitude(0);
+        }
+    }
+   
     for (int i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].setVoiceMode(mode);
@@ -426,6 +443,10 @@ void AudioSynth_::setOscDetune(uint8_t id, float amount)
 
 void AudioSynth_::setOscLevel(uint8_t id, uint8_t amount)
 {
+    // block level change if not in synth mode (to keep oscillators off)
+    if (curVoiceMode != VOICE_MODE_SYNTH)
+        return;
+    
     float gain;
     if (amount > 0)
         gain = dBtoGain(amount * 0.5f - 60); // the max level is -10 dB, to prevent clipping.
@@ -616,11 +637,11 @@ void AudioSynth_::removeModulation(uint8_t id)
 
 void AudioSynth_::updateModulation()
 {
+    if (curVoiceMode != VOICE_MODE_SYNTH)
+        return;
+
     for (uint8_t voiceId = 0; voiceId < MAX_VOICE; voiceId++)
     {
-        if (voiceArr[voiceId].curVoiceMode != VOICE_MODE_SYNTH)
-            return;
-
         float modSrcValue[MOD_SRC_MAX] = {0.0f};
         float modTgtValue[MOD_TGT_MAX] = {0.0f};
         bool dirty[MOD_TGT_MAX] = {false};
