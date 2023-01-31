@@ -5,7 +5,24 @@
 
 AudioSynth_ AudioSynth;
 
+AudioSynth_::ModParamList::ModParamList(AudioVoice *voiceArr) : oscPitchOffset{OscPitchOffset(voiceArr, 0), OscPitchOffset(voiceArr, 1)},
+                                                                oscLevel{OscLevel(voiceArr, 0), OscLevel(voiceArr, 1)},
+                                                                oscPwm{OscPwm(voiceArr, 0), OscPwm(voiceArr, 1)},
+                                                                noiseLevel(voiceArr),
+                                                                filterCutoff(voiceArr),
+                                                                filterResonance(voiceArr),
+                                                                lfoFreq{LfoFreq(voiceArr, 0), LfoFreq(voiceArr, 1)},
+                                                                lfoLevel{LfoLevel(voiceArr, 0), LfoLevel(voiceArr, 1)},
+                                                                envDelay{EnvDelay(voiceArr, 0), EnvDelay(voiceArr, 1), EnvDelay(voiceArr, 2)},
+                                                                envAttack{EnvAttack(voiceArr, 0), EnvAttack(voiceArr, 1), EnvAttack(voiceArr, 2)},
+                                                                envDecay{EnvDecay(voiceArr, 0), EnvDecay(voiceArr, 1), EnvDecay(voiceArr, 2)},
+                                                                envSustain{EnvSustain(voiceArr, 0), EnvSustain(voiceArr, 1), EnvSustain(voiceArr, 2)},
+                                                                envRelease{EnvRelease(voiceArr, 0), EnvRelease(voiceArr, 1), EnvRelease(voiceArr, 2)}
+{
+}
+
 AudioSynth_::AudioSynth_()
+    : modParamList(voiceArr)
 {
     // set up voice mixers
     voiceMixer[0] = &voiceMixer0_0;
@@ -73,15 +90,6 @@ AudioSynth_::AudioSynth_()
     voiceArr[5].voiceSwitch = &voiceSwitch5;
     voiceArr[6].voiceSwitch = &voiceSwitch6;
     voiceArr[7].voiceSwitch = &voiceSwitch7;
-    // amp envelope
-    voiceArr[0].ampEnv = &ampEnvelope0;
-    voiceArr[1].ampEnv = &ampEnvelope1;
-    voiceArr[2].ampEnv = &ampEnvelope2;
-    voiceArr[3].ampEnv = &ampEnvelope3;
-    voiceArr[4].ampEnv = &ampEnvelope4;
-    voiceArr[5].ampEnv = &ampEnvelope5;
-    voiceArr[6].ampEnv = &ampEnvelope6;
-    voiceArr[7].ampEnv = &ampEnvelope7;
     // ladder filter
     voiceArr[0].ladderFilter = &ladder0;
     voiceArr[1].ladderFilter = &ladder1;
@@ -109,24 +117,33 @@ AudioSynth_::AudioSynth_()
     voiceArr[5].lfo[1] = &lfo5_1;
     voiceArr[6].lfo[1] = &lfo6_1;
     voiceArr[7].lfo[1] = &lfo7_1;
+    // amp envelope
+    voiceArr[0].env[0] = &ampEnvelope0;
+    voiceArr[1].env[0] = &ampEnvelope1;
+    voiceArr[2].env[0] = &ampEnvelope2;
+    voiceArr[3].env[0] = &ampEnvelope3;
+    voiceArr[4].env[0] = &ampEnvelope4;
+    voiceArr[5].env[0] = &ampEnvelope5;
+    voiceArr[6].env[0] = &ampEnvelope6;
+    voiceArr[7].env[0] = &ampEnvelope7;
     // env1
-    voiceArr[0].env[0] = &envelope0_0;
-    voiceArr[1].env[0] = &envelope1_0;
-    voiceArr[2].env[0] = &envelope2_0;
-    voiceArr[3].env[0] = &envelope3_0;
-    voiceArr[4].env[0] = &envelope4_0;
-    voiceArr[5].env[0] = &envelope5_0;
-    voiceArr[6].env[0] = &envelope6_0;
-    voiceArr[7].env[0] = &envelope7_0;
+    voiceArr[0].env[1] = &envelope0_0;
+    voiceArr[1].env[1] = &envelope1_0;
+    voiceArr[2].env[1] = &envelope2_0;
+    voiceArr[3].env[1] = &envelope3_0;
+    voiceArr[4].env[1] = &envelope4_0;
+    voiceArr[5].env[1] = &envelope5_0;
+    voiceArr[6].env[1] = &envelope6_0;
+    voiceArr[7].env[1] = &envelope7_0;
     // env2
-    voiceArr[0].env[1] = &envelope0_1;
-    voiceArr[1].env[1] = &envelope1_1;
-    voiceArr[2].env[1] = &envelope2_1;
-    voiceArr[3].env[1] = &envelope3_1;
-    voiceArr[4].env[1] = &envelope4_1;
-    voiceArr[5].env[1] = &envelope5_1;
-    voiceArr[6].env[1] = &envelope6_1;
-    voiceArr[7].env[1] = &envelope7_1;
+    voiceArr[0].env[2] = &envelope0_1;
+    voiceArr[1].env[2] = &envelope1_1;
+    voiceArr[2].env[2] = &envelope2_1;
+    voiceArr[3].env[2] = &envelope3_1;
+    voiceArr[4].env[2] = &envelope4_1;
+    voiceArr[5].env[2] = &envelope5_1;
+    voiceArr[6].env[2] = &envelope6_1;
+    voiceArr[7].env[2] = &envelope7_1;
     // lfoSample[0]
     voiceArr[0].lfoSample[0] = &lfoSample0_0;
     voiceArr[1].lfoSample[0] = &lfoSample1_0;
@@ -217,9 +234,18 @@ AudioSynth_::AudioSynth_()
     {
         // put voice in idle list
         idleNote.push_front(noteEntry(0, i));
-        //  set modList
-        voiceArr[i].setModulationList(&modList);
     }
+}
+
+void AudioSynth_::calAndSetOscPitchOffset(uint8_t id)
+{
+    float freqOffset = 0.0f;
+    if (oscOctave[id] || oscSemi[id] || oscDetune[id])
+    {
+        // the modulation range is 4 octaves, we convert the offset to -1 to 1 range in 4 octaves.
+        freqOffset = (oscOctave[id] + (((float)oscSemi[id] + oscDetune[id]) / 12.0f)) / 4.0f;
+    }
+    modParamList.oscPitchOffset[id].set(freqOffset);
 }
 
 void AudioSynth_::noteOn(uint8_t note)
@@ -335,18 +361,20 @@ void AudioSynth_::sustainOff()
 // find all playing notes and set their pitch bend
 void AudioSynth_::pitchbend(float semitone, float amount)
 {
+    curPitchbend = amount;
+    curPitchbendMult = pow(2.0, semitone / 12.0);
     for (uint8_t i = 0; i < MAX_VOICE; i++)
     {
-        voiceArr[i].setPitchbend(semitone, amount);
+        voiceArr[i].setPitchbend(curPitchbendMult);
+        // apply the pitcbend to the oscillators (force update modulation)
+        modParamList.oscPitchOffset[0].modulate(i, modParamList.oscPitchOffset[0].getModValue(i));
+        modParamList.oscPitchOffset[1].modulate(i, modParamList.oscPitchOffset[1].getModValue(i));
     }
 }
 
 void AudioSynth_::modwheel(float amount)
 {
-    for (uint8_t i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setModwheel(amount);
-    }
+    curModWheel = amount;
 }
 
 void AudioSynth_::setMasterVol(int8_t vol)
@@ -390,36 +418,25 @@ void AudioSynth_::setOscWaveform(uint8_t id, uint8_t wave)
 
 void AudioSynth_::setOscOctave(uint8_t id, int8_t value)
 {
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setOscOctave(id, value);
-    }
+    oscOctave[id] = value;
+    calAndSetOscPitchOffset(id);
 }
 
 void AudioSynth_::setOscSemi(uint8_t id, int8_t value)
 {
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setOscSemi(id, value);
-    }
+    oscSemi[id] = value;
+    calAndSetOscPitchOffset(id);
 }
 
 void AudioSynth_::setOscPwm(uint8_t id, uint8_t duty)
 {
-    float duty_f = duty * 0.01f;
-    curSynthParam.oscPwm[id] = duty_f;
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setOscPwm(id, duty_f);
-    }
+    modParamList.oscPwm[id].set(duty * 0.01f);
 }
 
 void AudioSynth_::setOscDetune(uint8_t id, float amount)
 {
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setOscDetune(id, amount);
-    }
+    oscDetune[id] = amount;
+    calAndSetOscPitchOffset(id);
 }
 
 void AudioSynth_::setOscLevel(uint8_t id, uint8_t amount)
@@ -429,25 +446,7 @@ void AudioSynth_::setOscLevel(uint8_t id, uint8_t amount)
         gain = dBtoGain(amount * 0.5f - 60); // the max level is -10 dB, to prevent clipping.
     else
         gain = 0;
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setOscLevel(id, gain);
-    }
-    curSynthParam.oscLevel[id] = gain;
-}
-
-// set the amplitude envelope of the voice in ms (max 10000). Sustain is 0~1.
-void AudioSynth_::setAmpEnvelope(float delay, float attack, float decay, float sustain, float release)
-{
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setAmpEnvelope(delay, attack, decay, sustain, release);
-    }
-    curSynthParam.ampEnvVal[0] = delay;
-    curSynthParam.ampEnvVal[1] = attack;
-    curSynthParam.ampEnvVal[2] = decay;
-    curSynthParam.ampEnvVal[3] = sustain;
-    curSynthParam.ampEnvVal[4] = release;
+    modParamList.oscLevel[id].set(gain);
 }
 
 void AudioSynth_::setNoiseLevel(float amount)
@@ -457,31 +456,18 @@ void AudioSynth_::setNoiseLevel(float amount)
         gain = dBtoGain(amount * 0.5f - 60); // the max level is -10 dB, to prevent clipping.
     else
         gain = 0;
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setNoiseLevel(gain);
-    }
-    curSynthParam.noiseLevel = gain;
+    modParamList.noiseLevel.set(gain);
 }
 
 void AudioSynth_::setLadderFreq(float freq)
 {
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setLadderFreq(freq);
-    }
-    curSynthParam.ladderFreq = freq;
+    modParamList.filterCutoff.set(freq);
 }
 
 // set the ladder filter resonance. range 0~1.
 void AudioSynth_::setLadderResonance(float amount)
 {
-    float res = map(amount, 0, 1, 0, 1.8);
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setLadderResonance(res);
-    }
-    curSynthParam.ladderResonance = res;
+    modParamList.filterResonance.set(map(amount, 0, 1, 0, 1.8));
 }
 
 // set the ladder filter drive. range 0~1.
@@ -514,33 +500,47 @@ void AudioSynth_::setLfoWaveform(uint8_t id, uint8_t wave)
 
 void AudioSynth_::setLfoFreq(uint8_t id, float freq)
 {
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setLfoFreq(id, freq);
-    }
-    curSynthParam.lfoFreq[id] = freq;
+    modParamList.lfoFreq[id].set(freq);
 }
 
 void AudioSynth_::setLfoLevel(uint8_t id, float level)
 {
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setLfoLevel(id, level);
-    }
-    curSynthParam.lfoLevel[id] = level;
+    modParamList.lfoLevel[id].set(level);
 }
 
-void AudioSynth_::setEnvelope(uint8_t id, float delay, float attack, float decay, float sustain, float release)
+// set the envelope delay time in ms (max 10000)
+// id: 0 for amp envelope, 1~2 for modulation envelopes
+void AudioSynth_::setEnvDelay(uint8_t id, float delay)
 {
-    for (int i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].setEnvelope(id, delay, attack, decay, sustain, release);
-    }
-    curSynthParam.envVal[id][0] = delay;
-    curSynthParam.envVal[id][1] = attack;
-    curSynthParam.envVal[id][2] = decay;
-    curSynthParam.envVal[id][3] = sustain;
-    curSynthParam.envVal[id][4] = release;
+    modParamList.envDelay[id].set(delay);
+}
+
+// set the envelope attack time in ms (max 10000)
+// id: 0 for amp envelope, 1~2 for modulation envelopes
+void AudioSynth_::setEnvAttack(uint8_t id, float attack)
+{
+    modParamList.envAttack[id].set(attack);
+}
+
+// set the envelope decay time in ms (max 10000)
+// id: 0 for amp envelope, 1~2 for modulation envelopes
+void AudioSynth_::setEnvDecay(uint8_t id, float decay)
+{
+    modParamList.envDecay[id].set(decay);
+}
+
+// set the envelope sustain (0~1)
+// id: 0 for amp envelope, 1~2 for modulation envelopes
+void AudioSynth_::setEnvSustain(uint8_t id, float sustain)
+{
+    modParamList.envSustain[id].set(sustain);
+}
+
+// set the envelope release time in ms (max 10000)
+// id: 0 for amp envelope, 1~2 for modulation envelopes
+void AudioSynth_::setEnvRelease(uint8_t id, float release)
+{
+    modParamList.envRelease[id].set(release);
 }
 
 // add a modulation to the modList and returns id. Returns -1 if not valid.
@@ -598,13 +598,17 @@ void AudioSynth_::setModulationTarget(uint8_t id, uint8_t target)
             it++;
         }
         // reset the previous target
-        for (uint8_t i = 0; i < MAX_VOICE; i++)
-        {
-            voiceArr[i].resetModulaltion(it->target);
-        }
+        resetModulation(it->target);
         // set the target
         it->target = (modTarget)target;
     }
+}
+
+// reset the id-th modulation of the modList
+void AudioSynth_::resetModulation(uint8_t id)
+{
+    if (id != MOD_TGT_NONE && id < MOD_TGT_MAX)
+        modParamList[id].resetModulation();
 }
 
 // remove the id-th modulation of the modList
@@ -619,10 +623,7 @@ void AudioSynth_::removeModulation(uint8_t id)
             it++;
         }
         // reset the modulated target value
-        for (uint8_t i = 0; i < MAX_VOICE; i++)
-        {
-            voiceArr[i].resetModulaltion(it->target);
-        }
+        resetModulation(it->target);
         // remove the entry
         modList.erase(it);
     }
@@ -630,8 +631,68 @@ void AudioSynth_::removeModulation(uint8_t id)
 
 void AudioSynth_::updateModulation()
 {
-    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    for (uint8_t voiceId = 0; voiceId < MAX_VOICE; voiceId++)
     {
-        voiceArr[i].updateModulation();
+        if (voiceArr[voiceId].curVoiceMode != VOICE_MODE_SYNTH)
+            return;
+
+        float modSrcValue[MOD_SRC_MAX] = {0.0f};
+        float modTgtValue[MOD_TGT_MAX] = {0.0f};
+        bool dirty[MOD_TGT_MAX] = {false};
+        // get all modulation source value and store it
+        // TODO: need refactoring
+        for (uint8_t i = 1; i < MOD_SRC_MAX; i++)
+        {
+            switch (i)
+            {
+            case MOD_SRC_LFO1:
+                modSrcValue[i] = voiceArr[voiceId].lfoSample[0]->readSample() / 32768.0f;
+                break;
+            case MOD_SRC_LFO2:
+                modSrcValue[i] = voiceArr[voiceId].lfoSample[1]->readSample() / 32768.0f;
+                break;
+            case MOD_SRC_AMPENV:
+                modSrcValue[i] = voiceArr[voiceId].ampEnvSample->readSample() / 32768.0f;
+                break;
+            case MOD_SRC_ENV1:
+                modSrcValue[i] = voiceArr[voiceId].envSample[0]->readSample() / 32768.0f;
+                break;
+            case MOD_SRC_ENV2:
+                modSrcValue[i] = voiceArr[voiceId].envSample[1]->readSample() / 32768.0f;
+                break;
+            case MOD_SRC_PITCHBEND:
+                modSrcValue[i] = curPitchbend;
+                break;
+            case MOD_SRC_MODWHEEL:
+                modSrcValue[i] = curModWheel;
+                break;
+            case MOD_SRC_PITCH:
+                modSrcValue[i] = (voiceArr[voiceId].curNote - 64) / 64.0f;
+                break;
+            case MOD_SRC_VELOCITY:
+                modSrcValue[i] = voiceArr[voiceId].curAmp;
+                break;
+            }
+        }
+
+        // process all the modulations in modList, store the result value in modTgtValue
+        for (std::list<ModulationEntry>::iterator it = modList.begin(); it != modList.end(); it++)
+        {
+            float value = modSrcValue[it->source];
+            // calculate amount
+            value *= it->amount;
+            // add to the target value storege (using +=, so one target and be affected by multiple sources)
+            modTgtValue[it->target] += value;
+            // mark dirty
+            dirty[it->target] = true;
+        }
+        // set the final modulation value to the targets
+        for (uint8_t i = 1; i < MOD_TGT_MAX; i++)
+        {
+            if (dirty[i])
+            {
+                modParamList[i].modulate(voiceId, modTgtValue[i]);
+            }
+        }
     }
 }

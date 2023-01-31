@@ -212,21 +212,21 @@ void SynthPage::onEnvArcPressed(lv_event_t *e)
     uint8_t *curVal;
     if (curMenu == instance->menu_env[0])
     {
-        id = 0;
+        id = 1;
         curVal = instance->envVal[0];
         curText = instance->envText[0];
         curArc = instance->envArc[0];
     }
     else if (curMenu == instance->menu_env[1])
     {
-        id = 1;
+        id = 2;
         curVal = instance->envVal[1];
         curText = instance->envText[1];
         curArc = instance->envArc[1];
     }
     else
     {
-        id = 2;
+        id = 0;
         curVal = instance->ampEnvVal;
         curText = instance->ampEnvText;
         curArc = instance->ampEnvArc;
@@ -269,16 +269,25 @@ void SynthPage::onEnvArcPressed(lv_event_t *e)
     envParam[3] = curVal[3] * 0.01f;                      // sustain
     envParam[4] = powf(ENV_VAL_INCREMENT, curVal[4]) - 1; // release
 
+    // TODO: ugly code, need to be refactored
     switch (id)
     {
     case 0:
-    case 1:
-        AudioSynth.setEnvelope(id, envParam[0], envParam[1], envParam[2], envParam[3], envParam[4]);
-        Gui_SetEnvelopeGraph(instance->envGraph[id], instance->envPoints[id], envParam[0], envParam[1], envParam[2], envParam[3], envParam[4]);
-        break;
-    case 2:
-        AudioSynth.setAmpEnvelope(envParam[0], envParam[1], envParam[2], envParam[3], envParam[4]);
+        AudioSynth.setEnvDelay(id, envParam[0]);
+        AudioSynth.setEnvAttack(id, envParam[1]);
+        AudioSynth.setEnvDecay(id, envParam[2]);
+        AudioSynth.setEnvSustain(id, envParam[3]);
+        AudioSynth.setEnvRelease(id, envParam[4]);
         Gui_SetEnvelopeGraph(instance->ampEnvGraph, instance->ampEnvPoints, envParam[0], envParam[1], envParam[2], envParam[3], envParam[4]);
+        break;
+    case 1:
+    case 2:
+        AudioSynth.setEnvDelay(id, envParam[0]);
+        AudioSynth.setEnvAttack(id, envParam[1]);
+        AudioSynth.setEnvDecay(id, envParam[2]);
+        AudioSynth.setEnvSustain(id, envParam[3]);
+        AudioSynth.setEnvRelease(id, envParam[4]);
+        Gui_SetEnvelopeGraph(instance->envGraph[id-1], instance->envPoints[id-1], envParam[0], envParam[1], envParam[2], envParam[3], envParam[4]);
         break;
     }
 
