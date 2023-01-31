@@ -257,7 +257,6 @@ void AudioSynth_::noteOn(uint8_t note)
         if (it->note == note)
         {
             voiceFound = it->voiceIndex;
-            Serial.println("DEBUG: voice found in playingNote, note = " + String(note) + " voice index = " + String(voiceFound));
             playingNote.erase(it);
             voiceArr[voiceFound].noteOff();
 
@@ -271,20 +270,13 @@ void AudioSynth_::noteOn(uint8_t note)
         {
             voiceFound = idleNote.back().voiceIndex;
             idleNote.pop_back();
-            Serial.println("DEBUG: voice found in idleNote, voice index = " + String(voiceFound));
         }
         // If the all voices are occupied, grab the last voice from playing list.
         else if (!playingNote.empty())
         {
             voiceFound = playingNote.back().voiceIndex;
             playingNote.pop_back();
-            Serial.println("DEBUG: voice stole from playingNote, voice index = " + String(voiceFound));
             voiceArr[voiceFound].noteOff();
-        }
-        // this is not supposed to happen.
-        else
-        {
-            Serial.println("DEBUG: voice allocation failed");
         }
     }
     // DEBUG
@@ -297,7 +289,6 @@ void AudioSynth_::noteOn(uint8_t note)
         voiceArr[voiceFound].noteOn(note, map(velocity, 0, 1, 0.2, 1));
     else
         voiceArr[voiceFound].noteOn(note, 0.8);
-    Serial.println("DEBUG: playingNote size: " + String(playingNote.size()) + " idleNote size: " + String(idleNote.size()));
 }
 
 void AudioSynth_::noteOff(uint8_t note)
@@ -311,15 +302,11 @@ void AudioSynth_::noteOff(uint8_t note)
             voiceArr[voiceInd].isNoteOn = false;
             // If sustaining, set isNoteOn = false, and let it play in playingNote (don't stop it)
             if (isSustain)
-                Serial.println("DEBUG: sustain voice in playingNote, voice index = " + String(voiceInd));
             if (!isSustain)
             {
-                Serial.println("DEBUG: remove voice in playingNote, voice index = " + String(voiceInd));
                 playingNote.erase(it);
                 idleNote.push_front(noteEntry(note, voiceInd));
                 voiceArr[voiceInd].noteOff();
-
-                Serial.println("DEBUG: playingNote size: " + String(playingNote.size()) + " idleNote size: " + String(idleNote.size()));
             }
             break;
         }
@@ -342,11 +329,9 @@ void AudioSynth_::sustainOff()
         if (!voiceArr[voiceInd].isNoteOn)
         {
             // remove the note from playingNote list and stop it.
-            Serial.println("DEBUG: remove voice in playingNote, voice index = " + String(voiceInd));
             playingNote.erase(it++);
             idleNote.push_front(noteEntry(0, voiceInd));
             voiceArr[voiceInd].noteOff();
-            Serial.println("DEBUG: playingNote size: " + String(playingNote.size()) + " idleNote size: " + String(idleNote.size()));
 
             if (playingNote.empty())
                 break;
