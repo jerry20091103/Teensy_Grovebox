@@ -1,11 +1,9 @@
 #ifndef AUDIO_SYNTH_H
 #define AUDIO_SYNTH_H
 
-#include "Audio/AudioVoice.h"
 #include <list>
-
-#define MAX_VOICE 8
-#define MAX_MODULATION_COUNT 127
+#include "Audio/AudioVoice.h"
+#include "Audio/SynthModParam.h"
 
 // converts midi note number to pitch frequency
 float noteToFreq(uint8_t note);
@@ -21,6 +19,71 @@ private:
         uint8_t note;       // the MIDI note number
         uint8_t voiceIndex; // the assigned voice in the voiceArr[] array
     };
+
+    /*
+        A list or synth parameters with modulation function.
+    */
+    class ModParamList
+    {
+    public:
+        ModParamList(AudioVoice *voiceArr);
+        OscPitchOffset oscPitchOffset[2];
+        OscLevel oscLevel[2];
+        OscPwm oscPwm[2];
+        NoiseLevel noiseLevel;
+        FilterCutoff filterCutoff;
+        FilterResonance filterResonance;
+        LfoFreq lfoFreq[2];
+        LfoLevel lfoLevel[2];
+        EnvDelay envDelay[3];
+        EnvAttack envAttack[3];
+        EnvDecay envDecay[3];
+        EnvSustain envSustain[3];
+        EnvRelease envRelease[3];
+        
+        // overload the [] operator, so we can access the parameters by index in the UI.
+        SynthModParam& operator[] (uint8_t index)
+        {
+            switch (index)
+            {
+            case MOD_TGT_OSC1_FREQ: return oscPitchOffset[0];
+            case MOD_TGT_OSC1_LEVEL: return oscLevel[0];
+            case MOD_TGT_OSC1_PWM: return oscPwm[0];
+            case MOD_TGT_OSC2_FREQ: return oscPitchOffset[1];
+            case MOD_TGT_OSC2_LEVEL: return oscLevel[1];
+            case MOD_TGT_OSC2_PWM: return oscPwm[1];
+            case MOD_TGT_NOISE_LEVEL: return noiseLevel;
+            case MOD_TGT_FILTER_CUTOFF: return filterCutoff;
+            case MOD_TGT_FILTER_RESONANCE: return filterResonance;
+            case MOD_TGT_LFO1_FREQ: return lfoFreq[0];
+            case MOD_TGT_LFO1_LEVEL: return lfoLevel[0];
+            case MOD_TGT_LFO2_FREQ: return lfoFreq[1];
+            case MOD_TGT_LFO2_LEVEL: return lfoLevel[1];
+            case MOD_TGT_AMPENV_DELAY: return envDelay[0];
+            case MOD_TGT_AMPENV_ATTACK: return envAttack[0];
+            case MOD_TGT_AMPENV_DECAY: return envDecay[0];
+            case MOD_TGT_AMPENV_SUSTAIN: return envSustain[0];
+            case MOD_TGT_AMPENV_RELEASE: return envRelease[0];
+            case MOD_TGT_ENV1_DELAY: return envDelay[1];
+            case MOD_TGT_ENV1_ATTACK: return envAttack[1];
+            case MOD_TGT_ENV1_DECAY: return envDecay[1];
+            case MOD_TGT_ENV1_SUSTAIN: return envSustain[1];
+            case MOD_TGT_ENV1_RELEASE: return envRelease[1];
+            case MOD_TGT_ENV2_DELAY: return envDelay[2];
+            case MOD_TGT_ENV2_ATTACK: return envAttack[2];
+            case MOD_TGT_ENV2_DECAY: return envDecay[2];
+            case MOD_TGT_ENV2_SUSTAIN: return envSustain[2];
+            case MOD_TGT_ENV2_RELEASE: return envRelease[2];
+            default:
+                Serial.println("ERROR: ModParamList::operator[], index out of range.");
+                return oscPitchOffset[0];
+            }
+        }
+    }
+    modParamList;
+
+    // calculates and sets the pitch offset value using current octave, semi, detune and pitchbend values.
+    void calAndSetOscPitchOffset(uint8_t id);
 
     std::list<noteEntry> playingNote;
     std::list<noteEntry> idleNote;
@@ -56,7 +119,6 @@ public:
     void setOscPwm(uint8_t id, uint8_t duty);
     void setOscDetune(uint8_t id, float amount);
     void setOscLevel(uint8_t id, uint8_t amount);
-    void setAmpEnvelope(float delay, float attack, float decay, float sustain, float release);
     void setNoiseLevel(float amount);
     void setLadderFreq(float freq);
     void setLadderResonance(float amount);
@@ -65,36 +127,33 @@ public:
     void setLfoWaveform(uint8_t id, uint8_t wave);
     void setLfoFreq(uint8_t id, float freq);
     void setLfoLevel(uint8_t id, float level);
-    void setEnvelope(uint8_t id, float delay, float attack, float decay, float sustain, float release);
+    void setEnvDelay(uint8_t id, float delay);
+    void setEnvAttack(uint8_t id, float attack);
+    void setEnvDecay(uint8_t id, float decay);
+    void setEnvSustain(uint8_t id, float sustain);
+    void setEnvRelease(uint8_t id, float release);
     // *modulation
     int8_t addModulation(uint8_t source, uint8_t target);
     void setModulationAmount(uint8_t id, float amount);
     void setModulationSource(uint8_t id, uint8_t source);
     void setModulationTarget(uint8_t id, uint8_t target);
+    void resetModulation(uint8_t id);
     void removeModulation(uint8_t id);
     void updateModulation();
 
     // set master output volume in dB
     void setMasterVol(int8_t vol);
 
-    // synth parameter storage for modulation
-    struct synthParam
-    {
-        // the osc freq is stored in each voice instead.
-        float oscLevel[2];     // 0.0f to 1.0f
-        float oscPwm[2];       // 0.0f to 1.0f (duty cycle)
-        float noiseLevel;      // 0.0f to 1.0f
-        float ladderFreq;      // Hz
-        float ladderResonance; // 0.0f to 1.0f
-        float lfoFreq[2];      // Hz
-        float lfoLevel[2];     // 0.0f to 1.0f
-        float ampEnvVal[5];    // delay, attack, decay, sustain, release. In ms.
-        float envVal[2][5];    // delay, attack, decay, sustain, release. In ms.
-    };
+    float velocity = 0.0f;
+    float curModWheel = 0.0f;
+    float curPitchbend = 0.0f;
+    float curPitchbendMult = 1.0f;
 
-    synthParam curSynthParam;
+    uint8_t curVoiceMode = 0;
 
-    float velocity = 0;
+    int8_t oscOctave[2] = {0, 0};
+    int8_t oscSemi[2] = {0, 0};
+    float oscDetune[2] = {0.0f, 0.0f};
 };
 
 extern AudioSynth_ AudioSynth;

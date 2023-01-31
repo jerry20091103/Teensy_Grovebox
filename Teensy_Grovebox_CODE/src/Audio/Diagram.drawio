@@ -1,0 +1,40 @@
+<mxfile host="65bd71144e">
+    <diagram id="xDpyEDEwwMcE_A9npE7N" name="Page-1">
+        <mxGraphModel dx="1500" dy="864" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="11" value="#SynthModParam" style="swimlane;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="520" width="320" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="set(value)" style="rounded=1;whiteSpace=wrap;html=1;" parent="11" vertex="1">
+                    <mxGeometry x="10" y="40" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="get()" style="rounded=1;whiteSpace=wrap;html=1;" parent="11" vertex="1">
+                    <mxGeometry x="10" y="80" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="float value" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="11" vertex="1">
+                    <mxGeometry x="10" y="160" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="modulate(voice, value)" style="rounded=1;whiteSpace=wrap;html=1;" parent="11" vertex="1">
+                    <mxGeometry x="170" y="40" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="AudioVoice[] voiceArr" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="11" vertex="1">
+                    <mxGeometry x="10" y="120" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="resetModulation()" style="rounded=1;whiteSpace=wrap;html=1;" parent="11" vertex="1">
+                    <mxGeometry x="170" y="80" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="#ModSource" style="swimlane;startSize=23;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="400" width="320" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="get()" style="rounded=1;whiteSpace=wrap;html=1;" parent="25" vertex="1">
+                    <mxGeometry x="10" y="40" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="float value" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="25" vertex="1">
+                    <mxGeometry x="170" y="40" width="140" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
