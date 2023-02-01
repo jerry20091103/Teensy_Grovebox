@@ -16,7 +16,7 @@ IntervalTimer guiTimer;
 DMAMEM uint16_t tft_fb[TFT_X * TFT_Y];
 
 // lvgl draw buffer
-lv_color_t lvgl_buf[TFT_X * 40];
+DMAMEM lv_color_t lvgl_buf[TFT_X * 40];
 
 lv_disp_draw_buf_t draw_buf; // lvgl 'draw buffer' object
 lv_disp_drv_t disp_drv;      // lvgl 'display driver'
