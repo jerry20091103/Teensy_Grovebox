@@ -11,7 +11,7 @@
 ### Dependencies in the `lib` folder
 - [LVGL - Light and Versatile Embedded Graphics Library](https://lvgl.io/)
     - All GUIs in the project are created with LVGL.
-- [ILI9341_T4](https://www.facebook.com/messages/t/2665967166826350)
+- [ILI9341_T4](https://github.com/vindar/ILI9341_T4)
     - A optimized display driver for the ILI9341 TFT LCD + Teensy4 combo.
 ## Setup and Build
 - Install the PlatformIO extension in Visual Studio Code.
