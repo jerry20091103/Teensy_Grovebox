@@ -79,16 +79,12 @@ private:
     // noise
     lv_obj_t *noiseArc;
     lv_obj_t *noiseLevelText;
-    // amp env
-    lv_obj_t* ampEnvGraph;
-    lv_point_t ampEnvPoints[10];
-    lv_obj_t* ampEnvText[5];
-    lv_obj_t* ampEnvArc[5];
-    // env1 and env2
-    lv_obj_t* envGraph[2];
-    lv_point_t envPoints[2][10];
-    lv_obj_t* envArc[2][5];
-    lv_obj_t* envText[2][5];
+    // ampEnv, env1 and env2 share the same objects
+    lv_obj_t* envMenuArea;
+    lv_obj_t* envGraph;
+    lv_point_t envPoints[10];
+    lv_obj_t* envArc[5];
+    lv_obj_t* envText[5];
     // filter
     lv_obj_t* filterArc[4];
     lv_obj_t* filterText[4];

@@ -66,8 +66,29 @@ void SynthPage::onVolArcPressed(lv_event_t *e)
 // re-configure encoders when menu page has changed
 void SynthPage::onMenuPageChange(lv_event_t *e)
 {
+    // todo: between configreEncoders(), lv_event... lots of arc+encoder stuff is repeated...
     SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     instance->configureEncoders();
+    lv_obj_t *curMenu = lv_menu_get_cur_main_page(instance->menu);
+    // load values into shared GUI objects and move them to new parent
+    // * ENVs
+    if (curMenu == instance->menu_ampenv || curMenu == instance->menu_env[0] || curMenu == instance->menu_env[1])
+    {
+        uint8_t *curVal;
+        if (curMenu == instance->menu_env[0])
+            curVal = instance->envVal[0];
+        else if (curMenu == instance->menu_env[1])
+            curVal = instance->envVal[1];
+        else
+            curVal = instance->ampEnvVal;
+
+        for (uint8_t arcId = 0; arcId < 5; arcId++)
+        {
+            lv_arc_set_value(instance->envArc[arcId], curVal[arcId]);
+            lv_event_send(instance->envArc[arcId], LV_EVENT_VALUE_CHANGED, NULL);
+        }
+        lv_obj_set_parent(instance->envMenuArea, curMenu);
+    }
 }
 
 void SynthPage::onOscWaveSelect(lv_event_t *e)
@@ -201,123 +222,95 @@ void SynthPage::onEnvArcPressed(lv_event_t *e)
     SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     lv_obj_t *arc = lv_event_get_target(e);
     int16_t value = lv_arc_get_value(arc);
-    uint8_t flag = Gui_getObjIdFlag(arc);
-    lv_obj_t *curMenu;
-    if (lv_event_get_param(e) == NULL)
-        curMenu = lv_menu_get_cur_main_page(instance->menu);
-    else
-        curMenu = (lv_obj_t *)lv_event_get_param(e);
-    uint8_t id = 0;
-    lv_obj_t **curText, **curArc;
+    uint8_t arcId = Gui_getObjIdFlag(arc);
+    // get which menu we're in
+    lv_obj_t *curMenu = lv_menu_get_cur_main_page(instance->menu);
+    uint8_t menuId = 0;
     uint8_t *curVal;
     if (curMenu == instance->menu_env[0])
     {
-        id = 1;
+        menuId = 1;
         curVal = instance->envVal[0];
-        curText = instance->envText[0];
-        curArc = instance->envArc[0];
     }
     else if (curMenu == instance->menu_env[1])
     {
-        id = 2;
+        menuId = 2;
         curVal = instance->envVal[1];
-        curText = instance->envText[1];
-        curArc = instance->envArc[1];
     }
     else
     {
-        id = 0;
+        menuId = 0;
         curVal = instance->ampEnvVal;
-        curText = instance->ampEnvText;
-        curArc = instance->ampEnvArc;
     }
-    switch (flag)
+    // set values
+    float envParam = powf(ENV_VAL_INCREMENT, value) - 1; // sustain is a special case, handled below.
+    switch (arcId)
     {
     case 0:
         // delay
-        curVal[flag] = value;
+        curVal[arcId] = value;
+        AudioSynth.setEnvDelay(menuId, envParam);
         break;
     case 1:
         // attack
-        if (enc[0] != NULL)
-            enc[0]->setCurrentReading(value);
-        curVal[flag] = value;
+        enc[0]->setCurrentReading(value);
+        curVal[arcId] = value;
+        AudioSynth.setEnvAttack(menuId, envParam);
         break;
     case 2:
         // decay
-        if (enc[1] != NULL)
-            enc[1]->setCurrentReading(value);
-        curVal[flag] = value;
+        enc[1]->setCurrentReading(value);
+        curVal[arcId] = value;
+        AudioSynth.setEnvDecay(menuId, envParam);
         break;
     case 3:
         // sustain
-        if (enc[2] != NULL)
-            enc[2]->setCurrentReading(value);
-        curVal[flag] = value;
+        enc[2]->setCurrentReading(value);
+        curVal[arcId] = value;
+        envParam = value * 0.01f;
+        AudioSynth.setEnvAttack(menuId, envParam);
         break;
     case 4:
         // release
-        if (enc[3] != NULL)
-            enc[3]->setCurrentReading(value);
-        curVal[flag] = value;
+        enc[3]->setCurrentReading(value);
+        curVal[arcId] = value;
+        AudioSynth.setEnvRelease(menuId, envParam);
         break;
     }
-    float envParam[5];
-    envParam[0] = powf(ENV_VAL_INCREMENT, curVal[0]) - 1; // delay
-    envParam[1] = powf(ENV_VAL_INCREMENT, curVal[1]) - 1; // attack
-    envParam[2] = powf(ENV_VAL_INCREMENT, curVal[2]) - 1; // decay
-    envParam[3] = curVal[3] * 0.01f;                      // sustain
-    envParam[4] = powf(ENV_VAL_INCREMENT, curVal[4]) - 1; // release
+    // envelope graph needs all envelope values...
+    Gui_SetEnvelopeGraph(instance->envGraph, instance->envPoints,
+                         powf(ENV_VAL_INCREMENT, curVal[0]) - 1,
+                         powf(ENV_VAL_INCREMENT, curVal[1]) - 1,
+                         powf(ENV_VAL_INCREMENT, curVal[2]) - 1,
+                         curVal[3] * 0.01f,
+                         powf(ENV_VAL_INCREMENT, curVal[4]) - 1);
 
-    // TODO: ugly code, need to be refactored
-    switch (id)
-    {
-    case 0:
-        AudioSynth.setEnvDelay(id, envParam[0]);
-        AudioSynth.setEnvAttack(id, envParam[1]);
-        AudioSynth.setEnvDecay(id, envParam[2]);
-        AudioSynth.setEnvSustain(id, envParam[3]);
-        AudioSynth.setEnvRelease(id, envParam[4]);
-        Gui_SetEnvelopeGraph(instance->ampEnvGraph, instance->ampEnvPoints, envParam[0], envParam[1], envParam[2], envParam[3], envParam[4]);
-        break;
-    case 1:
-    case 2:
-        AudioSynth.setEnvDelay(id, envParam[0]);
-        AudioSynth.setEnvAttack(id, envParam[1]);
-        AudioSynth.setEnvDecay(id, envParam[2]);
-        AudioSynth.setEnvSustain(id, envParam[3]);
-        AudioSynth.setEnvRelease(id, envParam[4]);
-        Gui_SetEnvelopeGraph(instance->envGraph[id-1], instance->envPoints[id-1], envParam[0], envParam[1], envParam[2], envParam[3], envParam[4]);
-        break;
-    }
-
+    // set displayed value for GUI
     int decimal;
-    for (uint8_t i = 0; i < 5; i++)
+    if (arcId != 3)
     {
-        if (i != 3)
+        // units (S of ms)
+        if (envParam >= 1000)
         {
-            if (envParam[i] >= 1000)
-            {
-                envParam[i] /= 1000.0f;
-                lv_label_set_text(lv_obj_get_child(curArc[i], 1), "S");
-            }
-            else
-            {
-                lv_label_set_text(lv_obj_get_child(curArc[i], 1), "ms");
-            }
-
-            if (envParam[i] < 10)
-                decimal = 2;
-            else if (envParam[i] < 100)
-                decimal = 1;
-            else
-                decimal = 0;
-            lv_label_set_text_fmt(curText[i], "%.*f", decimal, envParam[i]);
+            envParam /= 1000.0f;
+            lv_label_set_text(lv_obj_get_child(instance->envArc[arcId], 1), "S");
         }
-        else // sustain
+        else
         {
-            lv_label_set_text_fmt(curText[i], "%d", curVal[i]);
+            lv_label_set_text(lv_obj_get_child(instance->envArc[arcId], 1), "ms");
         }
+        // decimal count
+        if (envParam < 10)
+            decimal = 2;
+        else if (envParam < 100)
+            decimal = 1;
+        else
+            decimal = 0;
+        lv_label_set_text_fmt(instance->envText[arcId], "%.*f", decimal, envParam);
+    }
+    else // sustain
+    {
+        lv_label_set_text_fmt(instance->envText[arcId], "%d", curVal[arcId]);
     }
 }
 
@@ -601,16 +594,10 @@ void SynthPage::onEncTurned(uint8_t id, int value)
         }
         lv_event_send(noiseArc, LV_EVENT_VALUE_CHANGED, NULL);
     }
-    else if (curMenu == menu_ampenv)
+    else if (curMenu == menu_ampenv || curMenu == menu_env[0] || curMenu == menu_env[1])
     {
-        lv_arc_set_value(ampEnvArc[id + 1], value);
-        lv_event_send(ampEnvArc[id + 1], LV_EVENT_VALUE_CHANGED, NULL);
-    }
-    else if (curMenu == menu_env[0] || curMenu == menu_env[1])
-    {
-        uint8_t i = curMenu == menu_env[0] ? 0 : 1;
-        lv_arc_set_value(envArc[i][id + 1], value);
-        lv_event_send(envArc[i][id + 1], LV_EVENT_VALUE_CHANGED, NULL);
+        lv_arc_set_value(envArc[id + 1], value);
+        lv_event_send(envArc[id + 1], LV_EVENT_VALUE_CHANGED, NULL);
     }
     else if (curMenu == menu_filter)
     {
@@ -786,21 +773,6 @@ void SynthPage::setUserData()
     AudioSynth.setNoiseLevel(noiseLevel);
     lv_label_set_text_fmt(noiseLevelText, "%d", noiseLevel);
 
-    // amp env menu
-    for (uint8_t id = 0; id < 5; id++)
-    {
-        lv_arc_set_value(ampEnvArc[id], ampEnvVal[id]);
-        lv_event_send(ampEnvArc[id], LV_EVENT_VALUE_CHANGED, menu_ampenv);
-    }
-    // env1 and env2
-    for (uint8_t id = 0; id < 2; id++)
-    {
-        for (uint8_t j = 0; j < 5; j++)
-        {
-            lv_arc_set_value(envArc[id][j], envVal[id][j]);
-            lv_event_send(envArc[id][j], LV_EVENT_VALUE_CHANGED, menu_env[id]);
-        }
-    }
     // filter menu
     for (uint8_t id = 0; id < 4; id++)
     {
@@ -983,26 +955,6 @@ void SynthPage::init()
 
     // *MENU AMPENV-----------------------------------------------------------------
     menu_ampenv = lv_menu_page_create(menu, "Amp Envelope");
-    menu_area = createItemMenuArea(menu_ampenv);
-    lv_obj_clear_flag(menu_area, LV_OBJ_FLAG_SCROLLABLE);
-    // *envelope graph
-    ampEnvGraph = Gui_CreateEnvelopeGraph(menu_area, 320, 90);
-    // *5 envelope arcs
-    const char *envTitle[] = {"Delay", "Attack", "Decay", "Sustain", "Release"};
-    for (uint8_t i = 0; i < 5; i++)
-    {
-        ampEnvArc[i] = Gui_CreateParamArc(menu_area, i, envTitle[i], i == 3 ? "%" : "ms", false);
-        lv_obj_set_size(ampEnvArc[i], 55, 55);
-        lv_obj_align(ampEnvArc[i], LV_ALIGN_BOTTOM_MID, -126 + 63 * i, 0);
-        Gui_setObjIdFlag(ampEnvArc[i], i);
-        if (i == 3) // sustain arc
-            lv_arc_set_range(ampEnvArc[i], 0, 100);
-        else // everything else
-            lv_arc_set_range(ampEnvArc[i], 0, ENV_VAL_MAX);
-        lv_obj_add_event_cb(ampEnvArc[i], onEnvArcPressed, LV_EVENT_VALUE_CHANGED, this);
-        ampEnvText[i] = lv_label_create(ampEnvArc[i]);
-        lv_obj_center(ampEnvText[i]);
-    }
 
     // *MENU ENV1 AND ENV2------------------------------------------------------------
     for (uint8_t i = 0; i < 2; i++)
@@ -1010,26 +962,27 @@ void SynthPage::init()
         char title[11];
         strcpy(title, (String("Envelope ") + String(i + 1)).c_str());
         menu_env[i] = lv_menu_page_create(menu, title);
-        menu_area = createItemMenuArea(menu_env[i]);
-        lv_obj_clear_flag(menu_area, LV_OBJ_FLAG_SCROLLABLE);
-        // *envelope graph
-        envGraph[i] = Gui_CreateEnvelopeGraph(menu_area, 320, 90);
-        // *5 envelope arcs
-        const char *envTitle[] = {"Delay", "Attack", "Decay", "Sustain", "Release"};
-        for (uint8_t j = 0; j < 5; j++)
-        {
-            envArc[i][j] = Gui_CreateParamArc(menu_area, j, envTitle[j], j == 3 ? "%" : "ms", false);
-            lv_obj_set_size(envArc[i][j], 55, 55);
-            lv_obj_align(envArc[i][j], LV_ALIGN_BOTTOM_MID, -126 + 63 * j, 0);
-            Gui_setObjIdFlag(envArc[i][j], j);
-            if (j == 3) // sustain arc
-                lv_arc_set_range(envArc[i][j], 0, 100);
-            else // everything else
-                lv_arc_set_range(envArc[i][j], 0, ENV_VAL_MAX);
-            lv_obj_add_event_cb(envArc[i][j], onEnvArcPressed, LV_EVENT_VALUE_CHANGED, this);
-            envText[i][j] = lv_label_create(envArc[i][j]);
-            lv_obj_center(envText[i][j]);
-        }
+    }
+    // *create a menu area to be shared by all envelopes
+    envMenuArea = createItemMenuArea(menu_ampenv); // set parent to amp env menu for now
+    lv_obj_clear_flag(envMenuArea, LV_OBJ_FLAG_SCROLLABLE);
+    // *envelope graph
+    envGraph = Gui_CreateEnvelopeGraph(envMenuArea, 320, 90);
+    // *5 envelope arcs
+    const char *envTitle[] = {"Delay", "Attack", "Decay", "Sustain", "Release"};
+    for (uint8_t arcId = 0; arcId < 5; arcId++)
+    {
+        envArc[arcId] = Gui_CreateParamArc(envMenuArea, arcId, envTitle[arcId], arcId == 3 ? "%" : "ms", false);
+        lv_obj_set_size(envArc[arcId], 55, 55);
+        lv_obj_align(envArc[arcId], LV_ALIGN_BOTTOM_MID, -126 + 63 * arcId, 0);
+        Gui_setObjIdFlag(envArc[arcId], arcId);
+        if (arcId == 3) // sustain arc
+            lv_arc_set_range(envArc[arcId], 0, 100);
+        else // everything else
+            lv_arc_set_range(envArc[arcId], 0, ENV_VAL_MAX);
+        lv_obj_add_event_cb(envArc[arcId], onEnvArcPressed, LV_EVENT_VALUE_CHANGED, this);
+        envText[arcId] = lv_label_create(envArc[arcId]);
+        lv_obj_center(envText[arcId]);
     }
 
     // *MENU FILTER-----------------------------------------------------------------
