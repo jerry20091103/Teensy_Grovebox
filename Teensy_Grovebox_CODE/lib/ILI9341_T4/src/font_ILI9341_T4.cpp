@@ -526,7 +526,7 @@ const ILI9341_t3_font_t font_ILI9341_T4_OpenSans_Bold_10 PROGMEM = {
 	3,
 	4,
 	4,
-	10,
+	11,
 	7
 };
 
@@ -1194,7 +1194,7 @@ const ILI9341_t3_font_t font_ILI9341_T4_OpenSans_Bold_12 PROGMEM = {
 	3,
 	5,
 	4,
-	12,
+	14,
 	9
 };
 
@@ -2038,7 +2038,7 @@ const ILI9341_t3_font_t font_ILI9341_T4_OpenSans_Bold_14 PROGMEM = {
 	3,
 	5,
 	4,
-	14,
+	15,
 	10
 };
 
@@ -3147,7 +3147,7 @@ const ILI9341_t3_font_t font_ILI9341_T4_OpenSans_Bold_16 PROGMEM = {
 	3,
 	5,
 	5,
-	16,
+	18,
 	12
 };
 

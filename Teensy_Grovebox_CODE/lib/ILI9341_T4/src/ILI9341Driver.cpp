@@ -43,6 +43,7 @@ namespace ILI9341_T4
         _height = ILI9341_T4_TFTHEIGHT;
         _rotation = 0;
         _refreshmode = 0; 
+        _irq_priority = ILI9341_T4_DEFAULT_IRQ_PRIORITY;
         _outputStream = nullptr;
 
         // buffering
@@ -82,6 +83,7 @@ namespace ILI9341_T4
         _rst = rst;
         _touch_cs = touch_cs;
         _touch_irq = touch_irq;
+        _spi_num = 255;
         _cspinmask = 0;
         _csport = NULL;
         _hardware_dc = false;
@@ -256,21 +258,16 @@ namespace ILI9341_T4
             {
             case 0:
                 attachInterruptVector(IRQ_LPSPI4, (_hardware_dc) ? _spiInterruptSPI0_hardware : _spiInterruptSPI0_software);
-                NVIC_SET_PRIORITY(IRQ_LPSPI4, ILI9341_T4_IRQ_PRIORITY);
-                NVIC_ENABLE_IRQ(IRQ_LPSPI4);
                 break;
             case 1:
                 attachInterruptVector(IRQ_LPSPI3, (_hardware_dc) ? _spiInterruptSPI1_hardware : _spiInterruptSPI1_software);
-                NVIC_SET_PRIORITY(IRQ_LPSPI3, ILI9341_T4_IRQ_PRIORITY);
-                NVIC_ENABLE_IRQ(IRQ_LPSPI3);
                 break;
             case 2:
                 attachInterruptVector(IRQ_LPSPI1, (_hardware_dc) ? _spiInterruptSPI2_hardware : _spiInterruptSPI2_software);
-                NVIC_SET_PRIORITY(IRQ_LPSPI1, ILI9341_T4_IRQ_PRIORITY);
-                NVIC_ENABLE_IRQ(IRQ_LPSPI1);
                 break;
             }
 
+        setIRQPriority(_irq_priority); // set SPI interrupt priority
 
         _maybeUpdateTCR(_tcr_dc_not_assert | LPSPI_TCR_FRAMESZ(7)); // drive DC high now. 
 
@@ -291,7 +288,7 @@ namespace ILI9341_T4
         if (_spi_clock_read < 0) _spi_clock_read = ILI9341_T4_DEFAULT_SPICLOCK_READ;
         _printf("\n- SPI write speed : %.2fMhz\n", spi_clock / 1000000.0f);
         _printf("- SPI read speed : %.2fMhz\n\n", spi_clock_read / 1000000.0f);
-
+        _printf("- IRQ priority : %d\n\n", _irq_priority);
 
         _rotation = 0; // default rotation
 
@@ -446,6 +443,29 @@ namespace ILI9341_T4
         resync();
         }
 
+
+    FLASHMEM void ILI9341Driver::setIRQPriority(int irq_priority)
+        {
+        _waitUpdateAsyncComplete();            
+        noInterrupts();
+        _irq_priority = _clip(irq_priority, 0, 255);        
+        switch (_spi_num)
+            {
+            case 0:
+                NVIC_SET_PRIORITY(IRQ_LPSPI4, _irq_priority);
+                NVIC_ENABLE_IRQ(IRQ_LPSPI4);
+                break;
+            case 1:
+                NVIC_SET_PRIORITY(IRQ_LPSPI3, _irq_priority);
+                NVIC_ENABLE_IRQ(IRQ_LPSPI3);
+                break;
+            case 2:
+                NVIC_SET_PRIORITY(IRQ_LPSPI1, _irq_priority);
+                NVIC_ENABLE_IRQ(IRQ_LPSPI1);
+                break;
+            }        
+        interrupts();
+        }
 
 
     /**********************************************************************************************************
@@ -671,7 +691,7 @@ namespace ILI9341_T4
                     }
                 }
             // wait to begin scanline 1. 
-            while (_getScanLine(true) == 0);  
+            while (_getScanLine(true) == 0)
                 {
                 if (em > 1000000)
                     { // hanging...
@@ -1322,7 +1342,7 @@ namespace ILI9341_T4
         }
 
 
-    void ILI9341Driver::_subFrameTimerStartcb()
+    FLASHMEM void ILI9341Driver::_subFrameTimerStartcb()
         {
         // we should be around scanline 0 (unless we are late). 
         _restartCpuTime();
@@ -1355,7 +1375,7 @@ namespace ILI9341_T4
 
 
 
-    void ILI9341Driver::_subFrameTimerStartcb2()
+    FLASHMEM void ILI9341Driver::_subFrameTimerStartcb2()
         {
         _restartUploadTime();
         _restartCpuTime();
@@ -1431,17 +1451,17 @@ namespace ILI9341_T4
         _dma_deassert_dc();
 
         noInterrupts();
-        NVIC_SET_PRIORITY(IRQ_DMA_CH0 + _dmatx.channel, ILI9341_T4_IRQ_PRIORITY);
+        NVIC_SET_PRIORITY(IRQ_DMA_CH0 + _dmatx.channel, _irq_priority);
         _dmatx.begin(false);        
         _dmatx.enable(); // go !
-        NVIC_SET_PRIORITY(IRQ_DMA_CH0 + _dmatx.channel, ILI9341_T4_IRQ_PRIORITY);
+        NVIC_SET_PRIORITY(IRQ_DMA_CH0 + _dmatx.channel, _irq_priority);
         interrupts();
         _pauseCpuTime();
         }
 
 
 
-    void ILI9341Driver::_subFrameInterruptDiff()
+    FLASHMEM void ILI9341Driver::_subFrameInterruptDiff()
         {
         if (_vsync_spacing > 0)
             { // check margin when using vsync
@@ -1564,18 +1584,18 @@ namespace ILI9341_T4
             _pimxrt_spi->SR = 0x3f00;
 
             // interrupt after each frame
+            noInterrupts();
             _pimxrt_spi->IER = LPSPI_IER_WCIE;  
-
             _pimxrt_spi->TDR = _spi_int_command[_spi_int_phase--]; // send the first command
             _pimxrt_spi->TCR = _dma_spi_tcr_deassert; // and then back to frame(15)
-
+            interrupts();
             // now we wait for the interrupt before toogling DC and sending the next frame... 
             }
         return;
         }
 
 
-    void ILI9341Driver::_subFrameInterruptDiff2()
+    FLASHMEM void ILI9341Driver::_subFrameInterruptDiff2()
         {
         //noInterrupts();        // UNNEEDED ?
         _restartUploadTime();
@@ -1594,7 +1614,7 @@ namespace ILI9341_T4
     ILI9341Driver* volatile ILI9341Driver::_dmaObject[3] = { nullptr, nullptr, nullptr }; 
 
 
-    void ILI9341Driver::_dmaInterruptDiff()
+    FLASHMEM void ILI9341Driver::_dmaInterruptDiff()
         { 
         //noInterrupts();        // UNNEEDED ?
         _dmatx.clearInterrupt();
@@ -1623,7 +1643,7 @@ namespace ILI9341_T4
 
     ILI9341Driver* volatile ILI9341Driver::_pitObj[4] = {nullptr, nullptr, nullptr, nullptr};   // definition 
 
-    void ILI9341Driver::_timerinit()
+    FLASHMEM void ILI9341Driver::_timerinit()
         {
         _istimer = false; 
         for (int i = 0; i < 4; i++)
@@ -1841,19 +1861,17 @@ namespace ILI9341_T4
         off += 3;
         const int sx = (int)_fetchbits_unsigned(data, off, font.bits_width);
         off += font.bits_width;
-        const int sy = (int)_fetchbits_unsigned(data, off, font.bits_height);
+        //const int sy = (int) _fetchbits_unsigned(data, off, font.bits_height);
         off += font.bits_height;
         const int xoffset = (int)_fetchbits_signed(data, off, font.bits_xoffset);
         off += font.bits_xoffset;
-        const int yoffset = (int)_fetchbits_signed(data, off, font.bits_yoffset);
+        //const int yoffset = (int)_fetchbits_signed(data, off, font.bits_yoffset);
         off += font.bits_yoffset;
         xadvance = (int)_fetchbits_unsigned(data, off, font.bits_delta);
-        const int x = pos_x + xoffset;
-        const int y = pos_y - sy - yoffset;
-        min_x = x;
-        max_x = x + sx - 1;
-        min_y = y;
-        max_y = y + sy - 1;
+        min_x = pos_x;
+        max_x = pos_x + xoffset + sx - 1;
+        min_y = pos_y - font.cap_height - 2;
+        max_y = min_y + font.line_space - 1; 
         }
 
 
@@ -1876,12 +1894,12 @@ namespace ILI9341_T4
             else
                 {
                 int xa = 0;
-                int mx = min_x; 
+                int mx = min_x;
                 int Mx = max_x;
                 int my = min_y;
                 int My = max_y;
                 _measureChar(c, pos_x, pos_y, mx, Mx, my, My, pfont, xa);
-                if (mx < min_x) min_x = mx; 
+                if (mx < min_x) min_x = mx;
                 if (my < min_y) min_y = my;
                 if (Mx > max_x) max_x = Mx;
                 if (My > max_y) max_y = My;
@@ -1891,10 +1909,10 @@ namespace ILI9341_T4
         }
 
 
-
     FLASHMEM void ILI9341Driver::_drawTextILI(const char* text, int pos_x , int  pos_y, uint16_t col, const void * pfont, bool start_newline_at_0, int lx, int ly, int stride, uint16_t* buffer, float opacity)
         {
-        if (opacity > 1.0f) opacity = 1.0f;
+        if (opacity <= 0.0f) return; 
+        if (opacity >= 1.0f) opacity = 1.0f;
         const int startx = start_newline_at_0 ? 0 : pos_x;
         const size_t l = strlen(text);
         for (size_t i = 0; i < l; i++)
@@ -2013,10 +2031,11 @@ namespace ILI9341_T4
 
     FLASHMEM void ILI9341Driver::_fillRect(int xmin, int xmax, int ymin, int ymax, int lx, int ly, int stride, uint16_t* buffer, uint16_t color, float opacity)
         {
+        if (opacity <= 0.0f) return;
         if (xmin < 0) xmin = 0; 
         if (xmax >= lx) xmax = lx - 1;
         if (ymin < 0) ymin = 0;
-        if (ymax >= lx) ymax = ly - 1;
+        if (ymax >= ly) ymax = ly - 1;
 
         const uint32_t a = (opacity >= 1.0f) ? 32 : (32 * opacity);
         for (int j = ymin; j <= ymax; j++)
@@ -2076,7 +2095,7 @@ namespace ILI9341_T4
         _drawCharILI(c, nx, ny, col, pfont, MAX_CHAR_SIZE_LX, MAX_CHAR_SIZE_LY, MAX_CHAR_SIZE_LX, buffer, 1.0f); // draw the char on the buffer
         _updateRectNow(buffer, pos_x, pos_x + max_x , pos_y - ny, pos_y + max_y - ny, MAX_CHAR_SIZE_LX); // upload it to the screen
 
-        pos_x += (nx + min_x);
+        pos_x += xa; //(nx + min_x);
 
         }
 
@@ -2088,13 +2107,81 @@ namespace ILI9341_T4
 
 
 
+    FLASHMEM void ILI9341Driver::overlayText(uint16_t* fb, const char* text, int position, int line, int font_size,
+                                             uint16_t fg_color, float fg_opacity,
+                                             uint16_t bg_color, float bg_opacity,
+                                             bool extend_bk_whole_width)
+        {
+
+        const ILI9341_t3_font_t * pfont;
+        if (font_size < 12)
+            pfont = &font_ILI9341_T4_OpenSans_Bold_10;
+        else if (font_size < 14)
+            pfont = &font_ILI9341_T4_OpenSans_Bold_12;
+        else if (font_size < 16)
+            pfont = &font_ILI9341_T4_OpenSans_Bold_14;
+        else 
+            pfont = &font_ILI9341_T4_OpenSans_Bold_16;
+
+        int x = 0;
+        int y = 0;
+        int tt_xmin, tt_xmax, tt_ymin, tt_ymax;
+        _measureText(text, x, y, tt_xmin, tt_xmax, tt_ymin, tt_ymax, pfont, false);
+
+        tt_xmin--;
+        tt_xmax++;
+
+        int dx, dy;
+        switch (position)
+            {
+            case 1: 
+                {
+                dx = _width - 1 - tt_xmax;
+                dy = _height - 1 - tt_ymax - line * pfont->line_space;
+                break;
+                }
+            case 2:
+                {
+                dx = -tt_xmin;
+                dy = _height - 1 - tt_ymax - line * pfont->line_space;
+                break;
+                }
+            case 3:
+                {
+                dx = -tt_xmin;
+                dy = -tt_ymin + line * pfont->line_space;
+                break;
+                }
+            default:
+                {
+                dx = _width - 1 - tt_xmax;
+                dy = -tt_ymin + line* pfont->line_space;
+                break;
+                }
+            }
+
+        x += dx;
+        y += dy;
+
+        tt_xmin += dx;
+        tt_xmax += dx;
+        tt_ymin += dy;
+        tt_ymax += dy;
+
+        if (extend_bk_whole_width)
+            { // overwrite
+            tt_xmin = 0; 
+            tt_xmax = _width - 1;
+            }
+
+        _fillRect(tt_xmin, tt_xmax, tt_ymin, tt_ymax, _width, _height, _width, fb, bg_color, bg_opacity);
+        _drawTextILI(text, x, y, fg_color, pfont, false, _width, _height, _width, fb, fg_opacity);
+        }
 
 
 
 
-
-
-    FLASHMEM void ILI9341Driver::overlayFPS(uint16_t* fb, int position, uint16_t fg_color, uint16_t bk_color, float opacity)
+    FLASHMEM void ILI9341Driver::overlayFPS(uint16_t* fb, int position, uint16_t fg_color, uint16_t bg_color, float opacity)
         {
         char text[8] = "--- FPS";
         int text_off = 0;
@@ -2117,54 +2204,7 @@ namespace ILI9341_T4
                 text[text_off] = '0' + (fps % 10);
                 }
             }
-
-        int x = 0;
-        int y = 0;
-        int _fps_xmin, _fps_xmax, _fps_ymin, _fps_ymax;
-        _measureText(text + text_off, x, y, _fps_xmin, _fps_xmax, _fps_ymin, _fps_ymax, &font_ILI9341_T4_OpenSans_Bold_10, false);
-        _fps_xmin -= 2;
-        _fps_xmax += 2;
-        _fps_ymin -= 3;
-        _fps_ymax += 2;
-
-        int dx, dy;
-        switch (position)
-            {
-            case 1: 
-                {
-                dx = _width - 1 - _fps_xmax;
-                dy = _height - 1 - _fps_ymax;
-                break;
-                }
-            case 2:
-                {
-                dx = -_fps_xmin;
-                dy = _height - 1 - _fps_ymax;
-                break;
-                }
-            case 3:
-                {
-                dx = -_fps_xmin;
-                dy = -_fps_ymin;
-                break;
-                }
-            default:
-                {
-                dx = _width - 1 - _fps_xmax;
-                dy = -_fps_ymin;
-                break;
-                }
-            }
-
-        x += dx;
-        _fps_xmin += dx;
-        _fps_xmax += dx;
-        y += dy;
-        _fps_ymin += dy;
-        _fps_ymax += dy;
-
-        _fillRect(_fps_xmin, _fps_xmax, _fps_ymin, _fps_ymax, _width, _height, _width, fb, bk_color, opacity);
-        _drawTextILI(text + text_off, x, y, fg_color, &font_ILI9341_T4_OpenSans_Bold_10, false, _width, _height, _width, fb, opacity + 0.3f);
+        overlayText(fb, text + text_off, position, 0, 10, fg_color, opacity + 0.3f, bg_color, opacity, false);  
         }
 
 
@@ -2203,6 +2243,7 @@ namespace ILI9341_T4
             _print("----------------- ILI9341Driver Stats ----------------\n");
             _print("[Configuration]\n");
             _printf("- SPI speed          : write=%u  read=%u\n", _spi_clock, _spi_clock_read);
+            _printf("- IRQ priority       : %d\n", _irq_priority);
             _print("- screen orientation : ");
             switch (getRotation())
                 {
@@ -2456,7 +2497,7 @@ namespace ILI9341_T4
 
 
 
-    bool ILI9341Driver::readTouch(int& x, int& y, int& z)
+    FLASHMEM bool ILI9341Driver::readTouch(int& x, int& y, int& z)
         {
         _updateTouch();
         if (_touch_z < _touch_z_threshold) return false;
@@ -2493,6 +2534,12 @@ namespace ILI9341_T4
         return true;
         }
 
+
+    FLASHMEM bool ILI9341Driver::readTouch(int& x, int& y)
+        {
+        int z;
+        return readTouch(x, y, z);
+        }
 
 
     int16_t ILI9341Driver::_besttwoavg(int16_t x, int16_t y, int16_t z)
@@ -2606,17 +2653,17 @@ namespace ILI9341_T4
 
     restart_calib:
 
-        int x[4];
-        int y[4];
-        int z[4];
+        int x[4] = {0,0,0,0};
+        int y[4] = {0,0,0,0};
+        int z[4] = {0,0,0,0};
 
         for (int i = 0; i < 4; i++)
             {
             char tn[4] = { (char)('1' + i),'/', '4', 0};
             clear(WHITE);         
-            _uploadText("Touchscreen calibration", 30, 120, BLACK, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_16), true);
+            _uploadText("Touchscreen calibration", 28, 120, BLACK, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_16), true);
             _uploadText("Touch the center of the", 50, 170, BLUE, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_12), true);
-            _uploadText("red square in the corner", 50, 185, BLUE, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_12), true);
+            _uploadText("red square in the corner", 47, 185, BLUE, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_12), true);
             _uploadText(tn, 105, 215, 31, 0xFFFF, (void*)(&font_ILI9341_T4_OpenSans_Bold_16), true);            
             _printf("\n- corner %s: touch the center of the red rectangle... ", tn);
             switch (i)
@@ -2650,7 +2697,7 @@ namespace ILI9341_T4
         _pushRect(GREY, 99, 235, 282, 316);
         _uploadText("GOOD", 27, 305, GREEN, GREY, (void*)(&font_ILI9341_T4_OpenSans_Bold_14), true);
         _uploadText("REDO CALIB.", 130, 305, RED, GREY, (void*)(&font_ILI9341_T4_OpenSans_Bold_14), true);
-        _uploadText("Draw below to test calibration", 22, 15, BLACK, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_14), true);
+        _uploadText("Draw below to test calibration", 19, 15, BLACK, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_14), true);
 
         float xa = (x[0] + x[3]) / 2.0f;
         float xb = (x[1] + x[2]) / 2.0f;
@@ -2700,7 +2747,7 @@ namespace ILI9341_T4
 
                         int minx, maxx, miny, maxy;
                         _measureText(tt, 0, 0, minx, maxx, miny, maxy, (void*)(&font_ILI9341_T4_OpenSans_Bold_16), false);
-                        _uploadText("Calibration data:", 60, 130, BLACK, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_16), true);
+                        _uploadText("Calibration data:", 50, 130, BLACK, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_16), true);
                         _uploadText(tt, 120 - (maxx - minx + 1)/2, 170, RED, WHITE, (void*)(&font_ILI9341_T4_OpenSans_Bold_16), true);
                         _pushRect(BLACK, 85, 155, 280, 318);
                         _pushRect(GREY, 87, 153, 282, 316);
