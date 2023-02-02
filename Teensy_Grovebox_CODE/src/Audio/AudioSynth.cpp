@@ -289,6 +289,13 @@ void AudioSynth_::noteOn(uint8_t note)
         voiceArr[voiceFound].noteOn(note, map(velocity, 0, 1, 0.2, 1));
     else
         voiceArr[voiceFound].noteOn(note, 0.8);
+
+    // todo: ugly fix here to apply oscPitchOffset to synth OSCs
+    if (curVoiceMode == VOICE_MODE_SYNTH)
+    {
+        calAndSetOscPitchOffset(0);
+        calAndSetOscPitchOffset(1);
+    }
 }
 
 void AudioSynth_::noteOff(uint8_t note)
@@ -403,7 +410,7 @@ void AudioSynth_::setVoiceMode(uint8_t mode)
             voiceArr[i].waveform[1]->amplitude(0);
         }
     }
-   
+
     for (int i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].setVoiceMode(mode);
@@ -446,7 +453,7 @@ void AudioSynth_::setOscLevel(uint8_t id, uint8_t amount)
     // block level change if not in synth mode (to keep oscillators off)
     if (curVoiceMode != VOICE_MODE_SYNTH)
         return;
-    
+
     float gain;
     if (amount > 0)
         gain = dBtoGain(amount * 0.5f - 60); // the max level is -10 dB, to prevent clipping.

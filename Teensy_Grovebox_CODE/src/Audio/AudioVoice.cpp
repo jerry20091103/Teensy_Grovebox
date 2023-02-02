@@ -21,8 +21,9 @@ void AudioVoice::noteOn(uint8_t note, float amp)
     case VOICE_MODE_SYNTH:
         setOscFreq(0, frequency);
         setOscFreq(1, frequency);
-        waveform[0]->amplitude(amp);
-        waveform[1]->amplitude(amp);
+        // todo: use another amplitude object for velocity
+        // waveform[0]->amplitude(amp);
+        // waveform[1]->amplitude(amp);
         env[0]->noteOn();
         env[1]->noteOn();
         env[2]->noteOn();
