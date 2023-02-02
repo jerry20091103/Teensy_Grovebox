@@ -66,16 +66,17 @@ private:
     lv_obj_t* pitchText;
     lv_obj_t* pitchBtn;
     lv_obj_t* velocityBtn;
-    // osc
-    lv_obj_t *oscWaveDropdown[2];
-    lv_obj_t* oscWaveImg[2];
-    lv_obj_t* oscWaveItemImg[2];
-    lv_obj_t* oscOctaveText[2];
-    lv_obj_t* oscSemiText[2];
-    lv_obj_t* oscArc[2][3];
-    lv_obj_t* oscPwmText[2];
-    lv_obj_t* oscDetuneText[2];
-    lv_obj_t* oscLevelText[2];
+    // osc1 and osc 2 share the same objects
+    lv_obj_t* oscMenuArea;
+    lv_obj_t* oscWaveDropdown;
+    lv_obj_t* oscWaveImg;
+    lv_obj_t* oscWaveItemImg[2]; // the is on the main menu buttons, so we need 2 for 2 OSCs
+    lv_obj_t* oscOctaveText;
+    lv_obj_t* oscSemiText;
+    lv_obj_t* oscArc[3];
+    lv_obj_t* oscPwmText;
+    lv_obj_t* oscDetuneText;
+    lv_obj_t* oscLevelText;
     // noise
     lv_obj_t *noiseArc;
     lv_obj_t *noiseLevelText;

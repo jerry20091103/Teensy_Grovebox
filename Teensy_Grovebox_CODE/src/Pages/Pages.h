@@ -38,6 +38,7 @@ public:
     // Configure a page before swithcing to it. Sets encoders and prepare variables. This function should be called after HardwareSetup().
     virtual void configurePage() = 0;
     // set user data to GUI elements. This function should be called after HardwareSetup().
+    // todo: also ensure that user data is set into audio objects?
     virtual void setUserData() = 0;
 
     // this updates the page approximately every frame
