@@ -271,29 +271,23 @@ void WaveTablePage::init()
     lv_label_set_text(label, "Octave");
     lv_obj_set_style_text_font(label, font_small, 0);
     lv_obj_set_pos(label, 23, 38);
-    btn = Gui_CreateButton(selectArea, false, 1);
+    btn = Gui_CreateButton(selectArea, LV_SYMBOL_MINUS, false, 1);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 0, 0);
     lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_MINUS);
-    lv_obj_center(label);
 
     octaveText = lv_label_create(selectArea);
     lv_obj_set_style_text_font(octaveText, font_large, 0);
     lv_obj_align(octaveText, LV_ALIGN_BOTTOM_LEFT, 40, -3);
 
-    btn = Gui_CreateButton(selectArea, false, 1);
+    btn = Gui_CreateButton(selectArea, LV_SYMBOL_PLUS, false, 1);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 60, 0);
     lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
     lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_PLUS);
-    lv_obj_center(label);
 
     // *velocity button
-    velocityBtn = Gui_CreateButton(selectArea, true);
+    velocityBtn = Gui_CreateButton(selectArea, NULL, true);
     lv_obj_set_size(velocityBtn, 60, 30);
     lv_obj_align(velocityBtn, LV_ALIGN_BOTTOM_LEFT, 100, 0);
     lv_obj_add_event_cb(velocityBtn, onVelocityBtnPressed, LV_EVENT_CLICKED, this);
@@ -308,7 +302,7 @@ void WaveTablePage::init()
     lv_obj_align(pitchDropdown, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_dropdown_set_options(pitchDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12");
     lv_obj_add_event_cb(pitchDropdown, onPitchDropdownSelect, LV_EVENT_VALUE_CHANGED, this);
-    pitchBtn = Gui_CreateButton(selectArea, true);
+    pitchBtn = Gui_CreateButton(selectArea, NULL, true);
     lv_obj_set_size(pitchBtn, 60, 30);
     lv_obj_align(pitchBtn, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_obj_add_event_cb(pitchBtn, onPitchBtnPressed, LV_EVENT_CLICKED, this);

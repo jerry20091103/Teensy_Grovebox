@@ -164,19 +164,19 @@ void SampleEditorPage::init()
     lv_obj_set_x(lv_obj_get_child(cursorGroup, 3), 300);
 
     // create buttons
-    recordBtn = Gui_CreateButton(screen, false, 1);
+    recordBtn = Gui_CreateButton(screen, "RECORD", false, 1);
     lv_obj_set_width(recordBtn, 70);
     lv_obj_align(recordBtn, LV_ALIGN_BOTTOM_MID, -120, -5);
 
-    playBtn = Gui_CreateButton(screen);
+    playBtn = Gui_CreateButton(screen, "PLAY");
     lv_obj_set_width(playBtn, 70);
     lv_obj_align(playBtn, LV_ALIGN_BOTTOM_MID, -40, -5);
 
-    stopBtn = Gui_CreateButton(screen);
+    stopBtn = Gui_CreateButton(screen, "STOP");
     lv_obj_set_width(stopBtn, 70);
     lv_obj_align(stopBtn, LV_ALIGN_BOTTOM_MID, 40, -5);
 
-    loopBtn = Gui_CreateButton(screen, true);
+    loopBtn = Gui_CreateButton(screen, "LOOP", true);
     lv_obj_set_width(loopBtn, 70);
     lv_obj_align(loopBtn, LV_ALIGN_BOTTOM_MID, 120, -5);
 

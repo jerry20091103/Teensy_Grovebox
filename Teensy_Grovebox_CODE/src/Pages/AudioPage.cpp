@@ -504,13 +504,10 @@ void AudioPage::init()
     lv_obj_add_event_cb(hpArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
     // PFL button
-    OutPflBtn = Gui_CreateButton(hpArc, true);
+    OutPflBtn = Gui_CreateButton(hpArc, "PFL", true);
     lv_obj_add_event_cb(OutPflBtn, onPFLBtnPressed, LV_EVENT_CLICKED, this);
     lv_obj_set_width(OutPflBtn, 60);
     lv_obj_align(OutPflBtn, LV_ALIGN_BOTTOM_MID, 0, 40);
-    label = lv_label_create(OutPflBtn);
-    lv_label_set_text(label, "PFL");
-    lv_obj_center(label);
 
     // *INPUT TAB-------------------------------------------------------------------------------
     lv_obj_t *tab2 = lv_tabview_add_tab(tabView, "INPUT");
@@ -548,32 +545,23 @@ void AudioPage::init()
     lv_label_set_text(label, "Source");
     lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 20);
     // line button
-    lineBtn = Gui_CreateButton(tab2, true);
+    lineBtn = Gui_CreateButton(tab2, "LINE", true);
     lv_obj_set_pos(lineBtn, 0, 100);
     lv_obj_set_size(lineBtn, 60, 25);
     lv_obj_clear_flag(lineBtn, LV_OBJ_FLAG_USER_1); // use USER_1 flag to indicate source
     lv_obj_add_event_cb(lineBtn, onInputSwitch, LV_EVENT_CLICKED, this);
-    label = lv_label_create(lineBtn);
-    lv_label_set_text(label, "LINE");
-    lv_obj_center(label);
     // mic button
-    micBtn = Gui_CreateButton(tab2, true);
+    micBtn = Gui_CreateButton(tab2, "MIC", true);
     lv_obj_set_pos(micBtn, 0, 130);
     lv_obj_set_size(micBtn, 60, 25);
     lv_obj_add_flag(micBtn, LV_OBJ_FLAG_USER_1); // use USER_1 flag to indicate source
     lv_obj_add_event_cb(micBtn, onInputSwitch, LV_EVENT_CLICKED, this);
-    label = lv_label_create(micBtn);
-    lv_label_set_text(label, "MIC");
-    lv_obj_center(label);
 
     // PFL button
-    InPflBtn = Gui_CreateButton(tab2, true);
+    InPflBtn = Gui_CreateButton(tab2, "PFL", true);
     lv_obj_set_pos(InPflBtn, 250, 0);
     lv_obj_add_event_cb(InPflBtn, onPFLBtnPressed, LV_EVENT_CLICKED, this);
     lv_obj_set_height(InPflBtn, 25);
-    label = lv_label_create(InPflBtn);
-    lv_label_set_text(label, "PFL");
-    lv_obj_center(label);
 
     // *POST-DSP TAB----------------------------------------------------------------------------
     lv_obj_t *tab3 = lv_tabview_add_tab(tabView, "POST-DSP");

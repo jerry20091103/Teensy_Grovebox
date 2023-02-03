@@ -255,126 +255,88 @@ void MidiPage::init()
     lv_obj_set_pos(btnGroup, 0, 105);
     lv_obj_clear_flag(btnGroup, LV_OBJ_FLAG_SCROLLABLE);
     // pitchbend button
-    pitchBtn = Gui_CreateButton(btnGroup, true);
+    pitchBtn = Gui_CreateButton(btnGroup, "PitchBend", true);
     lv_obj_add_event_cb(pitchBtn, onTogglePitchbend, LV_EVENT_CLICKED, this);
     lv_obj_set_width(pitchBtn, 90);
-    lv_obj_t *label = lv_label_create(pitchBtn);
-    lv_label_set_text(label, "PitchBend");
-    lv_obj_center(label);
     // mod button
-    modBtn = Gui_CreateButton(btnGroup, true);
+    modBtn = Gui_CreateButton(btnGroup, "ModWheel", true);
     lv_obj_add_event_cb(modBtn, onToggleModwheel, LV_EVENT_CLICKED, this);
     lv_obj_set_width(modBtn, 90);
     lv_obj_set_y(modBtn, 45);
-    label = lv_label_create(modBtn);
-    lv_label_set_text(label, "ModWheel");
-    lv_obj_center(label);
     // octave select
-    label = lv_label_create(btnGroup);
+    lv_obj_t *label = lv_label_create(btnGroup);
     lv_label_set_text(label, "Octave:");
     lv_obj_set_pos(label, 110, 7);
 
-    lv_obj_t *btn = Gui_CreateButton(btnGroup);
+    lv_obj_t *btn = Gui_CreateButton(btnGroup, LV_SYMBOL_MINUS);
     lv_obj_set_x(btn, 180);
     lv_obj_add_event_cb(btn, onOctaveDec, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_MINUS);
 
     octaveText = lv_label_create(btnGroup);
     lv_obj_set_style_text_font(octaveText, font_large, 0);
     lv_obj_set_pos(octaveText, 232, 7);
 
-    btn = Gui_CreateButton(btnGroup);
+    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PLUS);
     lv_obj_set_x(btn, 260);
     lv_obj_add_event_cb(btn, onOctaveInc, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_PLUS);
 
     // channel select
     label = lv_label_create(btnGroup);
     lv_label_set_text(label, "Channel:");
     lv_obj_set_pos(label, 105, 7 + 45);
 
-    btn = Gui_CreateButton(btnGroup);
+    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_MINUS);
     lv_obj_set_pos(btn, 180, 45);
     lv_obj_add_event_cb(btn, onChannelDec, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_MINUS);
 
     channelText = lv_label_create(btnGroup);
     lv_obj_set_style_text_font(channelText, font_large, 0);
     lv_obj_set_pos(channelText, 232, 7 + 45);
 
-    btn = Gui_CreateButton(btnGroup);
+    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PLUS);
     lv_obj_set_pos(btn, 260, 45);
     lv_obj_add_event_cb(btn, onChannelInc, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_PLUS);
 
     // bottom buttons
-    btn = Gui_CreateButton(btnGroup, false, 1);
+    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PLAY, false, 1);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_set_pos(btn, 0, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-    label = lv_label_create(btn);
-    lv_obj_center(label);
-    lv_label_set_text(label, LV_SYMBOL_PLAY);
 
-    btn = Gui_CreateButton(btnGroup, false, 1);
+    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_STOP, false, 1);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_set_pos(btn, 39, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-    label = lv_label_create(btn);
-    lv_obj_center(label);
-    lv_label_set_text(label, LV_SYMBOL_STOP);
 
-    btn = Gui_CreateButton(btnGroup, false, 2);
+    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PREV, false, 2);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_set_pos(btn, 78, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-    label = lv_label_create(btn);
-    lv_obj_center(label);
-    lv_label_set_text(label, LV_SYMBOL_PREV);
 
-    btn = Gui_CreateButton(btnGroup, false, 2);
+    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_NEXT, false, 2);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_set_pos(btn, 117, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-    label = lv_label_create(btn);
-    lv_obj_center(label);
-    lv_label_set_text(label, LV_SYMBOL_NEXT);
 
-    btn = Gui_CreateButton(btnGroup, false, 3);
+    btn = Gui_CreateButton(btnGroup, "20", false, 3);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_set_pos(btn, 156, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-    label = lv_label_create(btn);
-    lv_obj_center(label);
-    lv_label_set_text(label, "20");
 
-    btn = Gui_CreateButton(btnGroup, false, 3);
+    btn = Gui_CreateButton(btnGroup, "21", false, 3);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_set_pos(btn, 195, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-    label = lv_label_create(btn);
-    lv_obj_center(label);
-    lv_label_set_text(label, "21");
 
-    btn = Gui_CreateButton(btnGroup, false, 4);
+    btn = Gui_CreateButton(btnGroup, "22", false, 4);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_set_pos(btn, 234, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-    label = lv_label_create(btn);
-    lv_obj_center(label);
-    lv_label_set_text(label, "22");
 
-    btn = Gui_CreateButton(btnGroup, false, 4);
+    btn = Gui_CreateButton(btnGroup, "23", false, 4);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_set_pos(btn, 273, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-    label = lv_label_create(btn);
-    lv_obj_center(label);
-    lv_label_set_text(label, "23");
 }
 
 void MidiPage::updateCC(uint8_t control, uint8_t value)

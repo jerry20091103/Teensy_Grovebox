@@ -60,12 +60,9 @@ void PageManager_::Init()
     lv_obj_set_style_text_font(battLabel, font_large, 0);
     lv_obj_align(battLabel, LV_ALIGN_RIGHT_MID, -50, 0);
     // back button 
-    backBtn = Gui_CreateButton(statusBar);
+    backBtn = Gui_CreateButton(statusBar, LV_SYMBOL_HOME);
     lv_obj_set_height(backBtn, lv_pct(100));
     lv_obj_align(backBtn, LV_ALIGN_RIGHT_MID, 0, 0);
-    lv_obj_t *label = lv_label_create(backBtn);
-    lv_label_set_text(label, LV_SYMBOL_HOME);
-    lv_obj_center(label);
     lv_obj_add_event_cb(backBtn, onBackBtnPressed, LV_EVENT_CLICKED, this);
 
     for(auto i : PageArr)

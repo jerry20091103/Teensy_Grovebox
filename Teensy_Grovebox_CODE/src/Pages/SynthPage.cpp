@@ -867,51 +867,39 @@ void SynthPage::init()
     lv_label_set_text(label, "Octave: ");
     lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 50);
     // minus btn
-    btn = Gui_CreateButton(oscMenuArea);
+    btn = Gui_CreateButton(oscMenuArea, LV_SYMBOL_MINUS);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 65, 40);
     lv_obj_add_event_cb(btn, onOscOctaveSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_MINUS);
-    lv_obj_center(label);
     // octave text
     oscOctaveText = lv_label_create(oscMenuArea);
     lv_obj_set_style_text_font(oscOctaveText, font_large, 0);
     lv_obj_align(oscOctaveText, LV_ALIGN_TOP_LEFT, 105, 45);
     // plus btn
-    btn = Gui_CreateButton(oscMenuArea);
+    btn = Gui_CreateButton(oscMenuArea, LV_SYMBOL_PLUS);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 130, 40);
     lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
     lv_obj_add_event_cb(btn, onOscOctaveSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_PLUS);
-    lv_obj_center(label);
     // *semitone selector
     label = lv_label_create(oscMenuArea);
     lv_label_set_text(label, "Semi: ");
     lv_obj_align(label, LV_ALIGN_TOP_LEFT, 165, 50);
     // minus btn
-    btn = Gui_CreateButton(oscMenuArea);
+    btn = Gui_CreateButton(oscMenuArea, LV_SYMBOL_MINUS);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 210, 40);
     lv_obj_add_event_cb(btn, onOscSemiSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_MINUS);
-    lv_obj_center(label);
     // semitone text
     oscSemiText = lv_label_create(oscMenuArea);
     lv_obj_set_style_text_font(oscSemiText, font_large, 0);
     lv_obj_align(oscSemiText, LV_ALIGN_TOP_LEFT, 250, 45);
     // plus btn
-    btn = Gui_CreateButton(oscMenuArea);
+    btn = Gui_CreateButton(oscMenuArea, LV_SYMBOL_PLUS);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 275, 40);
     lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
     lv_obj_add_event_cb(btn, onOscSemiSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_PLUS);
-    lv_obj_center(label);
     // *pwm arc
     oscArc[0] = Gui_CreateParamArc(oscMenuArea, 1, "PWM", "%", false);
     Gui_setObjIdFlag(oscArc[0], 0);
@@ -1094,29 +1082,23 @@ void SynthPage::init()
     lv_label_set_text(label, "Octave");
     lv_obj_set_style_text_font(label, font_small, 0);
     lv_obj_set_pos(label, 23, 38);
-    btn = Gui_CreateButton(selectArea, false, 1);
+    btn = Gui_CreateButton(selectArea, LV_SYMBOL_MINUS, false, 1);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 0, 0);
     lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_MINUS);
-    lv_obj_center(label);
 
     octaveText = lv_label_create(selectArea);
     lv_obj_set_style_text_font(octaveText, font_large, 0);
     lv_obj_align(octaveText, LV_ALIGN_BOTTOM_LEFT, 40, -3);
 
-    btn = Gui_CreateButton(selectArea, false, 1);
+    btn = Gui_CreateButton(selectArea, LV_SYMBOL_PLUS, false, 1);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 60, 0);
     lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
     lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_PLUS);
-    lv_obj_center(label);
 
     // *velocity button
-    velocityBtn = Gui_CreateButton(selectArea, true);
+    velocityBtn = Gui_CreateButton(selectArea, NULL, true);
     lv_obj_set_size(velocityBtn, 60, 30);
     lv_obj_align(velocityBtn, LV_ALIGN_BOTTOM_LEFT, 100, 0);
     lv_obj_add_event_cb(velocityBtn, onVelocityBtnPressed, LV_EVENT_CLICKED, this);
@@ -1131,7 +1113,7 @@ void SynthPage::init()
     lv_obj_align(pitchDropdown, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_dropdown_set_options(pitchDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12");
     lv_obj_add_event_cb(pitchDropdown, onPitchDropdownSelect, LV_EVENT_VALUE_CHANGED, this);
-    pitchBtn = Gui_CreateButton(selectArea, true);
+    pitchBtn = Gui_CreateButton(selectArea, NULL, true);
     lv_obj_set_size(pitchBtn, 60, 30);
     lv_obj_align(pitchBtn, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_obj_add_event_cb(pitchBtn, onPitchBtnPressed, LV_EVENT_CLICKED, this);
@@ -1338,12 +1320,9 @@ lv_obj_t *SynthPage::createModEntry(lv_obj_t *parent)
     list = lv_dropdown_get_list(dropdown);
     lv_obj_set_style_text_font(list, font_small, 0);
     // delete button
-    lv_obj_t *btn = Gui_CreateButton(entry, false, 1);
+    lv_obj_t *btn = Gui_CreateButton(entry, LV_SYMBOL_TRASH, false, 1);
     lv_obj_set_size(btn, 32, 32);
     lv_obj_set_pos(btn, 270, 0);
-    lv_obj_t *label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_TRASH);
-    lv_obj_center(label);
     lv_obj_add_event_cb(btn, onDelModBtnPressed, LV_EVENT_CLICKED, this);
     // amount slider
     lv_obj_t *slider = lv_slider_create(entry);
@@ -1357,7 +1336,7 @@ lv_obj_t *SynthPage::createModEntry(lv_obj_t *parent)
     lv_obj_set_style_pad_all(slider, 0, LV_PART_KNOB);
     lv_obj_add_event_cb(slider, onModAmountChange, LV_EVENT_VALUE_CHANGED, this);
     // amount text
-    label = lv_label_create(entry);
+    lv_obj_t *label = lv_label_create(entry);
     lv_obj_set_style_text_font(label, font_small, 0);
     lv_obj_set_pos(label, 270, 35);
     lv_label_set_text_fmt(label, "%d", lv_obj_get_child_id(entry));
