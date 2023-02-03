@@ -4,6 +4,7 @@
 #include "AudioPage.h"
 #include "WaveTablePage.h"
 #include "SynthPage.h"
+#include "SampleEditorPage.h"
 // #include "ReverbPopup.h"
 // #include "Sf2SelectPopup.h"
 
@@ -37,6 +38,7 @@ void PageManager_::Init()
     PageArr[PG_AUDIO] = new AudioPage();
     PageArr[PG_WAVE] = new WaveTablePage();
     PageArr[PG_SYNTH] = new SynthPage();
+    PageArr[PG_SAMPLEEDITOR] = new SampleEditorPage();
     // PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
     // PageArr[E_PG_POPUP_SF2_SELECT] = new Sf2SelectPopup();
 

@@ -20,7 +20,7 @@ void HomePage::onBtnPressed(lv_event_t *e)
         //PageManager.switchPage(PG_DRUM);
         break;
     case 4:
-        //PageManager.switchPage(PG_RECORD);
+        PageManager.switchPage(PG_SAMPLEEDITOR);
         break;
     case 5:
         //PageManager.switchPage(PG_KEYBOARD);
