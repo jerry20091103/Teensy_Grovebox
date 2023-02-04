@@ -361,13 +361,12 @@ void AudioPage::update()
             // peak indicator
             if (InPeakHold[i][j] > 0)
             {
-                // !the leds are buggy now, so use set color to toggle on/off
-                lv_obj_set_style_bg_color(InPeakLed[i][j], color_Red, 0);
+                Gui_PeakLedOn(InPeakLed[i][j]);
                 InPeakHold[i][j]--;
             }
             else
             {
-                lv_obj_set_style_bg_color(InPeakLed[i][j], color_RedDark, 0);
+                Gui_PeakLedOff(InPeakLed[i][j]);
             }
         }
     }
@@ -393,13 +392,12 @@ void AudioPage::update()
                 // peak indicator
                 if (mixerPeakHold[i][j] > 0)
                 {
-                    // !the leds are buggy now, so use set color to toggle on/off
-                    lv_obj_set_style_bg_color(mixerPeakLed[i][j], color_Red, 0);
+                    Gui_PeakLedOn(mixerPeakLed[i][j]);
                     mixerPeakHold[i][j]--;
                 }
                 else
                 {
-                    lv_obj_set_style_bg_color(mixerPeakLed[i][j], color_RedDark, 0);
+                    Gui_PeakLedOff(mixerPeakLed[i][j]);
                 }
             }
         }
@@ -426,13 +424,12 @@ void AudioPage::update()
                 // peak indicator
                 if (OutPeakHold[i][j] > 0)
                 {
-                    // !the leds are buggy now, so use set color to toggle on/off
-                    lv_obj_set_style_bg_color(OutPeakLed[i][j], color_Red, 0);
+                    Gui_PeakLedOn(OutPeakLed[i][j]);
                     OutPeakHold[i][j]--;
                 }
                 else
                 {
-                    lv_obj_set_style_bg_color(OutPeakLed[i][j], color_RedDark, 0);
+                    Gui_PeakLedOff(OutPeakLed[i][j]);
                 }
             }
         }

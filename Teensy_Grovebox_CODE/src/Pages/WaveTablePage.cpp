@@ -218,13 +218,12 @@ void WaveTablePage::update()
     // peak indicator
     if (peakHold > 0)
     {
-        // !the leds are buggy now, so use set color to toggle on/off
-        lv_obj_set_style_bg_color(peakLed, color_Red, 0);
+        Gui_PeakLedOn(peakLed);
         peakHold--;
     }
     else
     {
-        lv_obj_set_style_bg_color(peakLed, color_RedDark, 0);
+        Gui_PeakLedOff(peakLed);
     }
 }
 

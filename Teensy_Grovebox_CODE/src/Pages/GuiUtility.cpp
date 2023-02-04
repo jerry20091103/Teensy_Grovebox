@@ -249,12 +249,23 @@ lv_obj_t *Gui_CreateVolumeMeter(lv_obj_t *parent, uint8_t w, uint8_t h, uint8_t 
 // create a peak led
 lv_obj_t *Gui_CreatePeakLed(lv_obj_t *parent, uint8_t w, uint8_t h)
 {
-    lv_obj_t *led = lv_led_create(parent);
+    lv_obj_t *led = lv_obj_create(parent);
+    lv_obj_remove_style_all(led);
     lv_obj_set_size(led, w, h);
-    lv_led_set_color(led, color_Red);
-    lv_obj_set_style_shadow_spread(led, 0, 0);
-    lv_obj_set_style_bg_color(led, color_Red, 0);
+    lv_obj_set_style_radius(led, LV_RADIUS_CIRCLE, 0);
+    lv_obj_set_style_bg_color(led, color_RedDark, 0);
+    lv_obj_set_style_bg_opa(led, LV_OPA_COVER, 0);
     return led;
+}
+
+void Gui_PeakLedOn(lv_obj_t *led)
+{
+    lv_obj_set_style_bg_color(led, color_Red, 0);
+}
+
+void Gui_PeakLedOff(lv_obj_t *led)
+{
+    lv_obj_set_style_bg_color(led, color_RedDark, 0);
 }
 
 // use 4 user flags to store custom object id

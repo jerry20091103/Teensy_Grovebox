@@ -49,6 +49,8 @@ PROGMEM lv_obj_t *Gui_CreateVolumeMeter(lv_obj_t *parent, uint8_t w, uint8_t h, 
 
 // Peak led
 PROGMEM lv_obj_t *Gui_CreatePeakLed(lv_obj_t *parent, uint8_t w, uint8_t h);
+void Gui_PeakLedOn(lv_obj_t *led);
+void Gui_PeakLedOff(lv_obj_t *led);
 
 // ADSR Envelope graph
 PROGMEM lv_obj_t *Gui_CreateEnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h);

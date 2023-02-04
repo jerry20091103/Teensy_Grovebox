@@ -809,14 +809,12 @@ void SynthPage::update()
     // peak indicator
     if (peakHold > 0)
     {
-        // !the leds are buggy now, so use set color to toggle on/off
-        // lv_obj_set_style_bg_color(peakLed, color_Red, 0);
-        lv_led_on(peakLed);
+        Gui_PeakLedOn(peakLed);
         peakHold--;
     }
     else
     {
-        lv_led_off(peakLed);
+        Gui_PeakLedOff(peakLed);
     }
 }
 
@@ -1333,7 +1331,7 @@ lv_obj_t *SynthPage::createModEntry(lv_obj_t *parent)
     lv_obj_set_style_bg_color(slider, color_Grey, 0);
     lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
-    lv_obj_set_style_pad_all(slider, 0, LV_PART_KNOB);
+    lv_obj_set_style_pad_all(slider, 2, LV_PART_KNOB);
     lv_obj_add_event_cb(slider, onModAmountChange, LV_EVENT_VALUE_CHANGED, this);
     // amount text
     lv_obj_t *label = lv_label_create(entry);
