@@ -102,15 +102,19 @@ lv_obj_t *Gui_CreateButton(lv_obj_t *parent, const char* text, bool toggle, uint
     {
     case 1:
         lv_obj_set_style_bg_color(button, color_RedDark, 0);
+        lv_obj_set_style_bg_color(button, color_Red, LV_STATE_CHECKED);
         break;
     case 2:
         lv_obj_set_style_bg_color(button, color_YellowDark, 0);
+        lv_obj_set_style_bg_color(button, color_Yellow, LV_STATE_CHECKED);
         break;
     case 3:
         lv_obj_set_style_bg_color(button, color_BlueDark, 0);
+        lv_obj_set_style_bg_color(button, color_Blue, LV_STATE_CHECKED);
         break;
     case 4:
         lv_obj_set_style_bg_color(button, color_GreenDark, 0);
+        lv_obj_set_style_bg_color(button, color_Green, LV_STATE_CHECKED);
         break;
     default:
         lv_obj_set_style_bg_color(button, color_Grey, 0);

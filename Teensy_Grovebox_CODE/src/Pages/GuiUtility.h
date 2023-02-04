@@ -1,6 +1,7 @@
 #include "lvgl.h"
 #include "Arduino.h"
 #include "fonts/fonts.h"
+#include "Audio/AudioObjects.h"
 
 // * Global Colors
 static const lv_color_t color_Red = lv_palette_main(LV_PALETTE_RED);
@@ -67,8 +68,8 @@ class GuiUserData
 public:
     GuiUserData(T data, int8_t id = 0, void (*onValueChangedFunc) (T data, int8_t id) = NULL)
     {
-        this.data = data;
-        this.id = id;
+        this->data = data;
+        this->id = id;
         this->setOnValueChanged(onValueChangedFunc);
     }
     T get()
@@ -77,7 +78,7 @@ public:
     }
     void set(T data)
     {
-        this.data = data;
+        this->data = data;
         if (onValueChangedFunc != NULL)
         {
             onValueChangedFunc(data, id);
@@ -85,7 +86,7 @@ public:
     }
     void setOnValueChanged(void (*onValueChangedFunc) (T data, int8_t id))
     {
-        this.onValueChangedFunc = onValueChangedFunc;
+        this->onValueChangedFunc = onValueChangedFunc;
     }
 private:
     T data;

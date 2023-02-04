@@ -5827,8 +5827,14 @@ value  frequency
 	<p class=func><span class=keyword>setLoopStartPoint</span>(position);</p>
 	<p class=desc>Sets the loop start position. Position is between 0 and 1. 0 and 1 represents the start and end of a clip
 	</p>
-	<p class=func><span class=keyword>setLoopEndPoint</span>(position);</p>
-	<p class=desc>Sets the loop end position. Position is between 0 and 1. 0 and 1 represents the start and end of a clip
+	<p class=func><span class=keyword>loop</span>(enable);</p>
+	<p class=desc>Enable or disable looping.
+	</p>
+	<p class=func><span class=keyword>playing</span>();</p>
+	<p class=desc>Returns whether the clip is playing.
+	</p>
+	<p class=func><span class=keyword>getCurrentPosition</span>();</p>
+	<p class=desc>Returns the current position in the clip. Position is between 0 and 1. 0 and 1 represents the start and end of a clip
 	</p>
 	<!--<h3>Examples</h3>
 	<p class=exam>File &gt; Examples &gt; Audio &gt; SamplePlayer
