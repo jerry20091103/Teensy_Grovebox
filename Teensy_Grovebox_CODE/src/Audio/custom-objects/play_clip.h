@@ -66,7 +66,7 @@ public:
         }
         __disable_irq();
         isPlaying = true;
-        currentBlock = clipLength * startPoint;
+        currentBlock = startPoint;
         __enable_irq();
     }
     void stop(void)
@@ -107,12 +107,30 @@ public:
         loopEndPoint = pos;
         __enable_irq();
     }
-    
+    // Enable or disable looping.
     void loop(bool enable)
     {
         __disable_irq()
         isLoop = enable;
         __enable_irq()
+    }
+    // Returns whether the clip is playing.
+    bool playing()
+    {
+        bool ret;
+        __disable_irq()
+        ret = isPlaying;
+        __enable_irq()
+        return ret;
+    }
+    // Returns the current position in the clip. Position is between 0 and 1. 0 and 1 represents the start and end of a clip
+    float getCurrentPosition()
+    {
+        float ret;
+        __disable_irq()
+        ret = (float)currentBlock / (float)clipLength;
+        __enable_irq()
+        return ret;
     }
 
 private:
@@ -125,7 +143,7 @@ private:
     uint16_t startPoint = 0;
     uint16_t endPoint = 0;
     uint16_t loopStartPoint = 0;
-    uint16_t loopEndPoint = 1;
+    uint16_t loopEndPoint = 0;
     uint16_t clipLength = 0;
     uint16_t currentBlock = 0;
     uint16_t limit = 0;
