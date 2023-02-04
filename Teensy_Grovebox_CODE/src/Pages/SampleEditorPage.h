@@ -16,11 +16,15 @@ private:
     lv_obj_t *loopBtn;
     lv_obj_t *normalizeBtn;
     lv_obj_t *reverseBtn;
+    lv_obj_t *volBar;
+    lv_obj_t *peakLed;
     lv_chart_series_t *serMax;
     lv_chart_series_t *serMin;
     int16_t waveformPointsMax[1000];
     int16_t waveformPointsMin[1000];
     taskid_t cancelRecordTaskId;
+    uint8_t peakHold = 0;
+    float peakAvg = 0;
     // load a waveform from clip to the chart
     void loadWaveformChart(int16_t *data, int length_samples);
     // create a cursor on the waveform display
@@ -35,6 +39,7 @@ private:
     static void onNormailzeButtonPressed(lv_event_t *event);
     static void onReverseButtonPressed(lv_event_t *event);
     static void onCursorDragged(lv_event_t *event);
+    static void onCrossFadeSliderPressed(lv_event_t *event);
 
     // * user data
     GuiUserData<float> cursorPos[4] = {
@@ -46,7 +51,9 @@ private:
                            { playClip1.setLoopEndPoint(value); }),
         GuiUserData<float>(1.0f, 3, [](float value, int8_t id)
                            { playClip1.setEndPoint(value); })};
-        
+
+    GuiUserData<float> crossFade = GuiUserData<float>(0.0f, 0, [](float value, int8_t id)
+                                                      { playClip1.setLoopCrossFade(value); });
 
 public:
     void onBtnPressed(uint8_t pin);

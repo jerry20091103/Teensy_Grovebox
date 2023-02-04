@@ -250,6 +250,14 @@ void SampleEditorPage::onCursorDragged(lv_event_t *event)
     instance->setCursorPos(cursorIndex, (point.x - 10) / 300.0f);
 }
 
+void SampleEditorPage::onCrossFadeSliderPressed(lv_event_t *event)
+{
+    SampleEditorPage *instance = (SampleEditorPage *)lv_event_get_user_data(event);
+    lv_obj_t *slider = lv_event_get_target(event);
+    int amount = lv_slider_get_value(slider);
+    instance->crossFade.set(amount * 0.01f);
+}
+
 void SampleEditorPage::onBtnPressed(uint8_t pin)
 {
     switch (pin)
@@ -278,7 +286,7 @@ void SampleEditorPage::onBtnReleased(uint8_t pin)
 void SampleEditorPage::onEncTurned(uint8_t id, int value)
 {
     setCursorPos(id, cursorPos[id].get() + value * CURSOR_INCREMENT);
-    // todo: crossfade between loop cursors
+    // todo: crossfade between loop cursors, input level meter
 }
 void SampleEditorPage::onJoyUpdate(int joy_x, int joy_y)
 {
@@ -319,6 +327,29 @@ void SampleEditorPage::update()
             lv_event_send(playBtn, LV_EVENT_CLICKED, NULL);
         }
     }
+    // update volume meter
+    if (peakClip1.available())
+    {
+        float peak = peakClip1.read();
+        // convert to dB
+        float temp_dB = gaintodB(peak);
+        if (temp_dB >= -0.1)
+            peakHold = PEAK_HOLD_TIME;
+        // calulate running average
+        peak = (peak + peakAvg * 3) / (3 + 1);
+        peakAvg = peak;
+        lv_bar_set_value(volBar, temp_dB, LV_ANIM_ON);
+    }
+    // peak indicator
+    if (peakHold > 0)
+    {
+        Gui_PeakLedOn(peakLed);
+        peakHold--;
+    }
+    else
+    {
+        Gui_PeakLedOff(peakLed);
+    }
 }
 void SampleEditorPage::init()
 {
@@ -353,7 +384,7 @@ void SampleEditorPage::init()
 
     // current position cursor
     currentPosCursor = lv_obj_create(cursorGroup);
-    lv_obj_set_size(currentPosCursor, 1, 100);
+    lv_obj_set_size(currentPosCursor, 1, 90);
     lv_obj_set_style_border_width(currentPosCursor, 1, 0);
     lv_obj_set_style_border_color(currentPosCursor, lv_color_white(), 0);
     lv_obj_set_pos(currentPosCursor, 10, 30);
@@ -361,17 +392,17 @@ void SampleEditorPage::init()
     // create buttons
     recordBtn = Gui_CreateButton(screen, "RECORD", true, 1);
     lv_obj_set_width(recordBtn, 76);
-    lv_obj_align(recordBtn, LV_ALIGN_BOTTOM_MID, -120, -10);
+    lv_obj_align(recordBtn, LV_ALIGN_BOTTOM_MID, -120, -5);
     lv_obj_add_event_cb(recordBtn, onRecordButtonPressed, LV_EVENT_CLICKED, this);
 
     playBtn = Gui_CreateButton(screen, "PLAY", true);
     lv_obj_set_width(playBtn, 76);
-    lv_obj_align(playBtn, LV_ALIGN_BOTTOM_MID, -40, -10);
+    lv_obj_align(playBtn, LV_ALIGN_BOTTOM_MID, -40, -5);
     lv_obj_add_event_cb(playBtn, onPlayButtonPressed, LV_EVENT_CLICKED, this);
 
     loopBtn = Gui_CreateButton(screen, "LOOP", true);
     lv_obj_set_width(loopBtn, 76);
-    lv_obj_align(loopBtn, LV_ALIGN_BOTTOM_MID, 40, -10);
+    lv_obj_align(loopBtn, LV_ALIGN_BOTTOM_MID, 40, -5);
     lv_obj_add_event_cb(loopBtn, onLoopButtonPressed, LV_EVENT_CLICKED, this);
 
     normalizeBtn = Gui_CreateButton(screen, "Normalize");
@@ -385,4 +416,24 @@ void SampleEditorPage::init()
     lv_obj_align(reverseBtn, LV_ALIGN_BOTTOM_MID, 120, -2);
     lv_obj_add_event_cb(reverseBtn, onReverseButtonPressed, LV_EVENT_CLICKED, this);
     lv_obj_set_style_text_font(lv_obj_get_child(reverseBtn, 0), font_small, 0);
+
+    // input volume bar
+    volBar = Gui_CreateVolumeMeter(screen, 60, 10);
+    lv_obj_align(volBar, LV_ALIGN_BOTTOM_MID, -126, -43);
+    peakLed = Gui_CreatePeakLed(volBar, 10, 10);
+    lv_obj_align(peakLed, LV_ALIGN_RIGHT_MID, 15, 0);
+
+    // crossfade slider
+    lv_obj_t *label = lv_label_create(screen);
+    lv_label_set_text(label, LV_SYMBOL_CLOSE);
+    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, -60, -40);
+    lv_obj_t *slider = lv_slider_create(screen);
+    lv_obj_set_size(slider, 115, 10);
+    lv_obj_align(slider, LV_ALIGN_BOTTOM_MID, 10, -43);
+    lv_slider_set_range(slider, 0, 100);
+    lv_obj_set_style_bg_color(slider, color_Grey, 0);
+    lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
+    lv_obj_set_style_pad_all(slider, 2, LV_PART_KNOB);
+    lv_obj_add_event_cb(slider, onCrossFadeSliderPressed, LV_EVENT_VALUE_CHANGED, this);
 }

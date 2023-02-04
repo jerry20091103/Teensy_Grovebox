@@ -12,7 +12,7 @@ static const char* SF2_Instrument_Names =
     "Piano Electrique\n"
     //"JR Bells\n"
     "JR Vibraphone\n"
-    "Drumkit\n"
+    "Drumkit"
     //"YDP Piano"
 };
 
