@@ -86,10 +86,14 @@ lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char* title,
     return arc;
 }
 
-// create a standard button, with color = 1~4, 0 is the default color
-lv_obj_t *Gui_CreateButton(lv_obj_t *parent, const char* text, bool toggle, uint8_t color)
+// create a standard button, with color = 1~4, 0 is the default color, size = -1 to use default size
+lv_obj_t *Gui_CreateButton(lv_obj_t *parent, int16_t w, int16_t h, const char* text, bool toggle, uint8_t color)
 {
     lv_obj_t *button = lv_btn_create(parent);
+    if (w >= 0)
+        lv_obj_set_width(button, w);
+    if (h >= 0)
+        lv_obj_set_height(button, h);
     if (text != NULL)
     {
         lv_obj_t *label = lv_label_create(button);
@@ -276,8 +280,7 @@ lv_obj_t *Gui_CreateSpinbox(lv_obj_t *parent, lv_event_cb_t onBtnPressedCb, void
     lv_obj_set_size(spinbox, 90, 30);
     lv_obj_add_flag(spinbox, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
 
-    lv_obj_t *btn = Gui_CreateButton(spinbox, LV_SYMBOL_MINUS, false, color);
-    lv_obj_set_size(btn, 30, 30);
+    lv_obj_t *btn = Gui_CreateButton(spinbox, 30, 30, LV_SYMBOL_MINUS, false, color);
     lv_obj_align(btn, LV_ALIGN_CENTER, -30, 0);
     lv_obj_add_event_cb(btn, onBtnPressedCb, LV_EVENT_CLICKED, cbUserData);
     Gui_setObjIdFlag(btn, 0); // set object id (0 = minus button)
@@ -286,10 +289,8 @@ lv_obj_t *Gui_CreateSpinbox(lv_obj_t *parent, lv_event_cb_t onBtnPressedCb, void
     lv_obj_set_style_text_font(label, font_large, 0);
     lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 
-    btn = Gui_CreateButton(spinbox, LV_SYMBOL_PLUS, false, color);
-    lv_obj_set_size(btn, 30, 30);
+    btn = Gui_CreateButton(spinbox, 30, 30, LV_SYMBOL_PLUS, false, color);
     lv_obj_align(btn, LV_ALIGN_CENTER, 30, 0);
-    lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
     lv_obj_add_event_cb(btn, onBtnPressedCb, LV_EVENT_CLICKED, cbUserData);
     Gui_setObjIdFlag(btn, 1); // set object id (1 = plus button)
 

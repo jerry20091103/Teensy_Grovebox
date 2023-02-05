@@ -261,13 +261,11 @@ void MidiPage::init()
     lv_obj_set_pos(btnGroup, 0, 105);
     lv_obj_clear_flag(btnGroup, LV_OBJ_FLAG_SCROLLABLE);
     // pitchbend button
-    pitchBtn = Gui_CreateButton(btnGroup, "PitchBend", true);
+    pitchBtn = Gui_CreateButton(btnGroup, 90, -1, "PitchBend", true);
     lv_obj_add_event_cb(pitchBtn, onTogglePitchbend, LV_EVENT_CLICKED, this);
-    lv_obj_set_width(pitchBtn, 90);
     // mod button
-    modBtn = Gui_CreateButton(btnGroup, "ModWheel", true);
+    modBtn = Gui_CreateButton(btnGroup, 90, -1, "ModWheel", true);
     lv_obj_add_event_cb(modBtn, onToggleModwheel, LV_EVENT_CLICKED, this);
-    lv_obj_set_width(modBtn, 90);
     lv_obj_set_y(modBtn, 45);
     // octave select
     lv_obj_t *label = lv_label_create(btnGroup);
@@ -286,43 +284,35 @@ void MidiPage::init()
     lv_obj_set_pos(channelSpinbox, 205, 45);
 
     // bottom buttons
-    lv_obj_t *btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PLAY, false, 1);
-    lv_obj_set_size(btn, 30, 30);
+    lv_obj_t *btn = Gui_CreateButton(btnGroup, 30, 30, LV_SYMBOL_PLAY, false, 1);
     lv_obj_set_pos(btn, 0, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 
-    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_STOP, false, 1);
-    lv_obj_set_size(btn, 30, 30);
+    btn = Gui_CreateButton(btnGroup, 30, 30, LV_SYMBOL_STOP, false, 1);
     lv_obj_set_pos(btn, 39, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 
-    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PREV, false, 2);
-    lv_obj_set_size(btn, 30, 30);
+    btn = Gui_CreateButton(btnGroup, 30, 30, LV_SYMBOL_PREV, false, 2);
     lv_obj_set_pos(btn, 78, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 
-    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_NEXT, false, 2);
-    lv_obj_set_size(btn, 30, 30);
+    btn = Gui_CreateButton(btnGroup, 30, 30, LV_SYMBOL_NEXT, false, 2);
     lv_obj_set_pos(btn, 117, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 
-    btn = Gui_CreateButton(btnGroup, "20", false, 3);
-    lv_obj_set_size(btn, 30, 30);
+    btn = Gui_CreateButton(btnGroup, 30, 30, "20", false, 3);
     lv_obj_set_pos(btn, 156, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 
-    btn = Gui_CreateButton(btnGroup, "21", false, 3);
-    lv_obj_set_size(btn, 30, 30);
+    btn = Gui_CreateButton(btnGroup, 30, 30, "21", false, 3);
     lv_obj_set_pos(btn, 195, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 
-    btn = Gui_CreateButton(btnGroup, "22", false, 4);
-    lv_obj_set_size(btn, 30, 30);
+    btn = Gui_CreateButton(btnGroup, 30, 30, "22", false, 4);
     lv_obj_set_pos(btn, 234, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 
-    btn = Gui_CreateButton(btnGroup, "23", false, 4);
-    lv_obj_set_size(btn, 30, 30);
+    btn = Gui_CreateButton(btnGroup, 30, 30, "23", false, 4);
     lv_obj_set_pos(btn, 273, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 }

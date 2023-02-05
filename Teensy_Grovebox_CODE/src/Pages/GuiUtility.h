@@ -42,7 +42,7 @@ static lv_style_t style_paramArcKnob;
 PROGMEM lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color = 0, const char* title = NULL, const char* unit = NULL, bool padding = true);
 
 // Button
-PROGMEM lv_obj_t *Gui_CreateButton(lv_obj_t *parent, const char* text = NULL, bool toggle = false, uint8_t color = 0);
+PROGMEM lv_obj_t *Gui_CreateButton(lv_obj_t *parent, int16_t w, int16_t h, const char* text = NULL, bool toggle = false, uint8_t color = 0);
 
 // Volume meter bar
 PROGMEM lv_obj_t *Gui_CreateVolumeMeter(lv_obj_t *parent, uint8_t w, uint8_t h, uint8_t color = 0);

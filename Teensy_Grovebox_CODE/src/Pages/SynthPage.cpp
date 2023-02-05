@@ -1177,8 +1177,7 @@ void SynthPage::init()
 
 lv_obj_t *SynthPage::createItemBtn(lv_obj_t *parent, const char *text)
 {
-    lv_obj_t *btn = Gui_CreateButton(parent);
-    lv_obj_set_size(btn, 76, 30);
+    lv_obj_t *btn = Gui_CreateButton(parent, 76, 30);
     lv_obj_set_style_pad_all(btn, 4, 0);
     lv_obj_t *label = lv_label_create(btn);
     lv_label_set_text(label, text);
@@ -1280,8 +1279,7 @@ lv_obj_t *SynthPage::createModEntry(lv_obj_t *parent)
     list = lv_dropdown_get_list(dropdown);
     lv_obj_set_style_text_font(list, font_small, 0);
     // delete button
-    lv_obj_t *btn = Gui_CreateButton(entry, LV_SYMBOL_TRASH, false, 1);
-    lv_obj_set_size(btn, 32, 32);
+    lv_obj_t *btn = Gui_CreateButton(entry, 32, 32, LV_SYMBOL_TRASH, false, 1);
     lv_obj_set_pos(btn, 270, 0);
     lv_obj_add_event_cb(btn, onDelModBtnPressed, LV_EVENT_CLICKED, this);
     // amount slider

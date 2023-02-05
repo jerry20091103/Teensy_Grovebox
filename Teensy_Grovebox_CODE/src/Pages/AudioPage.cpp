@@ -474,7 +474,7 @@ void AudioPage::init()
         // set callback
         lv_obj_add_event_cb(OutArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
         // mixer button
-        btn = Gui_CreateButton(OutArc[i]);
+        btn = Gui_CreateButton(OutArc[i],-1 ,-1);
         lv_obj_align(btn, LV_ALIGN_TOP_MID, 160, -5);
         if (i)
             lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
@@ -501,9 +501,8 @@ void AudioPage::init()
     lv_obj_add_event_cb(hpArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
     // PFL button
-    OutPflBtn = Gui_CreateButton(hpArc, "PFL", true);
+    OutPflBtn = Gui_CreateButton(hpArc, 60, -1, "PFL", true);
     lv_obj_add_event_cb(OutPflBtn, onPFLBtnPressed, LV_EVENT_CLICKED, this);
-    lv_obj_set_width(OutPflBtn, 60);
     lv_obj_align(OutPflBtn, LV_ALIGN_BOTTOM_MID, 0, 40);
 
     // *INPUT TAB-------------------------------------------------------------------------------
@@ -542,23 +541,20 @@ void AudioPage::init()
     lv_label_set_text(label, "Source");
     lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 20);
     // line button
-    lineBtn = Gui_CreateButton(tab2, "LINE", true);
+    lineBtn = Gui_CreateButton(tab2, 60, 25, "LINE", true);
     lv_obj_set_pos(lineBtn, 0, 100);
-    lv_obj_set_size(lineBtn, 60, 25);
     lv_obj_clear_flag(lineBtn, LV_OBJ_FLAG_USER_1); // use USER_1 flag to indicate source
     lv_obj_add_event_cb(lineBtn, onInputSwitch, LV_EVENT_CLICKED, this);
     // mic button
-    micBtn = Gui_CreateButton(tab2, "MIC", true);
+    micBtn = Gui_CreateButton(tab2, 60, 25, "MIC", true);
     lv_obj_set_pos(micBtn, 0, 130);
-    lv_obj_set_size(micBtn, 60, 25);
     lv_obj_add_flag(micBtn, LV_OBJ_FLAG_USER_1); // use USER_1 flag to indicate source
     lv_obj_add_event_cb(micBtn, onInputSwitch, LV_EVENT_CLICKED, this);
 
     // PFL button
-    InPflBtn = Gui_CreateButton(tab2, "PFL", true);
+    InPflBtn = Gui_CreateButton(tab2, -1, 25, "PFL", true);
     lv_obj_set_pos(InPflBtn, 250, 0);
     lv_obj_add_event_cb(InPflBtn, onPFLBtnPressed, LV_EVENT_CLICKED, this);
-    lv_obj_set_height(InPflBtn, 25);
 
     // *POST-DSP TAB----------------------------------------------------------------------------
     lv_obj_t *tab3 = lv_tabview_add_tab(tabView, "POST-DSP");

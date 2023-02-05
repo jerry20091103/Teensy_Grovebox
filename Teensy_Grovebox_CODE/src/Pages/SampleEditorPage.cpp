@@ -67,8 +67,7 @@ lv_obj_t *SampleEditorPage::createCursor(lv_obj_t *parent, lv_color_t color, con
     else
         lv_obj_set_y(cursor, 25);
 
-    lv_obj_t *handle = Gui_CreateButton(cursor, text);
-    lv_obj_set_size(handle, 25, 25);
+    lv_obj_t *handle = Gui_CreateButton(cursor, 25, 25, text);
     if (reverse)
         lv_obj_align(handle, LV_ALIGN_BOTTOM_MID, 0, 38);
     else
@@ -390,29 +389,24 @@ void SampleEditorPage::init()
     lv_obj_set_pos(currentPosCursor, 10, 30);
 
     // create buttons
-    recordBtn = Gui_CreateButton(screen, "RECORD", true, 1);
-    lv_obj_set_width(recordBtn, 76);
+    recordBtn = Gui_CreateButton(screen, 76, -1, "RECORD", true, 1);
     lv_obj_align(recordBtn, LV_ALIGN_BOTTOM_MID, -120, -5);
     lv_obj_add_event_cb(recordBtn, onRecordButtonPressed, LV_EVENT_CLICKED, this);
 
-    playBtn = Gui_CreateButton(screen, "PLAY", true);
-    lv_obj_set_width(playBtn, 76);
+    playBtn = Gui_CreateButton(screen, 76, -1, "PLAY", true);
     lv_obj_align(playBtn, LV_ALIGN_BOTTOM_MID, -40, -5);
     lv_obj_add_event_cb(playBtn, onPlayButtonPressed, LV_EVENT_CLICKED, this);
 
-    loopBtn = Gui_CreateButton(screen, "LOOP", true);
-    lv_obj_set_width(loopBtn, 76);
+    loopBtn = Gui_CreateButton(screen, 76, -1, "LOOP", true);
     lv_obj_align(loopBtn, LV_ALIGN_BOTTOM_MID, 40, -5);
     lv_obj_add_event_cb(loopBtn, onLoopButtonPressed, LV_EVENT_CLICKED, this);
 
-    normalizeBtn = Gui_CreateButton(screen, "Normalize");
-    lv_obj_set_size(normalizeBtn, 76, 25);
+    normalizeBtn = Gui_CreateButton(screen, 76, 25, "Normalize");
     lv_obj_align(normalizeBtn, LV_ALIGN_BOTTOM_MID, 120, -30);
     lv_obj_add_event_cb(normalizeBtn, onNormailzeButtonPressed, LV_EVENT_CLICKED, this);
     lv_obj_set_style_text_font(lv_obj_get_child(normalizeBtn, 0), font_small, 0);
 
-    reverseBtn = Gui_CreateButton(screen, "Reverse");
-    lv_obj_set_size(reverseBtn, 76, 25);
+    reverseBtn = Gui_CreateButton(screen, 76, 25, "Reverse");
     lv_obj_align(reverseBtn, LV_ALIGN_BOTTOM_MID, 120, -2);
     lv_obj_add_event_cb(reverseBtn, onReverseButtonPressed, LV_EVENT_CLICKED, this);
     lv_obj_set_style_text_font(lv_obj_get_child(reverseBtn, 0), font_small, 0);
