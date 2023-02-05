@@ -52,6 +52,10 @@ PROGMEM lv_obj_t *Gui_CreatePeakLed(lv_obj_t *parent, uint8_t w, uint8_t h);
 void Gui_PeakLedOn(lv_obj_t *led);
 void Gui_PeakLedOff(lv_obj_t *led);
 
+// Spinbox (value seletor with -/+ on the side)
+PROGMEM lv_obj_t *Gui_CreateSpinbox(lv_obj_t *parent, lv_event_cb_t onBtnPressedCb, void *cbUserData, uint8_t color = 0);
+void Gui_SpinboxSetValue(lv_obj_t *spinbox, int value);
+
 // ADSR Envelope graph
 PROGMEM lv_obj_t *Gui_CreateEnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h);
 void Gui_SetEnvelopeGraph(lv_obj_t *graph, lv_point_t *points, float delay, float attack, float decay, float sustain, float release);

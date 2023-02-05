@@ -39,7 +39,7 @@ void SynthPage::onOctaveSelect(lv_event_t *e)
 {
     SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
     lv_obj_t *btn = lv_event_get_target(e);
-    if (lv_obj_has_flag(btn, LV_OBJ_FLAG_USER_1))
+    if (Gui_getObjIdFlag(btn) == 1)
     {
         // increase
         instance->onBtnPressed(BTN_FN1);
@@ -101,10 +101,10 @@ void SynthPage::onMenuPageChange(lv_event_t *e)
         lv_dropdown_set_selected(instance->oscWaveDropdown, instance->oscWaveform[id]);
         lv_event_send(instance->oscWaveDropdown, LV_EVENT_VALUE_CHANGED, NULL);
 
-        lv_label_set_text_fmt(instance->oscOctaveText, "%d", instance->oscOctave[id]);
+        Gui_SpinboxSetValue(instance->oscOctaveSpinbox, instance->oscOctave[id]);
         AudioSynth.setOscOctave(id, instance->oscOctave[id]);
 
-        lv_label_set_text_fmt(instance->oscSemiText, "%d", instance->oscSemi[id]);
+        Gui_SpinboxSetValue(instance->oscSemiSpinbox, instance->oscSemi[id]);
         AudioSynth.setOscSemi(id, instance->oscSemi[id]);
 
         lv_arc_set_value(instance->oscArc[0], instance->oscPwm[id]);
@@ -198,7 +198,7 @@ void SynthPage::onOscOctaveSelect(lv_event_t *e)
     else if (curMenu == instance->menu_osc[1])
         id = 1;
 
-    if (lv_obj_has_flag(btn, LV_OBJ_FLAG_USER_1))
+    if (Gui_getObjIdFlag(btn) == 1)
     {
         // increase
         instance->oscOctave[id]++;
@@ -213,7 +213,7 @@ void SynthPage::onOscOctaveSelect(lv_event_t *e)
             instance->oscOctave[id] = -2;
     }
     AudioSynth.setOscOctave(id, instance->oscOctave[id]);
-    lv_label_set_text_fmt(instance->oscOctaveText, "%d", instance->oscOctave[id]);
+    Gui_SpinboxSetValue(instance->oscOctaveSpinbox, instance->oscOctave[id]);
 }
 
 void SynthPage::onOscSemiSelect(lv_event_t *e)
@@ -227,7 +227,7 @@ void SynthPage::onOscSemiSelect(lv_event_t *e)
     else if (curMenu == instance->menu_osc[1])
         id = 1;
 
-    if (lv_obj_has_flag(btn, LV_OBJ_FLAG_USER_1))
+    if (Gui_getObjIdFlag(btn) == 1)
     {
         // increase
         instance->oscSemi[id]++;
@@ -242,7 +242,7 @@ void SynthPage::onOscSemiSelect(lv_event_t *e)
             instance->oscSemi[id] = -12;
     }
     AudioSynth.setOscSemi(id, instance->oscSemi[id]);
-    lv_label_set_text_fmt(instance->oscSemiText, "%d", instance->oscSemi[id]);
+    Gui_SpinboxSetValue(instance->oscSemiSpinbox, instance->oscSemi[id]);
 }
 
 void SynthPage::onNoiseArcPressed(lv_event_t *e)
@@ -534,7 +534,7 @@ void SynthPage::onBtnPressed(uint8_t pin)
             {
                 octave = 1;
             }
-            lv_label_set_text_fmt(octaveText, "%d", octave);
+            Gui_SpinboxSetValue(octaveSpinbox, octave);
             break;
         case BTN_FN1:
             octave++;
@@ -542,7 +542,7 @@ void SynthPage::onBtnPressed(uint8_t pin)
             {
                 octave = 8;
             }
-            lv_label_set_text_fmt(octaveText, "%d", octave);
+            Gui_SpinboxSetValue(octaveSpinbox, octave);
             break;
         }
     }
@@ -750,7 +750,7 @@ void SynthPage::configureEncoders()
 void SynthPage::setUserData()
 {
     // main menu
-    lv_label_set_text_fmt(octaveText, "%d", octave);
+    Gui_SpinboxSetValue(octaveSpinbox, octave);
     lv_arc_set_value(volArc, volume);
     lv_event_send(volArc, LV_EVENT_VALUE_CHANGED, NULL);
     AudioSynth.setUseVelocity(useVelocity);
@@ -864,40 +864,14 @@ void SynthPage::init()
     label = lv_label_create(oscMenuArea);
     lv_label_set_text(label, "Octave: ");
     lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 50);
-    // minus btn
-    btn = Gui_CreateButton(oscMenuArea, LV_SYMBOL_MINUS);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 65, 40);
-    lv_obj_add_event_cb(btn, onOscOctaveSelect, LV_EVENT_CLICKED, this);
-    // octave text
-    oscOctaveText = lv_label_create(oscMenuArea);
-    lv_obj_set_style_text_font(oscOctaveText, font_large, 0);
-    lv_obj_align(oscOctaveText, LV_ALIGN_TOP_LEFT, 105, 45);
-    // plus btn
-    btn = Gui_CreateButton(oscMenuArea, LV_SYMBOL_PLUS);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 130, 40);
-    lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
-    lv_obj_add_event_cb(btn, onOscOctaveSelect, LV_EVENT_CLICKED, this);
+    oscOctaveSpinbox = Gui_CreateSpinbox(oscMenuArea, onOscOctaveSelect, this);
+    lv_obj_align(oscOctaveSpinbox, LV_ALIGN_TOP_LEFT, 65, 43);
     // *semitone selector
     label = lv_label_create(oscMenuArea);
     lv_label_set_text(label, "Semi: ");
     lv_obj_align(label, LV_ALIGN_TOP_LEFT, 165, 50);
-    // minus btn
-    btn = Gui_CreateButton(oscMenuArea, LV_SYMBOL_MINUS);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 210, 40);
-    lv_obj_add_event_cb(btn, onOscSemiSelect, LV_EVENT_CLICKED, this);
-    // semitone text
-    oscSemiText = lv_label_create(oscMenuArea);
-    lv_obj_set_style_text_font(oscSemiText, font_large, 0);
-    lv_obj_align(oscSemiText, LV_ALIGN_TOP_LEFT, 250, 45);
-    // plus btn
-    btn = Gui_CreateButton(oscMenuArea, LV_SYMBOL_PLUS);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_TOP_LEFT, 275, 40);
-    lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
-    lv_obj_add_event_cb(btn, onOscSemiSelect, LV_EVENT_CLICKED, this);
+    oscSemiSpinbox = Gui_CreateSpinbox(oscMenuArea, onOscSemiSelect, this);
+    lv_obj_align(oscSemiSpinbox, LV_ALIGN_TOP_LEFT, 210, 43);
     // *pwm arc
     oscArc[0] = Gui_CreateParamArc(oscMenuArea, 1, "PWM", "%", false);
     Gui_setObjIdFlag(oscArc[0], 0);
@@ -1080,20 +1054,8 @@ void SynthPage::init()
     lv_label_set_text(label, "Octave");
     lv_obj_set_style_text_font(label, font_small, 0);
     lv_obj_set_pos(label, 23, 38);
-    btn = Gui_CreateButton(selectArea, LV_SYMBOL_MINUS, false, 1);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-    lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
-
-    octaveText = lv_label_create(selectArea);
-    lv_obj_set_style_text_font(octaveText, font_large, 0);
-    lv_obj_align(octaveText, LV_ALIGN_BOTTOM_LEFT, 40, -3);
-
-    btn = Gui_CreateButton(selectArea, LV_SYMBOL_PLUS, false, 1);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 60, 0);
-    lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
-    lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
+    octaveSpinbox = Gui_CreateSpinbox(selectArea, onOctaveSelect, this, 1);
+    lv_obj_align(octaveSpinbox, LV_ALIGN_BOTTOM_LEFT, 0, 0);
 
     // *velocity button
     velocityBtn = Gui_CreateButton(selectArea, NULL, true);

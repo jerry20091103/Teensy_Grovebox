@@ -40,7 +40,7 @@ void WaveTablePage::onOctaveSelect(lv_event_t *e)
 {
     WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
     lv_obj_t *btn = lv_event_get_target(e);
-    if (lv_obj_has_flag(btn, LV_OBJ_FLAG_USER_1))
+    if (Gui_getObjIdFlag(btn)== 1)
     {
         // increase
         instance->onBtnPressed(BTN_FN1);
@@ -95,7 +95,7 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
             {
                 octave = 1;
             }
-            lv_label_set_text_fmt(octaveText, "%d", octave);
+            Gui_SpinboxSetValue(octaveSpinbox, octave);
             break;
         case BTN_FN1:
             octave++;
@@ -103,7 +103,7 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
             {
                 octave = 8;
             }
-            lv_label_set_text_fmt(octaveText, "%d", octave);
+            Gui_SpinboxSetValue(octaveSpinbox, octave);
             break;
         }
     }
@@ -183,7 +183,7 @@ void WaveTablePage::configurePage()
 void WaveTablePage::setUserData()
 {
     // select area
-    lv_label_set_text_fmt(octaveText, "%d", octave);
+    Gui_SpinboxSetValue(octaveSpinbox, octave);
     setVolume(volume);
     lv_arc_set_value(volArc, volume);
     lv_dropdown_set_selected(pitchDropdown, pitchbendRange - 1);
@@ -270,20 +270,8 @@ void WaveTablePage::init()
     lv_label_set_text(label, "Octave");
     lv_obj_set_style_text_font(label, font_small, 0);
     lv_obj_set_pos(label, 23, 38);
-    btn = Gui_CreateButton(selectArea, LV_SYMBOL_MINUS, false, 1);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-    lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
-
-    octaveText = lv_label_create(selectArea);
-    lv_obj_set_style_text_font(octaveText, font_large, 0);
-    lv_obj_align(octaveText, LV_ALIGN_BOTTOM_LEFT, 40, -3);
-
-    btn = Gui_CreateButton(selectArea, LV_SYMBOL_PLUS, false, 1);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 60, 0);
-    lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
-    lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
+    octaveSpinbox = Gui_CreateSpinbox(selectArea, onOctaveSelect, this, 1);
+    lv_obj_align(octaveSpinbox, LV_ALIGN_BOTTOM_LEFT, 0, 0);
 
     // *velocity button
     velocityBtn = Gui_CreateButton(selectArea, NULL, true);

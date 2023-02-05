@@ -9,10 +9,11 @@
 // displayed instrument names in lvgl dropdown menu
 static const char* SF2_Instrument_Names =
 {
-    "Piano Electrique\n"
+    // todo: these samples are comment out to save upload time.
+    "Piano Electrique"
     //"JR Bells\n"
-    "JR Vibraphone\n"
-    "Drumkit"
+    //"JR Vibraphone\n"
+    //"Drumkit"
     //"YDP Piano"
 };
 
@@ -21,7 +22,7 @@ static const AudioSynthWavetable::instrument_data *SF2_InstrumentRef[MAX_SF2_INS
 {
     &pianoelectrique,
     //&JR_bells,
-    &JR_vibraphone,
-    &AcoustDryKit
+    //&JR_vibraphone,
+    //&AcoustDryKit
     //&YDPiano
 };

@@ -61,7 +61,7 @@ private:
     lv_obj_t* volText;
     lv_obj_t* volBar;
     lv_obj_t* peakLed;
-    lv_obj_t* octaveText;
+    lv_obj_t* octaveSpinbox;
     lv_obj_t* pitchDropdown;
     lv_obj_t* pitchText;
     lv_obj_t* pitchBtn;
@@ -71,8 +71,8 @@ private:
     lv_obj_t* oscWaveDropdown;
     lv_obj_t* oscWaveImg;
     lv_obj_t* oscWaveItemImg[2]; // the is on the main menu buttons, so we need 2 for 2 OSCs
-    lv_obj_t* oscOctaveText;
-    lv_obj_t* oscSemiText;
+    lv_obj_t* oscOctaveSpinbox;
+    lv_obj_t* oscSemiSpinbox;
     lv_obj_t* oscArc[3];
     lv_obj_t* oscPwmText;
     lv_obj_t* oscDetuneText;

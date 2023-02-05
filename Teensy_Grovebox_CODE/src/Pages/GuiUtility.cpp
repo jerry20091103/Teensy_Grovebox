@@ -45,6 +45,7 @@ lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char* title,
         lv_obj_t *label = lv_label_create(arc);
         lv_label_set_text(label, title);
         lv_obj_align(label, LV_ALIGN_CENTER, 0, -42);
+        lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
     }
     // add unit
     if(unit != NULL)
@@ -266,6 +267,39 @@ void Gui_PeakLedOn(lv_obj_t *led)
 void Gui_PeakLedOff(lv_obj_t *led)
 {
     lv_obj_set_style_bg_color(led, color_RedDark, 0);
+}
+
+lv_obj_t *Gui_CreateSpinbox(lv_obj_t *parent, lv_event_cb_t onBtnPressedCb, void *cbUserData, uint8_t color)
+{
+    lv_obj_t *spinbox = lv_obj_create(parent);
+    lv_obj_remove_style_all(spinbox);
+    lv_obj_set_size(spinbox, 90, 30);
+    lv_obj_add_flag(spinbox, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+
+    lv_obj_t *btn = Gui_CreateButton(spinbox, LV_SYMBOL_MINUS, false, color);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_align(btn, LV_ALIGN_CENTER, -30, 0);
+    lv_obj_add_event_cb(btn, onBtnPressedCb, LV_EVENT_CLICKED, cbUserData);
+    Gui_setObjIdFlag(btn, 0); // set object id (0 = minus button)
+
+    lv_obj_t *label = lv_label_create(spinbox);
+    lv_obj_set_style_text_font(label, font_large, 0);
+    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+
+    btn = Gui_CreateButton(spinbox, LV_SYMBOL_PLUS, false, color);
+    lv_obj_set_size(btn, 30, 30);
+    lv_obj_align(btn, LV_ALIGN_CENTER, 30, 0);
+    lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
+    lv_obj_add_event_cb(btn, onBtnPressedCb, LV_EVENT_CLICKED, cbUserData);
+    Gui_setObjIdFlag(btn, 1); // set object id (1 = plus button)
+
+    return spinbox;
+}
+
+void Gui_SpinboxSetValue(lv_obj_t *spinbox, int value)
+{
+    lv_obj_t *label = lv_obj_get_child(spinbox, 1);
+    lv_label_set_text_fmt(label, "%d", value);
 }
 
 // use 4 user flags to store custom object id

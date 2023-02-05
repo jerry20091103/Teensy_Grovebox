@@ -28,44 +28,50 @@ void MidiPage::onToggleModwheel(lv_event_t *e)
     instance->useModwheel = !instance->useModwheel;
 }
 
-void MidiPage::onOctaveInc(lv_event_t *e)
+void MidiPage::onOctaveSelect(lv_event_t *e)
 {
     MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
-    instance->octave++;
-    if (instance->octave > 8)
+    lv_obj_t *btn = lv_event_get_target(e);
+    if (Gui_getObjIdFlag(btn) == 1)
     {
-        instance->octave = 8;
+        // increase
+        instance->octave++;
+        if (instance->octave > 8)
+        {
+            instance->octave = 8;
+        }
     }
-    lv_label_set_text_fmt(instance->octaveText, "%d", instance->octave);
-}
-
-void MidiPage::onOctaveDec(lv_event_t *e)
-{
-    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
-    instance->octave--;
-    if (instance->octave < 1)
+    else
     {
-        instance->octave = 1;
+        // decrease
+        instance->octave--;
+        if (instance->octave < 1)
+        {
+            instance->octave = 1;
+        }
     }
-    lv_label_set_text_fmt(instance->octaveText, "%d", instance->octave);
+    Gui_SpinboxSetValue(instance->octaveSpinbox, instance->octave);
 }
 
-void MidiPage::onChannelInc(lv_event_t *e)
+void MidiPage::onChannelSelect(lv_event_t *e)
 {
     MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
-    instance->midiChannel++;
-    if (instance->midiChannel > 16)
-        instance->midiChannel = 16;
-    lv_label_set_text_fmt(instance->channelText, "%d", instance->midiChannel);
-}
-
-void MidiPage::onChannelDec(lv_event_t *e)
-{
-    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
-    instance->midiChannel--;
-    if (instance->midiChannel < 1)
-        instance->midiChannel = 1;
-    lv_label_set_text_fmt(instance->channelText, "%d", instance->midiChannel);
+    lv_obj_t *btn = lv_event_get_target(e);
+    if (Gui_getObjIdFlag(btn) == 1)
+    {
+        // increase
+        instance->midiChannel++;
+        if (instance->midiChannel > 16)
+            instance->midiChannel = 16;
+    }
+    else
+    {
+        // decrease
+        instance->midiChannel--;
+        if (instance->midiChannel < 1)
+            instance->midiChannel = 1;
+    }
+    Gui_SpinboxSetValue(instance->channelSpinbox, instance->midiChannel);
 }
 
 void MidiPage::onBtnPressed(uint8_t pin)
@@ -266,39 +272,21 @@ void MidiPage::init()
     // octave select
     lv_obj_t *label = lv_label_create(btnGroup);
     lv_label_set_text(label, "Octave:");
-    lv_obj_set_pos(label, 110, 7);
+    lv_obj_set_pos(label, 135, 7);
 
-    lv_obj_t *btn = Gui_CreateButton(btnGroup, LV_SYMBOL_MINUS);
-    lv_obj_set_x(btn, 180);
-    lv_obj_add_event_cb(btn, onOctaveDec, LV_EVENT_CLICKED, this);
-
-    octaveText = lv_label_create(btnGroup);
-    lv_obj_set_style_text_font(octaveText, font_large, 0);
-    lv_obj_set_pos(octaveText, 232, 7);
-
-    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PLUS);
-    lv_obj_set_x(btn, 260);
-    lv_obj_add_event_cb(btn, onOctaveInc, LV_EVENT_CLICKED, this);
+    octaveSpinbox =  Gui_CreateSpinbox(btnGroup, onOctaveSelect, this);
+    lv_obj_set_x(octaveSpinbox, 205);
 
     // channel select
     label = lv_label_create(btnGroup);
     lv_label_set_text(label, "Channel:");
-    lv_obj_set_pos(label, 105, 7 + 45);
+    lv_obj_set_pos(label, 130, 52);
 
-    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_MINUS);
-    lv_obj_set_pos(btn, 180, 45);
-    lv_obj_add_event_cb(btn, onChannelDec, LV_EVENT_CLICKED, this);
-
-    channelText = lv_label_create(btnGroup);
-    lv_obj_set_style_text_font(channelText, font_large, 0);
-    lv_obj_set_pos(channelText, 232, 7 + 45);
-
-    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PLUS);
-    lv_obj_set_pos(btn, 260, 45);
-    lv_obj_add_event_cb(btn, onChannelInc, LV_EVENT_CLICKED, this);
+    channelSpinbox = Gui_CreateSpinbox(btnGroup, onChannelSelect, this);
+    lv_obj_set_pos(channelSpinbox, 205, 45);
 
     // bottom buttons
-    btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PLAY, false, 1);
+    lv_obj_t *btn = Gui_CreateButton(btnGroup, LV_SYMBOL_PLAY, false, 1);
     lv_obj_set_size(btn, 30, 30);
     lv_obj_set_pos(btn, 0, 90);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
@@ -410,14 +398,14 @@ void MidiPage::setUserData()
         lv_label_set_text_fmt(ccText[i], "%d", curCC[i]);
     }
 
-    lv_label_set_text_fmt(octaveText, "%d", octave);
-    lv_label_set_text_fmt(channelText, "%d", midiChannel);
+    Gui_SpinboxSetValue(octaveSpinbox, octave);
+    Gui_SpinboxSetValue(channelSpinbox, midiChannel);
 
     if (usePitchbend)
         lv_obj_add_state(pitchBtn, LV_STATE_CHECKED);
     else
         lv_obj_clear_state(pitchBtn, LV_STATE_CHECKED);
-    
+
     if (useModwheel)
         lv_obj_add_state(modBtn, LV_STATE_CHECKED);
     else
