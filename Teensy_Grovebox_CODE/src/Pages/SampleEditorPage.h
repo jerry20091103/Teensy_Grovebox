@@ -44,16 +44,16 @@ private:
     // * user data
     GuiUserData<float> cursorPos[4] = {
         GuiUserData<float>(0.0f, 0, [](float value, int8_t id)
-                           { playClip1.setStartPoint(value); }),
+                           { AudioSynth.setClipStartPoint(value); }),
         GuiUserData<float>(0.4f, 1, [](float value, int8_t id)
-                           { playClip1.setLoopStartPoint(value); }),
+                           { AudioSynth.setClipLoopStartPoint(value); }),
         GuiUserData<float>(0.6f, 2, [](float value, int8_t id)
-                           { playClip1.setLoopEndPoint(value); }),
+                           { AudioSynth.setClipLoopEndPoint(value); }),
         GuiUserData<float>(1.0f, 3, [](float value, int8_t id)
-                           { playClip1.setEndPoint(value); })};
+                           { AudioSynth.setClipEndPoint(value); })};
 
     GuiUserData<float> crossFade = GuiUserData<float>(0.0f, 0, [](float value, int8_t id)
-                                                      { playClip1.setLoopCrossFade(value); });
+                                                      { AudioSynth.setClipLoopCrossfade(value); });
 
 public:
     void onBtnPressed(uint8_t pin);

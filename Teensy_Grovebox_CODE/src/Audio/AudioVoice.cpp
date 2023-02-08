@@ -27,12 +27,17 @@ void AudioVoice::noteOn(uint8_t note, float amp)
         env[0]->noteOn();
         env[1]->noteOn();
         env[2]->noteOn();
+        setSampleNoteOffset(curSampleNoteOffset);
+        playClip->play();
         break;
 
     case VOICE_MODE_WAVETABLE:
         waveTable->playFrequency(frequency);
         waveTable->amplitude(amp);
         break;
+    case VOICE_MODE_SAMPLE_EDITER:
+        playClip->setSpeed(1);
+        playClip->play();
     }
 }
 
@@ -44,10 +49,14 @@ void AudioVoice::noteOff()
         env[0]->noteOff();
         env[1]->noteOff();
         env[2]->noteOff();
+        playClip->noteOff();
         break;
 
     case VOICE_MODE_WAVETABLE:
         waveTable->stop();
+        break;
+    case VOICE_MODE_SAMPLE_EDITER:
+        playClip->stop();
         break;
     }
 }
@@ -128,4 +137,16 @@ void AudioVoice::setLfoWaveform(uint8_t id, uint8_t wave)
         lfo[id]->begin(WAVEFORM_SAMPLE_HOLD);
         break;
     }
+}
+
+void AudioVoice::setSampleBaseNote(uint8_t note)
+{
+    curSampleBaseNote = note;
+    setSampleNoteOffset(curSampleNoteOffset);
+}
+
+void AudioVoice::setSampleNoteOffset(float offset)
+{
+    curSampleNoteOffset = offset;
+    playClip->setSpeed(powf(2, (curNote - curSampleBaseNote + curSampleNoteOffset) / 12.0f));
 }

@@ -81,6 +81,15 @@ AudioSynth_::AudioSynth_()
     voiceArr[5].noise = &noise5;
     voiceArr[6].noise = &noise6;
     voiceArr[7].noise = &noise7;
+    // playClip (sample player)
+    voiceArr[0].playClip = &playClip0;
+    voiceArr[1].playClip = &playClip1;
+    voiceArr[2].playClip = &playClip2;
+    voiceArr[3].playClip = &playClip3;
+    voiceArr[4].playClip = &playClip4;
+    voiceArr[5].playClip = &playClip5;
+    voiceArr[6].playClip = &playClip6;
+    voiceArr[7].playClip = &playClip7;
     // voice mode switch
     voiceArr[0].voiceSwitch = &voiceSwitch0;
     voiceArr[1].voiceSwitch = &voiceSwitch1;
@@ -199,31 +208,6 @@ AudioSynth_::AudioSynth_()
     envDc5.amplitude(1);
     envDc6.amplitude(1);
     envDc7.amplitude(1);
-    // set osc mixer
-    oscMixer0.gain(0, 1);
-    oscMixer0.gain(1, 1);
-    oscMixer0.gain(2, 1);
-    oscMixer1.gain(0, 1);
-    oscMixer1.gain(1, 1);
-    oscMixer1.gain(2, 1);
-    oscMixer2.gain(0, 1);
-    oscMixer2.gain(1, 1);
-    oscMixer2.gain(2, 1);
-    oscMixer3.gain(0, 1);
-    oscMixer3.gain(1, 1);
-    oscMixer3.gain(2, 1);
-    oscMixer4.gain(0, 1);
-    oscMixer4.gain(1, 1);
-    oscMixer4.gain(2, 1);
-    oscMixer5.gain(0, 1);
-    oscMixer5.gain(1, 1);
-    oscMixer5.gain(2, 1);
-    oscMixer6.gain(0, 1);
-    oscMixer6.gain(1, 1);
-    oscMixer6.gain(2, 1);
-    oscMixer7.gain(0, 1);
-    oscMixer7.gain(1, 1);
-    oscMixer7.gain(2, 1);
 
     setSF2Instrument(0);
     setOscWaveform(0, WAVE_OSC_SINE);
@@ -707,5 +691,71 @@ void AudioSynth_::updateModulation()
                 modParamList[i].modulate(voiceId, modTgtValue[i]);
             }
         }
+    }
+}
+
+void AudioSynth_::playClip()
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].noteOn(60); // the note number is not used in sample editor mode
+    }
+}
+void AudioSynth_::stopClip()
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].noteOff();
+    }
+}
+void AudioSynth_::setClip(audio_block_data_t *data, uint16_t len)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setClip(data, len);
+    }
+}
+void AudioSynth_::setClipLoop(bool loop)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->loop(loop);
+    }
+}
+
+void AudioSynth_::setClipStartPoint(float start)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setStartPoint(start);
+    }
+}
+void AudioSynth_::setClipLoopStartPoint(float start)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setLoopStartPoint(start);
+    }
+}
+void AudioSynth_::setClipLoopEndPoint(float end)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setLoopEndPoint(end);
+    }
+}
+void AudioSynth_::setClipEndPoint(float end)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setEndPoint(end);
+    }
+}
+
+void AudioSynth_::setClipLoopCrossfade(float crossfade)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setLoopCrossFade(crossfade);
     }
 }

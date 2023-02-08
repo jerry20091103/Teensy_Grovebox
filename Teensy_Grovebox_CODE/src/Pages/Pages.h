@@ -4,6 +4,7 @@
 #include "Hardware.h"
 #include "GuiUtility.h"
 #include "Utility/SimpleStack.h"
+#include "Utility/GuiUserData.h"
 
 #define MAX_PAGE_NAME 20
 

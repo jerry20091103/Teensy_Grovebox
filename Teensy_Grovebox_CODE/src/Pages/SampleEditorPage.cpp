@@ -133,7 +133,7 @@ void SampleEditorPage::onRecordButtonPressed(lv_event_t *event)
         taskManager.cancelTask(instance->cancelRecordTaskId);
         // stop recording
         clip1.stopRecording();
-        playClip1.setClip(clip1.getClip(), clip1.getClipLength());
+        AudioSynth.setClip(clip1.getClip(), clip1.getClipLength());
         // load to chart display
         instance->loadWaveformChart((int16_t *)clip1.getClip(), clip1.getClipLength() * AUDIO_BLOCK_SAMPLES);
         lv_label_set_text(label, "RECORD");
@@ -149,13 +149,13 @@ void SampleEditorPage::onPlayButtonPressed(lv_event_t *event)
     if (lv_obj_has_state(btn, LV_STATE_CHECKED))
     {
         // start playing
-        playClip1.play();
+        AudioSynth.playClip();
         lv_label_set_text(label, "STOP");
     }
     else
     {
         // stop playing
-        playClip1.stop();
+        AudioSynth.stopClip();
         lv_label_set_text(label, "PLAY");
     }
 }
@@ -169,7 +169,7 @@ void SampleEditorPage::onLoopButtonPressed(lv_event_t *event)
     if (lv_obj_has_state(btn, LV_STATE_CHECKED))
     {
         // start playing
-        playClip1.loop(true);
+        AudioSynth.setClipLoop(true);
         // set loop cursors to bright color
         setCursorColor(lv_obj_get_child(instance->cursorGroup, 1), color_Yellow);
         setCursorColor(lv_obj_get_child(instance->cursorGroup, 2), color_Blue);
@@ -177,7 +177,7 @@ void SampleEditorPage::onLoopButtonPressed(lv_event_t *event)
     else
     {
         // stop playing
-        playClip1.loop(false);
+        AudioSynth.setClipLoop(false);
         // set loop cursors to dark color
         setCursorColor(lv_obj_get_child(instance->cursorGroup, 1), color_YellowDark);
         setCursorColor(lv_obj_get_child(instance->cursorGroup, 2), color_BlueDark);
@@ -295,7 +295,7 @@ void SampleEditorPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t 
 }
 void SampleEditorPage::configurePage()
 {
-    AudioSynth.setVoiceMode(2);
+    AudioSynth.setVoiceMode(VOICE_MODE_SAMPLE_EDITER);
     // set encoders to direction mode
     enc[0]->changePrecision(0, 0);
     enc[1]->changePrecision(0, 0);
@@ -312,10 +312,10 @@ void SampleEditorPage::update()
     if (lv_obj_has_state(playBtn, LV_STATE_CHECKED))
     {
         // check play state of clip
-        if (playClip1.playing())
+        if (playClip0.playing())
         {
             // get current position
-            float pos = playClip1.getCurrentPosition();
+            float pos = playClip0.getCurrentPosition();
             // update current position cursor
             lv_obj_set_x(currentPosCursor, pos * 300 + 10);
         }

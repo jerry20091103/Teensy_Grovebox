@@ -92,7 +92,7 @@ public:
         }
         transmit(block);
         // check loop and end points
-        if (isLoop)
+        if (isLoop && noteOn)
         {
             if (currentBlock >= loopEndPoint)
                 currentBlock = loopStartPoint;
@@ -128,13 +128,23 @@ public:
         }
         __disable_irq();
         isPlaying = true;
+        noteOn = true;
         currentBlock = startPoint;
         __enable_irq();
     }
+    // stop playing immediately
     void stop(void)
     {
         __disable_irq();
         isPlaying = false;
+        noteOn = false;
+        __enable_irq();
+    }
+    // stop looping and play to the end of the clip
+    void noteOff()
+    {
+        __disable_irq();
+        noteOn = false;
         __enable_irq();
     }
     // Sets the start position. 0 and 1 represents the start and end of a clip
@@ -228,5 +238,6 @@ private:
     uint16_t crossFadeLength = 0;
     bool isLoop = false;
     bool isPlaying = false;
+    bool noteOn = false;
 };
 #endif // PLAY_CLIP_H

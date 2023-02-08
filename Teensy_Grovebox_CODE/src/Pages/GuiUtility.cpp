@@ -1,5 +1,11 @@
 #include "GuiUtility.h"
 
+// Global styles
+static lv_style_t style_paramArcMain;
+static lv_style_t style_paramArcMainNoPad;
+static lv_style_t style_paramArcInd;
+static lv_style_t style_paramArcKnob;
+
 void Gui_InitStyles()
 {
     // Parameters arc main part

@@ -35,10 +35,6 @@ LV_IMG_DECLARE(s_r_wave);
 
 // * Object Global styles and object creator
 // Paramsters arc
-static lv_style_t style_paramArcMain;
-static lv_style_t style_paramArcMainNoPad;
-static lv_style_t style_paramArcInd;
-static lv_style_t style_paramArcKnob;
 PROGMEM lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color = 0, const char* title = NULL, const char* unit = NULL, bool padding = true);
 
 // Button
@@ -65,38 +61,3 @@ PROGMEM void Gui_InitStyles();
 // helper functions
 void Gui_setObjIdFlag(lv_obj_t *&arcRef, uint8_t id);
 uint8_t Gui_getObjIdFlag(lv_obj_t *&arcRef);
-
-// * Template class for user data storage in Pages
-// This make the data object responsible for applying the changes to the system.
-template <class T>
-class GuiUserData
-{
-public:
-    GuiUserData(T data, int8_t id = 0, void (*onValueChangedFunc) (T data, int8_t id) = NULL)
-    {
-        this->data = data;
-        this->id = id;
-        this->setOnValueChanged(onValueChangedFunc);
-    }
-    T get()
-    {
-        return data;
-    }
-    void set(T data)
-    {
-        this->data = data;
-        if (onValueChangedFunc != NULL)
-        {
-            onValueChangedFunc(data, id);
-        }
-    }
-    void setOnValueChanged(void (*onValueChangedFunc) (T data, int8_t id))
-    {
-        this->onValueChangedFunc = onValueChangedFunc;
-    }
-private:
-    T data;
-    int8_t id;
-    void (*onValueChangedFunc) (T data, int8_t id);
-};
-
