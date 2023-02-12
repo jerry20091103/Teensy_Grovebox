@@ -1058,8 +1058,7 @@ void SynthPage::init()
     lv_obj_align(octaveSpinbox, LV_ALIGN_BOTTOM_LEFT, 0, 0);
 
     // *velocity button
-    velocityBtn = Gui_CreateButton(selectArea, NULL, true);
-    lv_obj_set_size(velocityBtn, 60, 30);
+    velocityBtn = Gui_CreateButton(selectArea, 60, 30, NULL, true);
     lv_obj_align(velocityBtn, LV_ALIGN_BOTTOM_LEFT, 100, 0);
     lv_obj_add_event_cb(velocityBtn, onVelocityBtnPressed, LV_EVENT_CLICKED, this);
     label = lv_label_create(velocityBtn);
@@ -1073,8 +1072,7 @@ void SynthPage::init()
     lv_obj_align(pitchDropdown, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_dropdown_set_options(pitchDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12");
     lv_obj_add_event_cb(pitchDropdown, onPitchDropdownSelect, LV_EVENT_VALUE_CHANGED, this);
-    pitchBtn = Gui_CreateButton(selectArea, NULL, true);
-    lv_obj_set_size(pitchBtn, 60, 30);
+    pitchBtn = Gui_CreateButton(selectArea, 60, 30, NULL, true);
     lv_obj_align(pitchBtn, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_obj_add_event_cb(pitchBtn, onPitchBtnPressed, LV_EVENT_CLICKED, this);
     lv_obj_add_event_cb(pitchBtn, onPitchBtnHolded, LV_EVENT_LONG_PRESSED, this);

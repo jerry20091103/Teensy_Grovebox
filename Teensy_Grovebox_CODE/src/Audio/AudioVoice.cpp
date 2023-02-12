@@ -72,7 +72,7 @@ void AudioVoice::setPitchbend(float pitchMult)
         break;
 
     case VOICE_MODE_WAVETABLE:
-        waveTable->setFrequency(frequency * pitchMult);
+        waveTable->setFrequency(frequency * pitchMult); // ! for unknown reason, program crashes when the voice is not played once then setFrequency() is set
         break;
     }
 }

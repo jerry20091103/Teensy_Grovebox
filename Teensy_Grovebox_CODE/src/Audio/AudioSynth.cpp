@@ -338,7 +338,7 @@ void AudioSynth_::sustainOff()
 void AudioSynth_::pitchbend(float semitone, float amount)
 {
     curPitchbend = amount;
-    curPitchbendMult = pow(2.0, semitone / 12.0);
+    curPitchbendMult = pow(2.0f, semitone / 12.0f);
     for (uint8_t i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].setPitchbend(curPitchbendMult);

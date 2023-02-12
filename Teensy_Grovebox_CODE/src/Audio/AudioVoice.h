@@ -128,7 +128,7 @@ public:
     AudioRecordSample *ampEnvSample;
     AudioPlayClip *playClip;
 
-    float frequency;
+    float frequency = 0.0f;
     float curAmp = 0.0f;
     float curPitchBendMult = 1.0f;
     float curSampleNoteOffset = 0.0f;

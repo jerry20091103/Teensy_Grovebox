@@ -14,8 +14,9 @@ class SynthPage : public Pages
 {
 private:
     // todo: add permenant memory
-    // todo: use the same menu for duplicate pages.
+    // todo: use the same menu for duplicate pages. (lfo)
     // todo: usd id flag to determine current menu, instead of using curMenu
+    // todo: bug fix: pitchbend crashes wavetable (when any one of the voice is not played before)
     // *user data
     uint8_t octave = 4;
     int8_t volume = 0;
