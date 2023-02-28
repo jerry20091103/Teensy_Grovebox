@@ -85,11 +85,11 @@ void AudioVoice::setVoiceMode(uint8_t mode)
     {
         if (i == mode)
         {
-            voiceSwitch->gain(1.0f, i);
+            voiceSwitch->gain(i, 1.0f);
         }
         else
         {
-            voiceSwitch->gain(0.0f, i);
+            voiceSwitch->gain(i, 0.0f);
         }
     }
 }

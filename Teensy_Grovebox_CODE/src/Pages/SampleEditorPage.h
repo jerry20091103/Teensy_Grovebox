@@ -20,13 +20,9 @@ private:
     lv_obj_t *peakLed;
     lv_chart_series_t *serMax;
     lv_chart_series_t *serMin;
-    int16_t waveformPointsMax[1000];
-    int16_t waveformPointsMin[1000];
     taskid_t cancelRecordTaskId;
     uint8_t peakHold = 0;
     float peakAvg = 0;
-    // load a waveform from clip to the chart
-    void loadWaveformChart(int16_t *data, int length_samples);
     // create a cursor on the waveform display
     lv_obj_t *createCursor(lv_obj_t *parent, lv_color_t color, const char *text, bool reverse = false);
     static void setCursorColor(lv_obj_t *cursor, lv_color_t color);

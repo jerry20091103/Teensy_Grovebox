@@ -13,47 +13,6 @@ void toggleRecordButton(SampleEditorPage *instance)
     lv_event_send(instance->recordBtn, LV_EVENT_CLICKED, NULL);
 }
 
-void SampleEditorPage::loadWaveformChart(int16_t *data, int length_samples)
-{
-    // downsample to 1000 points
-    if (length_samples < 1000)
-    {
-        lv_chart_set_point_count(waveformChart, length_samples);
-        lv_chart_set_ext_y_array(waveformChart, serMax, data);
-        lv_chart_set_ext_y_array(waveformChart, serMin, data);
-    }
-    else
-    {
-        int hop = length_samples / 1000.0f;
-        for (int i = 0; i < 1000; i++)
-        {
-            // find max
-            int16_t max = 0;
-            for (int j = 0; j < hop; j++)
-            {
-                if (data[i * hop + j] > max)
-                {
-                    max = data[i * hop + j];
-                }
-            }
-            waveformPointsMax[i] = max;
-            // find min
-            int16_t min = 0;
-            for (int j = 0; j < hop; j++)
-            {
-                if (data[i * hop + j] < min)
-                {
-                    min = data[i * hop + j];
-                }
-            }
-            waveformPointsMin[i] = min;
-        }
-        lv_chart_set_point_count(waveformChart, 1000);
-        lv_chart_set_ext_y_array(waveformChart, serMax, waveformPointsMax);
-        lv_chart_set_ext_y_array(waveformChart, serMin, waveformPointsMin);
-    }
-}
-
 lv_obj_t *SampleEditorPage::createCursor(lv_obj_t *parent, lv_color_t color, const char *text, bool reverse)
 {
     lv_obj_t *cursor = lv_obj_create(parent);
@@ -135,7 +94,7 @@ void SampleEditorPage::onRecordButtonPressed(lv_event_t *event)
         clip1.stopRecording();
         AudioSynth.setClip(clip1.getClip(), clip1.getClipLength());
         // load to chart display
-        instance->loadWaveformChart((int16_t *)clip1.getClip(), clip1.getClipLength() * AUDIO_BLOCK_SAMPLES);
+        Gui_WaveFormChartSetPoints(instance->waveformChart, instance->serMax, instance->serMin, (int16_t *)clip1.getClip(), clip1.getClipLength() * AUDIO_BLOCK_SAMPLES);
         lv_label_set_text(label, "RECORD");
     }
 }
@@ -208,7 +167,7 @@ void SampleEditorPage::onNormailzeButtonPressed(lv_event_t *event)
     {
         clipPtr[i] = clipPtr[i] * factor;
     }
-    instance->loadWaveformChart(clipPtr, length_samples);
+    Gui_WaveFormChartSetPoints(instance->waveformChart, instance->serMax, instance->serMin, clipPtr, length_samples);
 }
 
 void SampleEditorPage::onReverseButtonPressed(lv_event_t *event)
@@ -227,7 +186,7 @@ void SampleEditorPage::onReverseButtonPressed(lv_event_t *event)
         clipPtr[i] = clipPtr[length_samples - i];
         clipPtr[length_samples - i] = temp;
     }
-    instance->loadWaveformChart(clipPtr, length_samples);
+    Gui_WaveFormChartSetPoints(instance->waveformChart, instance->serMax, instance->serMin, clipPtr, length_samples);
 }
 
 void SampleEditorPage::onCursorDragged(lv_event_t *event)
@@ -357,18 +316,8 @@ void SampleEditorPage::init()
     screen = lv_obj_create(NULL);
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
     // waveform display
-    waveformChart = lv_chart_create(screen);
-    lv_obj_set_size(waveformChart, 320, 110);
+    waveformChart = Gui_CreateWaveformChart(screen, 320, 110, &serMax, &serMin, samplerWaveformPointsMax, samplerWaveformPointsMin);
     lv_obj_set_pos(waveformChart, 0, 55);
-    lv_chart_set_range(waveformChart, LV_CHART_AXIS_PRIMARY_Y, -32768, 32767);
-    lv_obj_set_style_bg_color(waveformChart, lv_color_black(), 0);
-
-    /*Do not display points on the data*/
-    lv_obj_set_style_size(waveformChart, 0, LV_PART_INDICATOR);
-    lv_obj_set_style_line_width(waveformChart, 1, LV_PART_ITEMS);
-
-    serMax = lv_chart_add_series(waveformChart, lv_color_white(), LV_CHART_AXIS_PRIMARY_Y);
-    serMin = lv_chart_add_series(waveformChart, lv_color_white(), LV_CHART_AXIS_PRIMARY_Y);
 
     // cursorGroup for 4 cursors
     cursorGroup = lv_obj_create(screen);

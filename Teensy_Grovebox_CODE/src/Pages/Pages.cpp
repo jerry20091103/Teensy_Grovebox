@@ -134,3 +134,7 @@ void PageManager_::onBackBtnPressed(lv_event_t *e)
         PageManager.switchPage(PageManager.navStack.pop());
     }
 }
+
+// common data shared by all pages
+int16_t samplerWaveformPointsMax[1000]; // todo: ugly?
+int16_t samplerWaveformPointsMin[1000];

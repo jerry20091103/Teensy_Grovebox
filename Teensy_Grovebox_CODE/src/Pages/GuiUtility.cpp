@@ -30,14 +30,14 @@ void Gui_InitStyles()
 }
 
 // create a standard parameter arc, with color = 1~4, 0 is the default color
-lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char* title, const char* unit, bool padding)
+lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char *title, const char *unit, bool padding)
 {
     lv_obj_t *arc = lv_arc_create(parent);
     lv_arc_set_rotation(arc, 135);
     lv_arc_set_bg_angles(arc, 0, 270);
     lv_arc_set_value(arc, 0);
     lv_obj_clear_flag(arc, LV_OBJ_FLAG_SCROLLABLE);
-    if(padding)
+    if (padding)
         lv_obj_add_style(arc, &style_paramArcMain, LV_PART_MAIN);
     else
         lv_obj_add_style(arc, &style_paramArcMainNoPad, LV_PART_MAIN);
@@ -46,7 +46,7 @@ lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char* title,
     lv_obj_add_style(arc, &style_paramArcKnob, LV_PART_KNOB);
     lv_obj_add_flag(arc, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
     // add title
-    if(title != NULL)
+    if (title != NULL)
     {
         lv_obj_t *label = lv_label_create(arc);
         lv_label_set_text(label, title);
@@ -54,7 +54,7 @@ lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char* title,
         lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
     }
     // add unit
-    if(unit != NULL)
+    if (unit != NULL)
     {
         lv_obj_t *label = lv_label_create(arc);
         lv_label_set_text(label, unit);
@@ -93,7 +93,7 @@ lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char* title,
 }
 
 // create a standard button, with color = 1~4, 0 is the default color, size = -1 to use default size
-lv_obj_t *Gui_CreateButton(lv_obj_t *parent, int16_t w, int16_t h, const char* text, bool toggle, uint8_t color)
+lv_obj_t *Gui_CreateButton(lv_obj_t *parent, int16_t w, int16_t h, const char *text, bool toggle, uint8_t color)
 {
     lv_obj_t *button = lv_btn_create(parent);
     if (w >= 0)
@@ -106,7 +106,7 @@ lv_obj_t *Gui_CreateButton(lv_obj_t *parent, int16_t w, int16_t h, const char* t
         lv_label_set_text(label, text);
         lv_obj_center(label);
     }
-    if(toggle)
+    if (toggle)
         lv_obj_add_flag(button, LV_OBJ_FLAG_CHECKABLE);
     // set color
     switch (color)
@@ -136,10 +136,10 @@ lv_obj_t *Gui_CreateButton(lv_obj_t *parent, int16_t w, int16_t h, const char* t
     return button;
 }
 
-// create a ADSR envelope graph 
+// create a ADSR envelope graph
 lv_obj_t *Gui_CreateEnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h)
 {
-    lv_obj_t* graph = lv_obj_create(parent);
+    lv_obj_t *graph = lv_obj_create(parent);
     lv_obj_remove_style_all(graph);
     lv_obj_set_size(graph, w, h);
     lv_obj_set_style_pad_all(graph, 5, 0);
@@ -150,12 +150,12 @@ lv_obj_t *Gui_CreateEnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h)
     lv_style_set_line_width(&style_line, 8);
     lv_style_set_line_rounded(&style_line, true);
 
-    lv_obj_t* line = lv_line_create(graph);
-    lv_obj_set_style_line_color(line, lv_color_white(), 0);   // delay
+    lv_obj_t *line = lv_line_create(graph);
+    lv_obj_set_style_line_color(line, lv_color_white(), 0); // delay
     lv_obj_add_style(line, &style_line, 0);
     lv_line_set_y_invert(line, true);
     line = lv_line_create(graph);
-    lv_obj_set_style_line_color(line, color_Red, 0);    // attack
+    lv_obj_set_style_line_color(line, color_Red, 0); // attack
     lv_obj_add_style(line, &style_line, 0);
     lv_line_set_y_invert(line, true);
     line = lv_line_create(graph);
@@ -163,11 +163,11 @@ lv_obj_t *Gui_CreateEnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h)
     lv_obj_add_style(line, &style_line, 0);
     lv_line_set_y_invert(line, true);
     line = lv_line_create(graph);
-    lv_obj_set_style_line_color(line, color_Blue, 0);   // sustain
+    lv_obj_set_style_line_color(line, color_Blue, 0); // sustain
     lv_obj_add_style(line, &style_line, 0);
     lv_line_set_y_invert(line, true);
     line = lv_line_create(graph);
-    lv_obj_set_style_line_color(line, color_Green, 0);  // release
+    lv_obj_set_style_line_color(line, color_Green, 0); // release
     lv_obj_add_style(line, &style_line, 0);
     lv_line_set_y_invert(line, true);
 
@@ -179,15 +179,15 @@ void Gui_SetEnvelopeGraph(lv_obj_t *graph, lv_point_t *points, float delay, floa
 {
     int16_t w = lv_obj_get_width(graph) - 20; // minus the padding
     int16_t h = lv_obj_get_height(graph) - 10;
-    // get the total length in ms 
+    // get the total length in ms
     float total = delay + attack + decay + release;
     // add padding if the total length is less than 200ms
-    if(total < 200)
+    if (total < 200)
     {
         total = 200;
     }
     // get absolute pos
-    int16_t sustain_abs = w/5 - total/40000 * w/10; // sustain_abs is between w/5 and w/10, it gets smaller as total time increases
+    int16_t sustain_abs = w / 5 - total / 40000 * w / 10; // sustain_abs is between w/5 and w/10, it gets smaller as total time increases
     int16_t w_remain = w - sustain_abs;
     int16_t delay_abs = delay / total * w_remain;
     int16_t attack_abs = attack / total * w_remain;
@@ -199,7 +199,7 @@ void Gui_SetEnvelopeGraph(lv_obj_t *graph, lv_point_t *points, float delay, floa
     points[1] = {delay_abs, 0};
     points[2] = {0, 0};
     points[3] = {attack_abs, h};
-    points[4] = {0, h}; 
+    points[4] = {0, h};
     points[5] = {decay_abs, (int16_t)(sustain * h)};
     points[6] = {0, (int16_t)(sustain * h)};
     points[7] = {sustain_abs, (int16_t)(sustain * h)};
@@ -230,7 +230,6 @@ void Gui_SetEnvelopeGraph(lv_obj_t *graph, lv_point_t *points, float delay, floa
     lv_line_set_points(line, &points[8], 2);
     lv_obj_set_x(line, delay_abs + attack_abs + decay_abs + sustain_abs);
 }
-
 
 // create a volume meter bar, with color = 0 or 1
 lv_obj_t *Gui_CreateVolumeMeter(lv_obj_t *parent, uint8_t w, uint8_t h, uint8_t color)
@@ -309,6 +308,72 @@ void Gui_SpinboxSetValue(lv_obj_t *spinbox, int value)
     lv_label_set_text_fmt(label, "%d", value);
 }
 
+// Simple wareform chart
+lv_obj_t *Gui_CreateWaveformChart(lv_obj_t *parent, int16_t w, int16_t h, lv_chart_series_t **serMax, lv_chart_series_t **serMin, int16_t *arrMax, int16_t *arrMin)
+{
+    lv_obj_t *chart = lv_chart_create(parent);
+    lv_obj_set_size(chart, w, h);
+    lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, -32768, 32767);
+    lv_obj_set_style_bg_color(chart, lv_color_black(), 0);
+
+    /*Do not display points on the data*/
+    lv_obj_set_style_size(chart, 0, LV_PART_INDICATOR);
+    lv_obj_set_style_line_width(chart, 1, LV_PART_ITEMS);
+
+    *serMax = lv_chart_add_series(chart, lv_color_white(), LV_CHART_AXIS_PRIMARY_Y);
+    *serMin = lv_chart_add_series(chart, lv_color_white(), LV_CHART_AXIS_PRIMARY_Y);
+
+    lv_chart_set_ext_y_array(chart, *serMax, arrMax);
+    lv_chart_set_ext_y_array(chart, *serMin, arrMin);
+
+    return chart;
+}
+
+void Gui_WaveFormChartSetPoints(lv_obj_t *chart, lv_chart_series_t *serMax, lv_chart_series_t *serMin, int16_t *data, int length)
+{
+    // downsample to 1000 points
+    int16_t *arrMax = (int16_t *)lv_chart_get_y_array(chart, serMax);
+    int16_t *arrMin = (int16_t *)lv_chart_get_y_array(chart, serMin);
+    if (length < 1000)
+    {
+        lv_chart_set_point_count(chart, length);
+        for (int i = 0; i < length; i++)
+        {
+            arrMax[i] = data[i];
+            arrMin[i] = data[i];
+        }
+    }
+    else
+    {
+        lv_chart_set_point_count(chart, 1000);
+        int hop = length / 1000.0f;
+        for (int i = 0; i < 1000; i++)
+        {
+            // find max
+            int16_t max = 0;
+            for (int j = 0; j < hop; j++)
+            {
+                if (data[i * hop + j] > max)
+                {
+                    max = data[i * hop + j];
+                }
+            }
+            arrMax[i] = max;
+            // find min
+            int16_t min = 0;
+            for (int j = 0; j < hop; j++)
+            {
+                if (data[i * hop + j] < min)
+                {
+                    min = data[i * hop + j];
+                }
+            }
+            arrMin[i] = min;
+        }
+    }
+    lv_chart_refresh(chart);
+}
+
 // use 4 user flags to store custom object id
 void Gui_setObjIdFlag(lv_obj_t *&arcRef, uint8_t id)
 {
@@ -337,8 +402,8 @@ void Gui_setObjIdFlag(lv_obj_t *&arcRef, uint8_t id)
 }
 uint8_t Gui_getObjIdFlag(lv_obj_t *&arcRef)
 {
-    return ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_1) << 0) + 
-           ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_2) << 1) + 
-           ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_3) << 2) + 
+    return ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_1) << 0) +
+           ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_2) << 1) +
+           ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_3) << 2) +
            ((uint8_t)lv_obj_has_flag(arcRef, LV_OBJ_FLAG_USER_4) << 3);
 }

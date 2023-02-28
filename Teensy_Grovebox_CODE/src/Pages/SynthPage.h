@@ -15,8 +15,9 @@ class SynthPage : public Pages
 private:
     // todo: add permenant memory
     // todo: use the same menu for duplicate pages. (lfo)
-    // todo: usd id flag to determine current menu, instead of using curMenu
+    // todo: switch between home/back button on top
     // todo: bug fix: pitchbend crashes wavetable (when any one of the voice is not played before)
+    // todo: paramArc: create the "text" object in the Gui_ functions
     // *user data
     uint8_t octave = 4;
     int8_t volume = 0;
@@ -42,6 +43,12 @@ private:
     // lfo
     uint8_t lfoWaveform[2] = {0, 0};
     uint16_t lfoVal[2][2] = {{0, 50}, {0, 50}};
+    // sampler
+    uint8_t samplerRootKey = 60; // C4
+    int8_t samplerTune = 0;
+    uint16_t samplerLowCut = 0;
+    uint16_t samplerHighCut = 300;
+    uint8_t samplerLevel = 90;
 
     // *class variables
     // gslc_tsElemRef *peakBox;
@@ -58,6 +65,7 @@ private:
     lv_obj_t* menu_filter;
     lv_obj_t* menu_lfo[2];
     lv_obj_t* menu_mod;
+    lv_obj_t* menu_sampler;
     lv_obj_t* volArc;
     lv_obj_t* volText;
     lv_obj_t* volBar;
@@ -99,6 +107,13 @@ private:
     // modulation
     lv_obj_t* modMenuArea; // this object is used with column flex layout
     lv_obj_t* newModBtn;
+    // sampler
+    lv_obj_t* waveformChart;
+    lv_chart_series_t *serMax;
+    lv_chart_series_t *serMin;
+    lv_obj_t* rootKeyBtn;
+    lv_obj_t* samplerArc[4];
+    lv_obj_t* samplerText[4];
 
     // *lvgl gui callbacks
     static void onVelocityBtnPressed(lv_event_t* e);
@@ -128,6 +143,10 @@ private:
     static void onModSourceChange(lv_event_t *e);
     static void onModTargetChange(lv_event_t *e);
     static void onModAmountChange(lv_event_t *e);
+    // sampler
+    static void onSamplerWaveformChartPressed(lv_event_t *e);
+    static void onSamplerArcPressed(lv_event_t *e);
+    static void onSamplerRootKeyBtnPressed(lv_event_t *e);
 
     // *helper functions
     void configureEncoders();

@@ -56,6 +56,10 @@ void Gui_SpinboxSetValue(lv_obj_t *spinbox, int value);
 PROGMEM lv_obj_t *Gui_CreateEnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h);
 void Gui_SetEnvelopeGraph(lv_obj_t *graph, lv_point_t *points, float delay, float attack, float decay, float sustain, float release);
 
+// Simple wareform chart
+PROGMEM lv_obj_t *Gui_CreateWaveformChart(lv_obj_t *parent, int16_t w, int16_t h, lv_chart_series_t **serMax, lv_chart_series_t **serMin, int16_t *arrMax, int16_t *arrMin);
+void Gui_WaveFormChartSetPoints(lv_obj_t *chart, lv_chart_series_t *serMax, lv_chart_series_t *serMin, int16_t *data, int length);
+
 PROGMEM void Gui_InitStyles();
 
 // helper functions

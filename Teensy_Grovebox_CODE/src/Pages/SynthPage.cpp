@@ -509,6 +509,79 @@ void SynthPage::onModAmountChange(lv_event_t *e)
     AudioSynth.setModulationAmount(id, float(amount) / 100.0f);
 }
 
+void SynthPage::onSamplerWaveformChartPressed(lv_event_t *e)
+{
+    PageManager.switchPage(PG_SAMPLEEDITOR);
+}
+
+void SynthPage::onSamplerArcPressed(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    lv_obj_t *arc = lv_event_get_target(e);
+    int16_t value = lv_arc_get_value(arc);
+    uint8_t arcId = Gui_getObjIdFlag(arc);
+    float freq;
+    int decimal;
+
+    switch (arcId)
+    {
+    case 0: // tune
+        enc[arcId]->setCurrentReading(value + 100);
+        instance->samplerTune = value;
+        // todo: not implemented
+        // AudioSynth.setClipTune(); 
+        lv_label_set_text_fmt(instance->samplerText[arcId], "%d", value);
+        break;
+    case 1: // low cut
+        freq = pow10f(value / 100.0f) * 20.0f;
+        AudioSynth.setClipLowCut(freq);
+        if (freq >= 1000)
+        {
+            freq /= 1000.0f;
+            lv_label_set_text(lv_obj_get_child(arc, 1), "kHz");
+        }
+        else
+        {
+            lv_label_set_text(lv_obj_get_child(arc, 1), "Hz");
+        }
+        if (freq < 100)
+            decimal = 2;
+        else
+            decimal = 1;
+        lv_label_set_text_fmt(instance->samplerText[arcId], "%.*f", decimal, freq);
+        break;
+    case 2: // high cut
+        freq = pow10f(value / 100.0f) * 20.0f;
+        AudioSynth.setClipHighCut(freq);
+        if (freq >= 1000)
+        {
+            freq /= 1000.0f;
+            lv_label_set_text(lv_obj_get_child(arc, 1), "kHz");
+        }
+        else
+        {
+            lv_label_set_text(lv_obj_get_child(arc, 1), "Hz");
+        }
+        if (freq < 100)
+            decimal = 2;
+        else
+            decimal = 1;
+        lv_label_set_text_fmt(instance->samplerText[arcId], "%.*f", decimal, freq);
+        break;
+    case 3: // Level
+        enc[arcId]->setCurrentReading(value);
+        instance->samplerLevel = value;
+        AudioSynth.setClipLevel(value);
+        lv_label_set_text_fmt(instance->samplerText[arcId], "%d", value);
+        break;
+    }
+}
+
+void SynthPage::onSamplerRootKeyBtnPressed(lv_event_t *e)
+{
+    
+}
+
 void SynthPage::onBtnPressed(uint8_t pin)
 {
     int noteNum;
@@ -634,6 +707,19 @@ void SynthPage::onEncTurned(uint8_t id, int value)
         lv_arc_set_value(lfoArc[i][id], value);
         lv_event_send(lfoArc[i][id], LV_EVENT_VALUE_CHANGED, NULL);
     }
+    else if (curMenu == menu_sampler)
+    {
+        switch (id)
+        {
+        case 0: // tune
+            lv_arc_set_value(samplerArc[id], value - 100);
+            break;
+        default:
+            lv_arc_set_value(samplerArc[id], value);
+            break;
+        }
+        lv_event_send(samplerArc[id], LV_EVENT_VALUE_CHANGED, NULL);
+    }
 }
 
 void SynthPage::onJoyUpdate(int joy_x, int joy_y)
@@ -670,6 +756,8 @@ void SynthPage::configurePage()
     AudioFX.reverb.setWithMem(&reverbMem);
     // set voice mode for AudioSynth
     AudioSynth.setVoiceMode(VOICE_MODE_SYNTH);
+    // refresh waveformChart for sampler
+    lv_chart_refresh(waveformChart);
 }
 
 // configure enocders for according to current menu page
@@ -744,6 +832,17 @@ void SynthPage::configureEncoders()
         enc[0]->changePrecision(350, lfoVal[id][0], false);
         // level
         enc[1]->changePrecision(100, lfoVal[id][1], false);
+    }
+    else if (curMenu == menu_sampler)
+    {
+        // tune
+        enc[0]->changePrecision(200, samplerTune + 100, false);
+        // low cut
+        enc[1]->changePrecision(300, samplerLowCut, false);
+        // high cut
+        enc[2]->changePrecision(300, samplerHighCut, false);
+        // level
+        enc[3]->changePrecision(100, samplerLevel, false);
     }
 }
 
@@ -1024,6 +1123,54 @@ void SynthPage::init()
     // "new modulation" btn
     createNewModBtn(modMenuArea);
 
+    // * MENU SAMPLER-------------------------------------------------------------------
+    menu_sampler = lv_menu_page_create(menu, "Sampler");
+    menu_area = createItemMenuArea(menu_sampler);
+    // *sample waveform viewer
+    waveformChart = Gui_CreateWaveformChart(menu_area, 305, 60, &serMax, &serMin, samplerWaveformPointsMax, samplerWaveformPointsMin);
+    lv_chart_set_point_count(waveformChart, 1000);
+    lv_obj_set_style_pad_all(waveformChart, 3, 0);
+    lv_obj_add_event_cb(waveformChart, onSamplerWaveformChartPressed, LV_EVENT_PRESSED, this);
+    // root key selector
+    label = lv_label_create(menu_area);
+    lv_label_set_text(label, "Root Key: ");
+    lv_obj_align(label, LV_ALIGN_LEFT_MID, 5, -10);
+    rootKeyBtn = Gui_CreateButton(menu_area, -1, 25, "C4", true);
+    lv_obj_align(rootKeyBtn, LV_ALIGN_LEFT_MID, 80, -10);
+    // tune arc
+    samplerArc[0] = Gui_CreateParamArc(menu_area, 1, "Tune", "cent", false);
+    lv_arc_set_range(samplerArc[0], -100, 100);
+    lv_obj_align(samplerArc[0], LV_ALIGN_BOTTOM_MID, -120, 0);
+    Gui_setObjIdFlag(samplerArc[0], 0);
+    lv_obj_add_event_cb(samplerArc[0], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
+    samplerText[0] = lv_label_create(samplerArc[0]);
+    lv_obj_center(samplerText[0]);
+    // low pass filter arc
+    samplerArc[1] = Gui_CreateParamArc(menu_area, 2, "Low Cut", "Hz", false);
+    lv_arc_set_range(samplerArc[1], 0, 300);
+    lv_obj_align(samplerArc[1], LV_ALIGN_BOTTOM_MID, -40, 0);
+    Gui_setObjIdFlag(samplerArc[1], 1);
+    lv_obj_add_event_cb(samplerArc[1], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
+    samplerText[1] = lv_label_create(samplerArc[1]);
+    lv_obj_center(samplerText[1]);
+    // high pass filter arc
+    samplerArc[2] = Gui_CreateParamArc(menu_area, 3, "High Cut", "Hz", false);
+    lv_arc_set_range(samplerArc[2], 0, 300);
+    lv_obj_align(samplerArc[2], LV_ALIGN_BOTTOM_MID, 40, 0);
+    Gui_setObjIdFlag(samplerArc[2], 2);
+    lv_obj_add_event_cb(samplerArc[2], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
+    samplerText[2] = lv_label_create(samplerArc[2]);
+    lv_obj_center(samplerText[2]);
+    // level arc
+    samplerArc[3] = Gui_CreateParamArc(menu_area, 4, "Level", "%", false);
+    lv_arc_set_range(samplerArc[3], 0, 100);
+    lv_obj_align(samplerArc[3], LV_ALIGN_BOTTOM_MID, 120, 0);
+    Gui_setObjIdFlag(samplerArc[3], 3);
+    lv_obj_add_event_cb(samplerArc[3], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
+    samplerText[3] = lv_label_create(samplerArc[3]);
+    lv_obj_center(samplerText[3]);
+    
+
     // *MENU MAIN-------------------------------------------------------------------
     menu_main = lv_menu_page_create(menu, NULL);
     lv_menu_set_page(menu, menu_main);
@@ -1087,6 +1234,11 @@ void SynthPage::init()
     lv_obj_align(peakLed, LV_ALIGN_RIGHT_MID, 15, 0);
 
     // *ITEM AREA
+    /*
+        osc1  | noise  | ampenv | lfo1
+        osc2  | filter | env1   | lfo2
+      sampler |  mod   | env2   |
+    */
     lv_obj_t *itemArea = lv_obj_create(menu_main);
     lv_obj_remove_style_all(itemArea);
     lv_obj_set_size(itemArea, 320, 105);
@@ -1108,11 +1260,11 @@ void SynthPage::init()
     oscWaveItemImg[1] = lv_img_create(btn);
     lv_obj_set_align(oscWaveItemImg[1], LV_ALIGN_LEFT_MID);
     lv_menu_set_load_page_event(menu, btn, menu_osc[1]);
-    // noise button
-    btn = createItemBtn(col, "Noise");
+    // sampler button
+    btn = createItemBtn(col, "Sampler");
     lv_obj_set_y(btn, 70);
     lv_obj_center(lv_obj_get_child(btn, 0));
-    lv_menu_set_load_page_event(menu, btn, menu_noise);
+    lv_menu_set_load_page_event(menu, btn, menu_sampler);
 
     // *column 2
     col = lv_obj_create(itemArea);
@@ -1120,22 +1272,20 @@ void SynthPage::init()
     lv_obj_set_size(col, 80, 105);
     lv_obj_set_style_pad_all(col, 2, 0);
     lv_obj_set_x(col, 80);
+    // noise button
+    btn = createItemBtn(col, "Noise");
+    lv_obj_center(lv_obj_get_child(btn, 0));
+    lv_menu_set_load_page_event(menu, btn, menu_noise);
     // filter button
     btn = createItemBtn(col, "Filter");
+    lv_obj_set_y(btn, 35);
     lv_obj_center(lv_obj_get_child(btn, 0));
     lv_menu_set_load_page_event(menu, btn, menu_filter);
-    // lfo1 button
-    btn = createItemBtn(col, "LFO 1");
-    lv_obj_set_y(btn, 35);
-    lfoWaveItemImg[0] = lv_img_create(btn);
-    lv_obj_set_align(lfoWaveItemImg[0], LV_ALIGN_LEFT_MID);
-    lv_menu_set_load_page_event(menu, btn, menu_lfo[0]);
-    // lfo2 button
-    btn = createItemBtn(col, "LFO2");
+    // mod button
+    btn = createItemBtn(col, "MOD");
     lv_obj_set_y(btn, 70);
-    lfoWaveItemImg[1] = lv_img_create(btn);
-    lv_obj_set_align(lfoWaveItemImg[1], LV_ALIGN_LEFT_MID);
-    lv_menu_set_load_page_event(menu, btn, menu_lfo[1]);
+    lv_obj_center(lv_obj_get_child(btn, 0));
+    lv_menu_set_load_page_event(menu, btn, menu_mod);
 
     // *column 3
     col = lv_obj_create(itemArea);
@@ -1164,10 +1314,18 @@ void SynthPage::init()
     lv_obj_set_size(col, 80, 105);
     lv_obj_set_style_pad_all(col, 2, 0);
     lv_obj_set_x(col, 240);
-    // mod button
-    btn = createItemBtn(col, "MOD");
-    lv_obj_center(lv_obj_get_child(btn, 0));
-    lv_menu_set_load_page_event(menu, btn, menu_mod);
+    // lfo1 button
+    btn = createItemBtn(col, "LFO 1");
+    lv_obj_set_y(btn, 0);
+    lfoWaveItemImg[0] = lv_img_create(btn);
+    lv_obj_set_align(lfoWaveItemImg[0], LV_ALIGN_LEFT_MID);
+    lv_menu_set_load_page_event(menu, btn, menu_lfo[0]);
+    // lfo2 button
+    btn = createItemBtn(col, "LFO2");
+    lv_obj_set_y(btn, 35);
+    lfoWaveItemImg[1] = lv_img_create(btn);
+    lv_obj_set_align(lfoWaveItemImg[1], LV_ALIGN_LEFT_MID);
+    lv_menu_set_load_page_event(menu, btn, menu_lfo[1]);
 
     // *At last, add menu change callback
     lv_obj_add_event_cb(menu, onMenuPageChange, LV_EVENT_VALUE_CHANGED, this);
