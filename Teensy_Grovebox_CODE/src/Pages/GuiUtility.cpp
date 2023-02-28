@@ -45,6 +45,9 @@ lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char *title,
     lv_obj_add_style(arc, &style_paramArcInd, LV_PART_INDICATOR);
     lv_obj_add_style(arc, &style_paramArcKnob, LV_PART_KNOB);
     lv_obj_add_flag(arc, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+    // add value text
+    lv_obj_t *label = lv_label_create(arc);
+    lv_obj_center(label);
     // add title
     if (title != NULL)
     {
@@ -90,6 +93,21 @@ lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color, const char *title,
         break;
     }
     return arc;
+}
+
+lv_obj_t *Gui_ParamArcGetValueText(lv_obj_t *arc)
+{
+    return lv_obj_get_child(arc, 0);
+}
+
+lv_obj_t *Gui_ParamArcGetTitleText(lv_obj_t *arc)
+{
+    return lv_obj_get_child(arc, 1);
+}
+
+lv_obj_t *Gui_ParamArcGetUnitText(lv_obj_t *arc)
+{
+    return lv_obj_get_child(arc, 2);
 }
 
 // create a standard button, with color = 1~4, 0 is the default color, size = -1 to use default size

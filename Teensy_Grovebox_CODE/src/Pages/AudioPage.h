@@ -38,27 +38,22 @@ private:
     lv_obj_t* tabView;
     // output tab
     lv_obj_t *OutArc[2];
-    lv_obj_t *OutVolText[2];
     lv_obj_t *OutBar[2][2];
     lv_obj_t *OutPeakLed[2][2];
     lv_obj_t *hpArc;
     lv_obj_t *hpModeLabel;
-    lv_obj_t *hpVolText;
     lv_obj_t *OutPflBtn;
     // input tab
     lv_obj_t *InArc[2];
-    lv_obj_t *InVolText[2];
     lv_obj_t *InBar[2][2];
     lv_obj_t *InPeakLed[2][2];
     lv_obj_t *gainArc;
-    lv_obj_t *gainText;
     lv_obj_t *lineBtn;
     lv_obj_t *micBtn;
     lv_obj_t *InPflBtn;
     // post-dsp tab
     // output mixer
     lv_obj_t *mixerArc[4];
-    lv_obj_t *mixerVolText[4];
     lv_obj_t *mixerBar[4][2];
     lv_obj_t *mixerPeakLed[4][2];
     lv_obj_t *mixerWindow;
@@ -73,7 +68,7 @@ private:
     static void onMixerClose(lv_event_t *e);
 
     // helper functions
-    PROGMEM void createTrackGui(lv_obj_t *&parent, lv_obj_t *&arcRef, lv_obj_t *&volTextRef, lv_obj_t **barArrRef, lv_obj_t **peakArrRef, uint8_t color, const char *name);
+    PROGMEM void createTrackGui(lv_obj_t *&parent, lv_obj_t *&arcRef, lv_obj_t **barArrRef, lv_obj_t **peakArrRef, uint8_t color, const char *name);
     void updateHpVol(uint8_t newVal);
     void updateOutVol(MasterTracks track, uint8_t newVal);
     void setPFL(bool flag);

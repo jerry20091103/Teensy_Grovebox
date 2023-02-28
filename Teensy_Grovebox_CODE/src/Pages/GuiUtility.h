@@ -36,6 +36,9 @@ LV_IMG_DECLARE(s_r_wave);
 // * Object Global styles and object creator
 // Paramsters arc
 PROGMEM lv_obj_t *Gui_CreateParamArc(lv_obj_t *parent, uint8_t color = 0, const char* title = NULL, const char* unit = NULL, bool padding = true);
+lv_obj_t *Gui_ParamArcGetValueText(lv_obj_t *arc);
+lv_obj_t *Gui_ParamArcGetTitleText(lv_obj_t *arc);
+lv_obj_t *Gui_ParamArcGetUnitText(lv_obj_t *arc);
 
 // Button
 PROGMEM lv_obj_t *Gui_CreateButton(lv_obj_t *parent, int16_t w, int16_t h, const char* text = NULL, bool toggle = false, uint8_t color = 0);

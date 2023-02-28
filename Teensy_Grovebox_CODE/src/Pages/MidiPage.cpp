@@ -196,7 +196,7 @@ void MidiPage::onEncTurned(uint8_t id, int value)
     if (encConfigure[id])
     {
         curCC[id] = value + CC_MIN;
-        lv_label_set_text_fmt(ccText[id], "%d", curCC[id]);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(ccArc[id]), "%d", curCC[id]);
     }
     else
     {
@@ -250,8 +250,6 @@ void MidiPage::init()
         lv_arc_set_range(ccArc[i], 0, 127);
         lv_obj_set_x(ccArc[i], lv_pct(25 * i));
         lv_obj_add_event_cb(ccArc[i], onArcValueChanged, LV_EVENT_VALUE_CHANGED, this);
-        ccText[i] = lv_label_create(ccArc[i]);
-        lv_obj_center(ccText[i]);
     }
     // button group
     lv_obj_t *btnGroup = lv_obj_create(screen);
@@ -385,7 +383,7 @@ void MidiPage::setUserData()
     for (uint8_t i = 0; i < 4; i++)
     {
         lv_arc_set_value(ccArc[i], storeCC[curCC[i] - CC_MIN]);
-        lv_label_set_text_fmt(ccText[i], "%d", curCC[i]);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(ccArc[i]), "%d", curCC[i]);
     }
 
     Gui_SpinboxSetValue(octaveSpinbox, octave);

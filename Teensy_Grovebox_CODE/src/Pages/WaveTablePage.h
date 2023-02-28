@@ -28,7 +28,6 @@ private:
     // *lvgl object refs
     lv_obj_t* sf2SelectDropdown;
     lv_obj_t* volArc;
-    lv_obj_t* volText;
     lv_obj_t* volBar;
     lv_obj_t* peakLed;
     lv_obj_t* octaveSpinbox;

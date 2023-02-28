@@ -60,7 +60,7 @@ void SynthPage::onVolArcPressed(lv_event_t *e)
         enc[3]->setCurrentReading(value + VOL_OFFSET);
     instance->volume = value;
     AudioSynth.setMasterVol(value);
-    lv_label_set_text_fmt(instance->volText, "%d", value);
+    lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
 }
 
 // re-configure encoders when menu page has changed
@@ -166,7 +166,7 @@ void SynthPage::onOscArcPressed(lv_event_t *e)
             enc[0]->setCurrentReading(value);
         instance->oscPwm[menuId] = value;
         AudioSynth.setOscPwm(menuId, value);
-        lv_label_set_text_fmt(instance->oscPwmText, "%d", value);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     case 1:
         // detune
@@ -174,7 +174,7 @@ void SynthPage::onOscArcPressed(lv_event_t *e)
             enc[1]->setCurrentReading(value + 100);
         instance->oscDetune[menuId] = value;
         AudioSynth.setOscDetune(menuId, value * 0.01f);
-        lv_label_set_text_fmt(instance->oscDetuneText, "%d", value);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     case 2:
         // level
@@ -182,7 +182,7 @@ void SynthPage::onOscArcPressed(lv_event_t *e)
             enc[2]->setCurrentReading(value);
         instance->oscLevel[menuId] = value;
         AudioSynth.setOscLevel(menuId, value);
-        lv_label_set_text_fmt(instance->oscLevelText, "%d", value);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     }
 }
@@ -254,7 +254,7 @@ void SynthPage::onNoiseArcPressed(lv_event_t *e)
     enc[0]->setCurrentReading(value);
     instance->noiseLevel = value;
     AudioSynth.setNoiseLevel(value);
-    lv_label_set_text_fmt(instance->noiseLevelText, "%d", value);
+    lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
 }
 
 void SynthPage::onEnvArcPressed(lv_event_t *e)
@@ -346,11 +346,11 @@ void SynthPage::onEnvArcPressed(lv_event_t *e)
             decimal = 1;
         else
             decimal = 0;
-        lv_label_set_text_fmt(instance->envText[arcId], "%.*f", decimal, envParam);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%.*f", decimal, envParam);
     }
     else // sustain
     {
-        lv_label_set_text_fmt(instance->envText[arcId], "%d", curVal[arcId]);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", curVal[arcId]);
     }
 }
 
@@ -372,29 +372,29 @@ void SynthPage::onFilterArcPressed(lv_event_t *e)
         if (freq >= 1000)
         {
             freq /= 1000.0f;
-            lv_label_set_text(lv_obj_get_child(arc, 1), "kHz");
+            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "kHz");
         }
         else
         {
-            lv_label_set_text(lv_obj_get_child(arc, 1), "Hz");
+            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "Hz");
         }
         if (freq < 100)
             decimal = 2;
         else
             decimal = 1;
-        lv_label_set_text_fmt(instance->filterText[flag], "%.*f", decimal, freq);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%.*f", decimal, freq);
         break;
     case 1: // resonance
         AudioSynth.setLadderResonance(value / 100.0f);
-        lv_label_set_text_fmt(instance->filterText[flag], "%d", value);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     case 2: // drive
         AudioSynth.setLadderDrive(value / 100.0f);
-        lv_label_set_text_fmt(instance->filterText[flag], "%d", value);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     case 3: // passband gain
         AudioSynth.setLadderPassbandGain(value / 100.0f);
-        lv_label_set_text_fmt(instance->filterText[flag], "%d", value);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     }
 }
@@ -445,11 +445,11 @@ void SynthPage::onLfoArcPressed(lv_event_t *e)
             decimal = 2;
         else
             decimal = 1;
-        lv_label_set_text_fmt(instance->lfoText[id][flag], "%.*f", decimal, freq);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%.*f", decimal, freq);
         break;
     case 1: // level
         AudioSynth.setLfoLevel(id, value / 100.0f);
-        lv_label_set_text_fmt(instance->lfoText[id][flag], "%d", value);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     }
 }
@@ -530,7 +530,7 @@ void SynthPage::onSamplerArcPressed(lv_event_t *e)
         instance->samplerTune = value;
         // todo: not implemented
         // AudioSynth.setClipTune(); 
-        lv_label_set_text_fmt(instance->samplerText[arcId], "%d", value);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     case 1: // low cut
         freq = pow10f(value / 100.0f) * 20.0f;
@@ -538,17 +538,17 @@ void SynthPage::onSamplerArcPressed(lv_event_t *e)
         if (freq >= 1000)
         {
             freq /= 1000.0f;
-            lv_label_set_text(lv_obj_get_child(arc, 1), "kHz");
+            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "kHz");
         }
         else
         {
-            lv_label_set_text(lv_obj_get_child(arc, 1), "Hz");
+            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "Hz");
         }
         if (freq < 100)
             decimal = 2;
         else
             decimal = 1;
-        lv_label_set_text_fmt(instance->samplerText[arcId], "%.*f", decimal, freq);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%.*f", decimal, freq);
         break;
     case 2: // high cut
         freq = pow10f(value / 100.0f) * 20.0f;
@@ -556,23 +556,23 @@ void SynthPage::onSamplerArcPressed(lv_event_t *e)
         if (freq >= 1000)
         {
             freq /= 1000.0f;
-            lv_label_set_text(lv_obj_get_child(arc, 1), "kHz");
+            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "kHz");
         }
         else
         {
-            lv_label_set_text(lv_obj_get_child(arc, 1), "Hz");
+            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "Hz");
         }
         if (freq < 100)
             decimal = 2;
         else
             decimal = 1;
-        lv_label_set_text_fmt(instance->samplerText[arcId], "%.*f", decimal, freq);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%.*f", decimal, freq);
         break;
     case 3: // Level
         enc[arcId]->setCurrentReading(value);
         instance->samplerLevel = value;
         AudioSynth.setClipLevel(value);
-        lv_label_set_text_fmt(instance->samplerText[arcId], "%d", value);
+        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     }
 }
@@ -869,7 +869,7 @@ void SynthPage::setUserData()
     // noise menu
     lv_arc_set_value(noiseArc, noiseLevel);
     AudioSynth.setNoiseLevel(noiseLevel);
-    lv_label_set_text_fmt(noiseLevelText, "%d", noiseLevel);
+    lv_label_set_text_fmt(Gui_ParamArcGetValueText(noiseArc), "%d", noiseLevel);
 
     // filter menu
     for (uint8_t id = 0; id < 4; id++)
@@ -975,9 +975,6 @@ void SynthPage::init()
     oscArc[0] = Gui_CreateParamArc(oscMenuArea, 1, "PWM", "%", false);
     Gui_setObjIdFlag(oscArc[0], 0);
     lv_obj_align(oscArc[0], LV_ALIGN_TOP_LEFT, 0, 100);
-    // pwm text
-    oscPwmText = lv_label_create(oscArc[0]);
-    lv_obj_center(oscPwmText);
     // set value
     lv_arc_set_range(oscArc[0], 0, 100);
     lv_obj_add_event_cb(oscArc[0], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
@@ -985,9 +982,6 @@ void SynthPage::init()
     oscArc[1] = Gui_CreateParamArc(oscMenuArea, 2, "Detune", "cent", false);
     Gui_setObjIdFlag(oscArc[1], 1);
     lv_obj_align(oscArc[1], LV_ALIGN_TOP_LEFT, 80, 100);
-    // detune text
-    oscDetuneText = lv_label_create(oscArc[1]);
-    lv_obj_center(oscDetuneText);
     // set value
     lv_arc_set_range(oscArc[1], -100, 100);
     lv_obj_add_event_cb(oscArc[1], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
@@ -995,9 +989,6 @@ void SynthPage::init()
     oscArc[2] = Gui_CreateParamArc(oscMenuArea, 3, "Level", "%", false);
     Gui_setObjIdFlag(oscArc[2], 2);
     lv_obj_align(oscArc[2], LV_ALIGN_TOP_LEFT, 160, 100);
-    // level text
-    oscLevelText = lv_label_create(oscArc[2]);
-    lv_obj_center(oscLevelText);
     // set value
     lv_arc_set_range(oscArc[2], 0, 100);
     lv_obj_add_event_cb(oscArc[2], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
@@ -1008,9 +999,6 @@ void SynthPage::init()
     // *level arc
     noiseArc = Gui_CreateParamArc(menu_area, 1, "Level", "%", false);
     lv_obj_align(noiseArc, LV_ALIGN_TOP_LEFT, 5, 20);
-    // level text
-    noiseLevelText = lv_label_create(noiseArc);
-    lv_obj_center(noiseLevelText);
     // set value
     lv_arc_set_range(noiseArc, 0, 100);
     lv_obj_add_event_cb(noiseArc, onNoiseArcPressed, LV_EVENT_VALUE_CHANGED, this);
@@ -1043,8 +1031,6 @@ void SynthPage::init()
         else // everything else
             lv_arc_set_range(envArc[arcId], 0, ENV_VAL_MAX);
         lv_obj_add_event_cb(envArc[arcId], onEnvArcPressed, LV_EVENT_VALUE_CHANGED, this);
-        envText[arcId] = lv_label_create(envArc[arcId]);
-        lv_obj_center(envText[arcId]);
     }
 
     // *MENU FILTER-----------------------------------------------------------------
@@ -1070,8 +1056,6 @@ void SynthPage::init()
         lv_obj_align(filterArc[i], LV_ALIGN_BOTTOM_MID, -120 + 80 * i, -80);
         Gui_setObjIdFlag(filterArc[i], i);
         lv_obj_add_event_cb(filterArc[i], onFilterArcPressed, LV_EVENT_VALUE_CHANGED, this);
-        filterText[i] = lv_label_create(filterArc[i]);
-        lv_obj_center(filterText[i]);
     }
 
     // *MENU LFO1 AND LFO2-----------------------------------------------------------------
@@ -1102,16 +1086,12 @@ void SynthPage::init()
         lv_obj_align(lfoArc[id][0], LV_ALIGN_BOTTOM_MID, -120, -40);
         Gui_setObjIdFlag(lfoArc[id][0], 0);
         lv_obj_add_event_cb(lfoArc[id][0], onLfoArcPressed, LV_EVENT_VALUE_CHANGED, this);
-        lfoText[id][0] = lv_label_create(lfoArc[id][0]);
-        lv_obj_center(lfoText[id][0]);
         // *level arc
         lfoArc[id][1] = Gui_CreateParamArc(menu_area, 2, "Level", "%", false);
         lv_arc_set_range(lfoArc[id][1], 0, 100);
         lv_obj_align(lfoArc[id][1], LV_ALIGN_BOTTOM_MID, -40, -40);
         Gui_setObjIdFlag(lfoArc[id][1], 1);
         lv_obj_add_event_cb(lfoArc[id][1], onLfoArcPressed, LV_EVENT_VALUE_CHANGED, this);
-        lfoText[id][1] = lv_label_create(lfoArc[id][1]);
-        lv_obj_center(lfoText[id][1]);
     }
 
     // *MENU MODULATION-----------------------------------------------------------------
@@ -1143,33 +1123,24 @@ void SynthPage::init()
     lv_obj_align(samplerArc[0], LV_ALIGN_BOTTOM_MID, -120, 0);
     Gui_setObjIdFlag(samplerArc[0], 0);
     lv_obj_add_event_cb(samplerArc[0], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
-    samplerText[0] = lv_label_create(samplerArc[0]);
-    lv_obj_center(samplerText[0]);
     // low pass filter arc
     samplerArc[1] = Gui_CreateParamArc(menu_area, 2, "Low Cut", "Hz", false);
     lv_arc_set_range(samplerArc[1], 0, 300);
     lv_obj_align(samplerArc[1], LV_ALIGN_BOTTOM_MID, -40, 0);
     Gui_setObjIdFlag(samplerArc[1], 1);
     lv_obj_add_event_cb(samplerArc[1], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
-    samplerText[1] = lv_label_create(samplerArc[1]);
-    lv_obj_center(samplerText[1]);
     // high pass filter arc
     samplerArc[2] = Gui_CreateParamArc(menu_area, 3, "High Cut", "Hz", false);
     lv_arc_set_range(samplerArc[2], 0, 300);
     lv_obj_align(samplerArc[2], LV_ALIGN_BOTTOM_MID, 40, 0);
     Gui_setObjIdFlag(samplerArc[2], 2);
     lv_obj_add_event_cb(samplerArc[2], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
-    samplerText[2] = lv_label_create(samplerArc[2]);
-    lv_obj_center(samplerText[2]);
     // level arc
     samplerArc[3] = Gui_CreateParamArc(menu_area, 4, "Level", "%", false);
     lv_arc_set_range(samplerArc[3], 0, 100);
     lv_obj_align(samplerArc[3], LV_ALIGN_BOTTOM_MID, 120, 0);
     Gui_setObjIdFlag(samplerArc[3], 3);
     lv_obj_add_event_cb(samplerArc[3], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
-    samplerText[3] = lv_label_create(samplerArc[3]);
-    lv_obj_center(samplerText[3]);
-    
 
     // *MENU MAIN-------------------------------------------------------------------
     menu_main = lv_menu_page_create(menu, NULL);
@@ -1189,9 +1160,6 @@ void SynthPage::init()
     // *volume arc
     volArc = Gui_CreateParamArc(selectArea, 4, "Gain", "dB", false);
     lv_obj_align(volArc, LV_ALIGN_TOP_RIGHT, -5, 20);
-    // gain text
-    volText = lv_label_create(volArc);
-    lv_obj_center(volText);
     // set value
     lv_arc_set_range(volArc, -15, 15);
     lv_obj_add_event_cb(volArc, onVolArcPressed, LV_EVENT_VALUE_CHANGED, this);

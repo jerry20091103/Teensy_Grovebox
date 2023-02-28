@@ -17,7 +17,6 @@ private:
     const uint8_t recordMsg[4] = {0x7f, 0x01, 0x06, 0x07};
 
     // lvgl object refs
-    lv_obj_t *ccText[4];
     lv_obj_t *ccArc[4];
     lv_obj_t *octaveSpinbox;
     lv_obj_t *channelSpinbox;

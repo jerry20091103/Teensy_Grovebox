@@ -258,9 +258,6 @@ void WaveTablePage::init()
     // *volume arc
     volArc = Gui_CreateParamArc(selectArea, 4, "Gain", "dB", false);
     lv_obj_align(volArc, LV_ALIGN_TOP_RIGHT, -5, 20);
-    // gain text
-    volText = lv_label_create(volArc);
-    lv_obj_center(volText);
     // set value
     lv_arc_set_range(volArc, -15, 15);
     lv_obj_add_event_cb(volArc, onVolArcPressed, LV_EVENT_VALUE_CHANGED, this);
@@ -307,5 +304,5 @@ void WaveTablePage::setVolume(int8_t value)
 {
     volume = value;
     AudioSynth.setMasterVol(value);
-    lv_label_set_text_fmt(volText, "%d", value);
+    lv_label_set_text_fmt(Gui_ParamArcGetValueText(volArc), "%d", value);
 }

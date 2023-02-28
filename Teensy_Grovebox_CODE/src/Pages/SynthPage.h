@@ -67,7 +67,6 @@ private:
     lv_obj_t* menu_mod;
     lv_obj_t* menu_sampler;
     lv_obj_t* volArc;
-    lv_obj_t* volText;
     lv_obj_t* volBar;
     lv_obj_t* peakLed;
     lv_obj_t* octaveSpinbox;
@@ -83,27 +82,20 @@ private:
     lv_obj_t* oscOctaveSpinbox;
     lv_obj_t* oscSemiSpinbox;
     lv_obj_t* oscArc[3];
-    lv_obj_t* oscPwmText;
-    lv_obj_t* oscDetuneText;
-    lv_obj_t* oscLevelText;
     // noise
     lv_obj_t *noiseArc;
-    lv_obj_t *noiseLevelText;
     // ampEnv, env1 and env2 share the same objects
     lv_obj_t* envMenuArea;
     lv_obj_t* envGraph;
     lv_point_t envPoints[10];
     lv_obj_t* envArc[5];
-    lv_obj_t* envText[5];
     // filter
     lv_obj_t* filterArc[4];
-    lv_obj_t* filterText[4];
     // lfo
     lv_obj_t* lfoWaveDropdown[2];
     lv_obj_t* lfoWaveImg[2];
     lv_obj_t* lfoWaveItemImg[2];
     lv_obj_t* lfoArc[2][2];
-    lv_obj_t* lfoText[2][2];
     // modulation
     lv_obj_t* modMenuArea; // this object is used with column flex layout
     lv_obj_t* newModBtn;
@@ -113,7 +105,6 @@ private:
     lv_chart_series_t *serMin;
     lv_obj_t* rootKeyBtn;
     lv_obj_t* samplerArc[4];
-    lv_obj_t* samplerText[4];
 
     // *lvgl gui callbacks
     static void onVelocityBtnPressed(lv_event_t* e);
