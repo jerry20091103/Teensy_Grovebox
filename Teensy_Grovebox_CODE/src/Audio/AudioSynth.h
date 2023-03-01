@@ -153,6 +153,7 @@ public:
     void setClipLowCut(float freq);
     void setClipHighCut(float freq);
     void setClipLevel(uint8_t amount);
+    void setClipBaseNote(uint8_t note);
     // todo: pitchoffset (pitchbend...) for sampler
 
 

@@ -529,7 +529,7 @@ void SynthPage::onSamplerArcPressed(lv_event_t *e)
         enc[arcId]->setCurrentReading(value + 100);
         instance->samplerTune = value;
         // todo: not implemented
-        // AudioSynth.setClipTune(); 
+        // AudioSynth.setClipTune();
         lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     case 1: // low cut
@@ -579,7 +579,31 @@ void SynthPage::onSamplerArcPressed(lv_event_t *e)
 
 void SynthPage::onSamplerRootKeyBtnPressed(lv_event_t *e)
 {
-    
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    if (instance->seletctingRootKey)
+        return;
+    instance->seletctingRootKey = true;
+    // show message box
+    lv_obj_t *msgbox = lv_msgbox_create(NULL, "Root Key: ", "Press a piano key to select root key.", instance->setRootKeyBtns, false);
+    lv_obj_center(msgbox);
+    lv_obj_set_style_bg_color(msgbox, lv_color_black(), 0);
+    lv_obj_add_event_cb(msgbox, onSamplerRootKeySelectSetPressed, LV_EVENT_VALUE_CHANGED, instance);
+    instance->rootKeySelectTitleText = lv_msgbox_get_title(msgbox);
+    lv_label_set_text_fmt(instance->rootKeySelectTitleText, "Root Key: %s", noteNumToNoteName(instance->samplerRootKey).c_str());
+    lv_obj_set_style_text_font(lv_msgbox_get_title(msgbox), font_large, 0);
+}
+
+void SynthPage::onSamplerRootKeySelectSetPressed(lv_event_t *e)
+{
+    SynthPage *instance = (SynthPage *)lv_event_get_user_data(e);
+    lv_obj_t *msgbox = lv_event_get_current_target(e);
+    if (lv_msgbox_get_active_btn(msgbox) == 0)
+    {
+        // set
+        instance->seletctingRootKey = false;
+        // close msgbox
+        lv_msgbox_close(msgbox);
+    }
 }
 
 void SynthPage::onBtnPressed(uint8_t pin)
@@ -589,6 +613,16 @@ void SynthPage::onBtnPressed(uint8_t pin)
     if (keyNum > 0)
     {
         noteNum = keyNum - 1 + 12 * octave;
+        if (seletctingRootKey)
+        {
+            samplerRootKey = noteNum;
+            AudioSynth.setClipBaseNote(noteNum);
+            // change button label
+            lv_obj_t *label = lv_obj_get_child(rootKeyBtn, 0);
+            lv_label_set_text(label, noteNumToNoteName(samplerRootKey).c_str());
+            // change msgbox title
+            lv_label_set_text_fmt(rootKeySelectTitleText, "Root Key: %s", noteNumToNoteName(noteNum).c_str());
+        }
         AudioSynth.noteOn(noteNum);
     }
     else
@@ -888,7 +922,7 @@ void SynthPage::setUserData()
             lv_event_send(lfoArc[id][j], LV_EVENT_VALUE_CHANGED, menu_lfo[id]);
         }
     }
-    // todo: set user data of shared GUI objects into audio systems.  
+    // todo: set user data of shared GUI objects into audio systems.
 }
 
 void SynthPage::update()
@@ -1115,8 +1149,9 @@ void SynthPage::init()
     label = lv_label_create(menu_area);
     lv_label_set_text(label, "Root Key: ");
     lv_obj_align(label, LV_ALIGN_LEFT_MID, 5, -10);
-    rootKeyBtn = Gui_CreateButton(menu_area, -1, 25, "C4", true);
+    rootKeyBtn = Gui_CreateButton(menu_area, -1, 25, "C4");
     lv_obj_align(rootKeyBtn, LV_ALIGN_LEFT_MID, 80, -10);
+    lv_obj_add_event_cb(rootKeyBtn, onSamplerRootKeyBtnPressed, LV_EVENT_PRESSED, this);
     // tune arc
     samplerArc[0] = Gui_CreateParamArc(menu_area, 1, "Tune", "cent", false);
     lv_arc_set_range(samplerArc[0], -100, 100);
@@ -1443,4 +1478,53 @@ lv_obj_t *SynthPage::createNewModBtn(lv_obj_t *parent)
     lv_obj_add_event_cb(Btn, onNewModBtnPressed, LV_EVENT_CLICKED, this);
 
     return Btn;
+}
+
+// convert midi note number to note name
+String SynthPage::noteNumToNoteName(uint8_t keyNum)
+{
+    String noteName;
+    uint8_t octave = keyNum / 12 - 1;
+    uint8_t note = keyNum % 12;
+    switch (note)
+    {
+    case 0:
+        noteName = "C";
+        break;
+    case 1:
+        noteName = "C#";
+        break;
+    case 2:
+        noteName = "D";
+        break;
+    case 3:
+        noteName = "D#";
+        break;
+    case 4:
+        noteName = "E";
+        break;
+    case 5:
+        noteName = "F";
+        break;
+    case 6:
+        noteName = "F#";
+        break;
+    case 7:
+        noteName = "G";
+        break;
+    case 8:
+        noteName = "G#";
+        break;
+    case 9:
+        noteName = "A";
+        break;
+    case 10:
+        noteName = "A#";
+        break;
+    case 11:
+        noteName = "B";
+        break;
+    }
+    noteName += octave;
+    return noteName;
 }

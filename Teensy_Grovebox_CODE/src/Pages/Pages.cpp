@@ -100,12 +100,13 @@ void PageManager_::goBack()
 
 void PageManager_::showPowerPopup()
 {
-    lv_obj_t *msgbox = lv_msgbox_create(NULL, "Power Off", "Are you sure you want to power off?", powerBtns, false);
+    lv_obj_t *msgbox = lv_msgbox_create(NULL, "Power Off", "Are you sure you want to power off ?\n#f44336 ALL CHANGES WILL BE LOST.#", powerBtns, false);
     lv_obj_center(msgbox);
     lv_obj_set_style_bg_color(msgbox, lv_color_black(), 0);
     lv_obj_add_event_cb(msgbox, onPowerBtnPressed, LV_EVENT_VALUE_CHANGED, NULL);
     lv_obj_t *temp = lv_msgbox_get_title(msgbox);
     lv_obj_set_style_text_font(temp, font_large, 0);
+    temp = lv_msgbox_get_text(msgbox);
     lv_label_set_recolor(temp, true);
     temp = lv_msgbox_get_btns(msgbox);
     lv_obj_set_style_text_font(temp, font_large, 0);

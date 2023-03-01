@@ -810,3 +810,11 @@ void AudioSynth_::setClipLevel(uint8_t amount)
         voiceArr[i].clipAmp->gain(gain);   
     }
 }
+
+void AudioSynth_::setClipBaseNote(uint8_t note)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setSampleBaseNote(note);
+    }
+}

@@ -54,6 +54,8 @@ private:
     // gslc_tsElemRef *peakBox;
     float peakAvg = 0;
     uint8_t peakHold = 0;
+    bool seletctingRootKey = false;
+    const char* setRootKeyBtns[2] = {"Set", ""};
 
     // *lvgl object refs
     lv_obj_t* menu;
@@ -105,6 +107,7 @@ private:
     lv_chart_series_t *serMin;
     lv_obj_t* rootKeyBtn;
     lv_obj_t* samplerArc[4];
+    lv_obj_t* rootKeySelectTitleText;
 
     // *lvgl gui callbacks
     static void onVelocityBtnPressed(lv_event_t* e);
@@ -138,6 +141,7 @@ private:
     static void onSamplerWaveformChartPressed(lv_event_t *e);
     static void onSamplerArcPressed(lv_event_t *e);
     static void onSamplerRootKeyBtnPressed(lv_event_t *e);
+    static void onSamplerRootKeySelectSetPressed(lv_event_t *e);
 
     // *helper functions
     void configureEncoders();
@@ -147,6 +151,7 @@ private:
     const lv_img_dsc_t* getLfoWaveImg(uint8_t id);
     lv_obj_t* createModEntry(lv_obj_t* parent);
     lv_obj_t* createNewModBtn(lv_obj_t* parent);
+    static String noteNumToNoteName(uint8_t keyNum);
 
 public:
     void onBtnPressed(uint8_t pin);
