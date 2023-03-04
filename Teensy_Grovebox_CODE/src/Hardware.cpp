@@ -48,6 +48,7 @@ void myDispFlush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p
 void myTouchRead(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 {
     int touchX, touchY, touchZ;
+    static int lastX = 0, lastY = 0;
     bool touched = tft.readTouch(touchX, touchY, touchZ); // read the touchpad
     if (!touched)
     { // nothing
@@ -56,6 +57,14 @@ void myTouchRead(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     else
     { // pressed
         data->state = LV_INDEV_STATE_PR;
+        // if the touch is too close to the last one, running average 4 of them to reduce jitter
+        if (abs(touchX - lastX) < 10 && abs(touchY - lastY) < 10)
+        {
+            touchX = (touchX + lastX * 3) / 4;
+            touchY = (touchY + lastY * 3) / 4;
+        }
+        lastX = touchX;
+        lastY = touchY;
         data->point.x = touchX;
         data->point.y = touchY;
     }
