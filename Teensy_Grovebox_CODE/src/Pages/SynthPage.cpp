@@ -333,11 +333,11 @@ void SynthPage::onEnvArcPressed(lv_event_t *e)
         if (envParam >= 1000)
         {
             envParam /= 1000.0f;
-            lv_label_set_text(lv_obj_get_child(instance->envArc[arcId], 1), "S");
+            lv_label_set_text(Gui_ParamArcGetUnitText(instance->envArc[arcId]), "S");
         }
         else
         {
-            lv_label_set_text(lv_obj_get_child(instance->envArc[arcId], 1), "ms");
+            lv_label_set_text(Gui_ParamArcGetUnitText(instance->envArc[arcId]), "ms");
         }
         // decimal count
         if (envParam < 10)
