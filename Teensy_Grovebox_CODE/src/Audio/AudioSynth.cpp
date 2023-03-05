@@ -99,15 +99,6 @@ AudioSynth_::AudioSynth_()
     voiceArr[5].clipAmp = &clipAmp5;
     voiceArr[6].clipAmp = &clipAmp6;
     voiceArr[7].clipAmp = &clipAmp7;
-    // clip biquad (sampler lowcut, highcut)
-    voiceArr[0].clipBiquad = &clipBiquad0;
-    voiceArr[1].clipBiquad = &clipBiquad1;
-    voiceArr[2].clipBiquad = &clipBiquad2;
-    voiceArr[3].clipBiquad = &clipBiquad3;
-    voiceArr[4].clipBiquad = &clipBiquad4;
-    voiceArr[5].clipBiquad = &clipBiquad5;
-    voiceArr[6].clipBiquad = &clipBiquad6;
-    voiceArr[7].clipBiquad = &clipBiquad7;
     // voice mode switch
     voiceArr[0].voiceSwitch = &voiceSwitch0;
     voiceArr[1].voiceSwitch = &voiceSwitch1;
@@ -775,24 +766,6 @@ void AudioSynth_::setClipLoopCrossfade(float crossfade)
     for (uint8_t i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].playClip->setLoopCrossFade(crossfade);
-    }
-}
-
-// todo: change to SynthModParam for modulation function.
-void AudioSynth_::setClipLowCut(float freq)
-{
-    for(uint8_t i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].clipBiquad->setHighpass(0, freq);
-    }
-}
-
-// todo: change to SynthModParam for modulation function.
-void AudioSynth_::setClipHighCut(float freq)
-{
-    for(uint8_t i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].clipBiquad->setLowpass(1, freq);
     }
 }
 

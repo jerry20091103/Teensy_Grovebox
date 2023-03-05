@@ -128,7 +128,6 @@ public:
     AudioRecordSample *ampEnvSample;
     AudioPlayClip *playClip;
     AudioAmplifier *clipAmp;
-    AudioFilterBiquad *clipBiquad;
 
     float frequency = 0.0f;
     float curAmp = 0.0f;

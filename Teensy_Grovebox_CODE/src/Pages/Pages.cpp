@@ -90,6 +90,17 @@ void PageManager_::switchPage(uint8_t pageID)
     // set title text
     lv_label_set_text(title, PageArr[pageID]->pageName);
     PageArr[pageID]->configurePage();
+    // change back button icon if previous page is home page
+    lv_obj_t *label = lv_obj_get_child(backBtn, 0);
+    if(getPrevPage() == PG_HOME)
+    {
+        lv_label_set_text(label, LV_SYMBOL_HOME);
+    }
+    else
+    {
+        lv_label_set_text(label, LV_SYMBOL_LEFT);
+    }
+    // load screen in lvgl
     lv_scr_load(PageArr[pageID]->screen);
 }
 

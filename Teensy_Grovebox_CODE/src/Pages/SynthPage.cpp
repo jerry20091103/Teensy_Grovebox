@@ -462,7 +462,7 @@ void SynthPage::onNewModBtnPressed(lv_event_t *e)
     if (id != -1)
     {
         // create a new mod entry
-        lv_obj_t *entry = instance->createModEntry(instance->modMenuArea);
+        instance->createModEntry(instance->modMenuArea, id);
         // scroll down
         lv_obj_scroll_by_bounded(instance->modMenuArea, 0, -55, LV_ANIM_ON);
     }
@@ -520,8 +520,6 @@ void SynthPage::onSamplerArcPressed(lv_event_t *e)
     lv_obj_t *arc = lv_event_get_target(e);
     int16_t value = lv_arc_get_value(arc);
     uint8_t arcId = Gui_getObjIdFlag(arc);
-    float freq;
-    int decimal;
 
     switch (arcId)
     {
@@ -532,43 +530,7 @@ void SynthPage::onSamplerArcPressed(lv_event_t *e)
         // AudioSynth.setClipTune();
         lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
-    case 1: // low cut
-        freq = pow10f(value / 100.0f) * 20.0f;
-        AudioSynth.setClipLowCut(freq);
-        if (freq >= 1000)
-        {
-            freq /= 1000.0f;
-            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "kHz");
-        }
-        else
-        {
-            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "Hz");
-        }
-        if (freq < 100)
-            decimal = 2;
-        else
-            decimal = 1;
-        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%.*f", decimal, freq);
-        break;
-    case 2: // high cut
-        freq = pow10f(value / 100.0f) * 20.0f;
-        AudioSynth.setClipHighCut(freq);
-        if (freq >= 1000)
-        {
-            freq /= 1000.0f;
-            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "kHz");
-        }
-        else
-        {
-            lv_label_set_text(Gui_ParamArcGetUnitText(arc), "Hz");
-        }
-        if (freq < 100)
-            decimal = 2;
-        else
-            decimal = 1;
-        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%.*f", decimal, freq);
-        break;
-    case 3: // Level
+    case 1: // level
         enc[arcId]->setCurrentReading(value);
         instance->samplerLevel = value;
         AudioSynth.setClipLevel(value);
@@ -871,12 +833,8 @@ void SynthPage::configureEncoders()
     {
         // tune
         enc[0]->changePrecision(200, samplerTune + 100, false);
-        // low cut
-        enc[1]->changePrecision(300, samplerLowCut, false);
-        // high cut
-        enc[2]->changePrecision(300, samplerHighCut, false);
         // level
-        enc[3]->changePrecision(100, samplerLevel, false);
+        enc[1]->changePrecision(100, samplerLevel, false);
     }
 }
 
@@ -969,7 +927,10 @@ void SynthPage::init()
     lv_obj_set_size(menu, 320, 205);
     lv_obj_set_y(menu, 35);
     btn = lv_menu_get_main_header_back_btn(menu);
-    lv_obj_set_size(btn, 25, 20);
+    lv_obj_set_style_bg_opa(btn, LV_OPA_100, 0);
+    lv_obj_set_style_bg_color(btn, color_Grey, 0);
+    label = lv_label_create(btn);
+    lv_label_set_text(label, " Back ");
     // *MENU OSC1 and 2-------------------------------------------------------------------
     for (uint8_t menuId = 0; menuId < 2; menuId++)
     {
@@ -1158,24 +1119,12 @@ void SynthPage::init()
     lv_obj_align(samplerArc[0], LV_ALIGN_BOTTOM_MID, -120, 0);
     Gui_setObjIdFlag(samplerArc[0], 0);
     lv_obj_add_event_cb(samplerArc[0], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
-    // low pass filter arc
-    samplerArc[1] = Gui_CreateParamArc(menu_area, 2, "Low Cut", "Hz", false);
-    lv_arc_set_range(samplerArc[1], 0, 300);
+    // level arc
+    samplerArc[1] = Gui_CreateParamArc(menu_area, 2, "Level", "%", false);
+    lv_arc_set_range(samplerArc[1], 0, 100);
     lv_obj_align(samplerArc[1], LV_ALIGN_BOTTOM_MID, -40, 0);
     Gui_setObjIdFlag(samplerArc[1], 1);
     lv_obj_add_event_cb(samplerArc[1], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
-    // high pass filter arc
-    samplerArc[2] = Gui_CreateParamArc(menu_area, 3, "High Cut", "Hz", false);
-    lv_arc_set_range(samplerArc[2], 0, 300);
-    lv_obj_align(samplerArc[2], LV_ALIGN_BOTTOM_MID, 40, 0);
-    Gui_setObjIdFlag(samplerArc[2], 2);
-    lv_obj_add_event_cb(samplerArc[2], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
-    // level arc
-    samplerArc[3] = Gui_CreateParamArc(menu_area, 4, "Level", "%", false);
-    lv_arc_set_range(samplerArc[3], 0, 100);
-    lv_obj_align(samplerArc[3], LV_ALIGN_BOTTOM_MID, 120, 0);
-    Gui_setObjIdFlag(samplerArc[3], 3);
-    lv_obj_add_event_cb(samplerArc[3], onSamplerArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
     // *MENU MAIN-------------------------------------------------------------------
     menu_main = lv_menu_page_create(menu, NULL);
@@ -1350,7 +1299,7 @@ lv_obj_t *SynthPage::createItemMenuArea(lv_obj_t *menu)
     lv_obj_t *menu_area = lv_obj_create(menu);
     lv_obj_remove_style_all(menu_area);
     lv_obj_set_style_pad_all(menu_area, 5, 0);
-    lv_obj_set_size(menu_area, 320, 180);
+    lv_obj_set_size(menu_area, 320, 178);
 
     return menu_area;
 }
@@ -1403,7 +1352,7 @@ const lv_img_dsc_t *SynthPage::getLfoWaveImg(uint8_t id)
     return img;
 }
 
-lv_obj_t *SynthPage::createModEntry(lv_obj_t *parent)
+lv_obj_t *SynthPage::createModEntry(lv_obj_t *parent, int8_t id)
 {
     // delete "new modulation" button
     lv_obj_del(lv_obj_get_child(parent, -1));
@@ -1452,11 +1401,11 @@ lv_obj_t *SynthPage::createModEntry(lv_obj_t *parent)
     lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
     lv_obj_set_style_pad_all(slider, 2, LV_PART_KNOB);
     lv_obj_add_event_cb(slider, onModAmountChange, LV_EVENT_VALUE_CHANGED, this);
-    // amount text
+    // id text
     lv_obj_t *label = lv_label_create(entry);
     lv_obj_set_style_text_font(label, font_small, 0);
     lv_obj_set_pos(label, 270, 35);
-    lv_label_set_text_fmt(label, "%d", lv_obj_get_child_id(entry));
+    lv_label_set_text_fmt(label, "%d", id);
 
     createNewModBtn(parent);
 

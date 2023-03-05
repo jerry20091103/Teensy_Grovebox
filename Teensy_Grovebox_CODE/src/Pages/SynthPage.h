@@ -46,8 +46,6 @@ private:
     // sampler
     uint8_t samplerRootKey = 60; // C4
     int8_t samplerTune = 0;
-    uint16_t samplerLowCut = 0;
-    uint16_t samplerHighCut = 300;
     uint8_t samplerLevel = 90;
 
     // *class variables
@@ -106,7 +104,7 @@ private:
     lv_chart_series_t *serMax;
     lv_chart_series_t *serMin;
     lv_obj_t* rootKeyBtn;
-    lv_obj_t* samplerArc[4];
+    lv_obj_t* samplerArc[2];
     lv_obj_t* rootKeySelectTitleText;
 
     // *lvgl gui callbacks
@@ -149,7 +147,7 @@ private:
     lv_obj_t* createItemMenuArea(lv_obj_t* menu);
     const lv_img_dsc_t* getOscWaveImg(uint8_t id);
     const lv_img_dsc_t* getLfoWaveImg(uint8_t id);
-    lv_obj_t* createModEntry(lv_obj_t* parent);
+    lv_obj_t* createModEntry(lv_obj_t* parent, int8_t id);
     lv_obj_t* createNewModBtn(lv_obj_t* parent);
     static String noteNumToNoteName(uint8_t keyNum);
 

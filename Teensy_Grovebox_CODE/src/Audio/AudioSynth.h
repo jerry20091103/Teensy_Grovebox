@@ -150,8 +150,6 @@ public:
     void setClipLoopEndPoint(float end);
     void setClipEndPoint(float end);
     void setClipLoopCrossfade(float crossfade);
-    void setClipLowCut(float freq);
-    void setClipHighCut(float freq);
     void setClipLevel(uint8_t amount);
     void setClipBaseNote(uint8_t note);
     // todo: pitchoffset (pitchbend...) for sampler
