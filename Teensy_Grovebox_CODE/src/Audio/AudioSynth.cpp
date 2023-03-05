@@ -354,6 +354,8 @@ void AudioSynth_::pitchbend(float semitone, float amount)
         // apply the pitcbend to the oscillators (force update modulation)
         modParamList.oscPitchOffset[0].modulate(i, modParamList.oscPitchOffset[0].getModValue(i));
         modParamList.oscPitchOffset[1].modulate(i, modParamList.oscPitchOffset[1].getModValue(i));
+        // apply pitchbend to sampler
+        voiceArr[i].setSampleNoteOffset(semitone);
     }
 }
 
