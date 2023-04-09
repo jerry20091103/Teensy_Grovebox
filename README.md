@@ -3,7 +3,8 @@
 
 - An all-in-one music multi-tool in a 25-key MIDI keyboard form factor.
 - Made with Teensy 4.1 and Teensy Audio Board.
-- Here is a [small demo video for the synth function.](https://www.youtube.com/watch?v=64bXlY2FwMQ)
+- [Demo video for the synth function.](https://www.youtube.com/watch?v=64bXlY2FwMQ)
+- [Demo video for the Sampler function.](https://youtu.be/v5BAqmPcjrQ)
 ## Hardware Features
 - 25-key MIDI keyboard with mechanical key switches.
 - 4 encoder knobs and a joystick.
@@ -20,7 +21,7 @@
 - USB MIDI keyboard with pitchbend, mod wheel, and 4 assignable knobs.
 - Wavetable synth mode to play SF2 soundfonts. (with Teensy SoundFont Decoder ...link)
 - Polyphonic synth engine with 8 voices, each with 2 oscillators, 2 LFOs, 3 envelopes, and 1 filter.
-- Sampler mode (under development).
+- Sampler mode.
 - Effects like delay, chorus, reverb... (under development).
 
 ## Folders in this repo
