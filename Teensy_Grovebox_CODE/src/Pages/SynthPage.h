@@ -13,11 +13,6 @@
 class SynthPage : public Pages
 {
 private:
-    // todo: add permenant memory
-    // todo: use the same menu for duplicate pages. (lfo)
-    // todo: switch between home/back button on top
-    // todo: bug fix: pitchbend crashes wavetable (when any one of the voice is not played before)
-    // todo: paramArc: create the "text" object in the Gui_ functions
     // *user data
     uint8_t octave = 4;
     int8_t volume = 0;
