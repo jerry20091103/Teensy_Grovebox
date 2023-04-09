@@ -4,8 +4,8 @@
 #include "AudioPage.h"
 #include "WaveTablePage.h"
 #include "SynthPage.h"
+#include "SampleEditorPage.h"
 // #include "ReverbPopup.h"
-// #include "Sf2SelectPopup.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -37,6 +37,7 @@ void PageManager_::Init()
     PageArr[PG_AUDIO] = new AudioPage();
     PageArr[PG_WAVE] = new WaveTablePage();
     PageArr[PG_SYNTH] = new SynthPage();
+    PageArr[PG_SAMPLEEDITOR] = new SampleEditorPage();
     // PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
     // PageArr[E_PG_POPUP_SF2_SELECT] = new Sf2SelectPopup();
 
@@ -58,12 +59,9 @@ void PageManager_::Init()
     lv_obj_set_style_text_font(battLabel, font_large, 0);
     lv_obj_align(battLabel, LV_ALIGN_RIGHT_MID, -50, 0);
     // back button 
-    backBtn = Gui_CreateButton(statusBar);
+    backBtn = Gui_CreateButton(statusBar, -1, -1, LV_SYMBOL_HOME);
     lv_obj_set_height(backBtn, lv_pct(100));
     lv_obj_align(backBtn, LV_ALIGN_RIGHT_MID, 0, 0);
-    lv_obj_t *label = lv_label_create(backBtn);
-    lv_label_set_text(label, LV_SYMBOL_HOME);
-    lv_obj_center(label);
     lv_obj_add_event_cb(backBtn, onBackBtnPressed, LV_EVENT_CLICKED, this);
 
     for(auto i : PageArr)
@@ -92,6 +90,17 @@ void PageManager_::switchPage(uint8_t pageID)
     // set title text
     lv_label_set_text(title, PageArr[pageID]->pageName);
     PageArr[pageID]->configurePage();
+    // change back button icon if previous page is home page
+    lv_obj_t *label = lv_obj_get_child(backBtn, 0);
+    if(getPrevPage() == PG_HOME)
+    {
+        lv_label_set_text(label, LV_SYMBOL_HOME);
+    }
+    else
+    {
+        lv_label_set_text(label, LV_SYMBOL_LEFT);
+    }
+    // load screen in lvgl
     lv_scr_load(PageArr[pageID]->screen);
 }
 
@@ -102,12 +111,13 @@ void PageManager_::goBack()
 
 void PageManager_::showPowerPopup()
 {
-    lv_obj_t *msgbox = lv_msgbox_create(NULL, "Power Off", "Are you sure you want to power off?", powerBtns, false);
+    lv_obj_t *msgbox = lv_msgbox_create(NULL, "Power Off", "Are you sure you want to power off ?\n#f44336 ALL CHANGES WILL BE LOST.#", powerBtns, false);
     lv_obj_center(msgbox);
     lv_obj_set_style_bg_color(msgbox, lv_color_black(), 0);
     lv_obj_add_event_cb(msgbox, onPowerBtnPressed, LV_EVENT_VALUE_CHANGED, NULL);
     lv_obj_t *temp = lv_msgbox_get_title(msgbox);
     lv_obj_set_style_text_font(temp, font_large, 0);
+    temp = lv_msgbox_get_text(msgbox);
     lv_label_set_recolor(temp, true);
     temp = lv_msgbox_get_btns(msgbox);
     lv_obj_set_style_text_font(temp, font_large, 0);
@@ -135,3 +145,7 @@ void PageManager_::onBackBtnPressed(lv_event_t *e)
         PageManager.switchPage(PageManager.navStack.pop());
     }
 }
+
+// common data shared by all pages
+int16_t samplerWaveformPointsMax[1000]; // todo: ugly?
+int16_t samplerWaveformPointsMin[1000];

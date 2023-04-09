@@ -361,13 +361,12 @@ void AudioPage::update()
             // peak indicator
             if (InPeakHold[i][j] > 0)
             {
-                // !the leds are buggy now, so use set color to toggle on/off
-                lv_obj_set_style_bg_color(InPeakLed[i][j], color_Red, 0);
+                Gui_PeakLedOn(InPeakLed[i][j]);
                 InPeakHold[i][j]--;
             }
             else
             {
-                lv_obj_set_style_bg_color(InPeakLed[i][j], color_RedDark, 0);
+                Gui_PeakLedOff(InPeakLed[i][j]);
             }
         }
     }
@@ -393,13 +392,12 @@ void AudioPage::update()
                 // peak indicator
                 if (mixerPeakHold[i][j] > 0)
                 {
-                    // !the leds are buggy now, so use set color to toggle on/off
-                    lv_obj_set_style_bg_color(mixerPeakLed[i][j], color_Red, 0);
+                    Gui_PeakLedOn(mixerPeakLed[i][j]);
                     mixerPeakHold[i][j]--;
                 }
                 else
                 {
-                    lv_obj_set_style_bg_color(mixerPeakLed[i][j], color_RedDark, 0);
+                    Gui_PeakLedOff(mixerPeakLed[i][j]);
                 }
             }
         }
@@ -426,13 +424,12 @@ void AudioPage::update()
                 // peak indicator
                 if (OutPeakHold[i][j] > 0)
                 {
-                    // !the leds are buggy now, so use set color to toggle on/off
-                    lv_obj_set_style_bg_color(OutPeakLed[i][j], color_Red, 0);
+                    Gui_PeakLedOn(OutPeakLed[i][j]);
                     OutPeakHold[i][j]--;
                 }
                 else
                 {
-                    lv_obj_set_style_bg_color(OutPeakLed[i][j], color_RedDark, 0);
+                    Gui_PeakLedOff(OutPeakLed[i][j]);
                 }
             }
         }
@@ -466,7 +463,6 @@ void AudioPage::init()
     {
         createTrackGui(tab1,
                        OutArc[i],
-                       OutVolText[i],
                        OutBar[i],
                        OutPeakLed[i],
                        i + 1, i == 0 ? "Analog" : "USB");
@@ -477,7 +473,7 @@ void AudioPage::init()
         // set callback
         lv_obj_add_event_cb(OutArc[i], onArcPressed, LV_EVENT_VALUE_CHANGED, this);
         // mixer button
-        btn = Gui_CreateButton(OutArc[i]);
+        btn = Gui_CreateButton(OutArc[i],-1 ,-1);
         lv_obj_align(btn, LV_ALIGN_TOP_MID, 160, -5);
         if (i)
             lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
@@ -496,21 +492,14 @@ void AudioPage::init()
     lv_obj_set_style_text_font(hpModeLabel, font_extraSymbol, LV_PART_MAIN);
     lv_label_set_text(hpModeLabel, MY_HEADPHONE_SYMBOL);
     lv_obj_align(hpModeLabel, LV_ALIGN_TOP_MID, 0, -20);
-    // volume text
-    hpVolText = lv_label_create(hpArc);
-    lv_obj_center(hpVolText);
     // set value
     Gui_setObjIdFlag(hpArc, 2);
     lv_obj_add_event_cb(hpArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
 
     // PFL button
-    OutPflBtn = Gui_CreateButton(hpArc, true);
+    OutPflBtn = Gui_CreateButton(hpArc, 60, -1, "PFL", true);
     lv_obj_add_event_cb(OutPflBtn, onPFLBtnPressed, LV_EVENT_CLICKED, this);
-    lv_obj_set_width(OutPflBtn, 60);
     lv_obj_align(OutPflBtn, LV_ALIGN_BOTTOM_MID, 0, 40);
-    label = lv_label_create(OutPflBtn);
-    lv_label_set_text(label, "PFL");
-    lv_obj_center(label);
 
     // *INPUT TAB-------------------------------------------------------------------------------
     lv_obj_t *tab2 = lv_tabview_add_tab(tabView, "INPUT");
@@ -520,7 +509,6 @@ void AudioPage::init()
     {
         createTrackGui(tab2,
                        InArc[i],
-                       InVolText[i],
                        InBar[i],
                        InPeakLed[i],
                        i + 2, i == 0 ? "Analog" : "USB");
@@ -535,9 +523,6 @@ void AudioPage::init()
     // *input gain
     gainArc = Gui_CreateParamArc(tab2, 1, "Gain", "dB", false);
     lv_obj_set_y(gainArc, 15);
-    // gain text
-    gainText = lv_label_create(gainArc);
-    lv_obj_align(gainText, LV_ALIGN_CENTER, 0, 0);
     // set value
     Gui_setObjIdFlag(gainArc, 5);
     lv_obj_add_event_cb(gainArc, onArcPressed, LV_EVENT_VALUE_CHANGED, this);
@@ -548,32 +533,20 @@ void AudioPage::init()
     lv_label_set_text(label, "Source");
     lv_obj_align(label, LV_ALIGN_BOTTOM_MID, 0, 20);
     // line button
-    lineBtn = Gui_CreateButton(tab2, true);
+    lineBtn = Gui_CreateButton(tab2, 60, 25, "LINE", true);
     lv_obj_set_pos(lineBtn, 0, 100);
-    lv_obj_set_size(lineBtn, 60, 25);
     lv_obj_clear_flag(lineBtn, LV_OBJ_FLAG_USER_1); // use USER_1 flag to indicate source
     lv_obj_add_event_cb(lineBtn, onInputSwitch, LV_EVENT_CLICKED, this);
-    label = lv_label_create(lineBtn);
-    lv_label_set_text(label, "LINE");
-    lv_obj_center(label);
     // mic button
-    micBtn = Gui_CreateButton(tab2, true);
+    micBtn = Gui_CreateButton(tab2, 60, 25, "MIC", true);
     lv_obj_set_pos(micBtn, 0, 130);
-    lv_obj_set_size(micBtn, 60, 25);
     lv_obj_add_flag(micBtn, LV_OBJ_FLAG_USER_1); // use USER_1 flag to indicate source
     lv_obj_add_event_cb(micBtn, onInputSwitch, LV_EVENT_CLICKED, this);
-    label = lv_label_create(micBtn);
-    lv_label_set_text(label, "MIC");
-    lv_obj_center(label);
 
     // PFL button
-    InPflBtn = Gui_CreateButton(tab2, true);
+    InPflBtn = Gui_CreateButton(tab2, -1, 25, "PFL", true);
     lv_obj_set_pos(InPflBtn, 250, 0);
     lv_obj_add_event_cb(InPflBtn, onPFLBtnPressed, LV_EVENT_CLICKED, this);
-    lv_obj_set_height(InPflBtn, 25);
-    label = lv_label_create(InPflBtn);
-    lv_label_set_text(label, "PFL");
-    lv_obj_center(label);
 
     // *POST-DSP TAB----------------------------------------------------------------------------
     lv_obj_t *tab3 = lv_tabview_add_tab(tabView, "POST-DSP");
@@ -605,7 +578,6 @@ void AudioPage::init()
     {
         createTrackGui(windowContent,
                        mixerArc[i],
-                       mixerVolText[i],
                        mixerBar[i],
                        mixerPeakLed[i],
                        i + 1, trackNames[i]);
@@ -621,7 +593,7 @@ void AudioPage::init()
     lv_obj_add_flag(mixerWindow, LV_OBJ_FLAG_HIDDEN);
 }
 
-void AudioPage::createTrackGui(lv_obj_t *&parent, lv_obj_t *&arcRef, lv_obj_t *&volTextRef, lv_obj_t **barArrRef, lv_obj_t **peakArrRef, uint8_t color, const char *name)
+void AudioPage::createTrackGui(lv_obj_t *&parent, lv_obj_t *&arcRef, lv_obj_t **barArrRef, lv_obj_t **peakArrRef, uint8_t color, const char *name)
 {
     lv_obj_t *label;
     // create arc
@@ -631,9 +603,6 @@ void AudioPage::createTrackGui(lv_obj_t *&parent, lv_obj_t *&arcRef, lv_obj_t *&
     label = lv_label_create(arcRef);
     lv_label_set_text(label, name);
     lv_obj_align(label, LV_ALIGN_TOP_LEFT, 80, 2);
-    // volume text
-    volTextRef = lv_label_create(arcRef);
-    lv_obj_center(volTextRef);
     // volume meter and peak led
     for (uint8_t i = 0; i < 2; i++)
     {
@@ -658,7 +627,7 @@ void AudioPage::updateHpVol(uint8_t newVal)
         float temp = newVal;
         sgtl5000_1.volume(map((float)temp, 0, HP_VOL_MAX, 0, 0.8));
     }
-    lv_label_set_text(hpVolText, String(newVal).c_str());
+    lv_label_set_text(Gui_ParamArcGetValueText(hpArc), String(newVal).c_str());
     hpVol = newVal;
 }
 
@@ -669,7 +638,7 @@ void AudioPage::updateOutVol(MasterTracks track, uint8_t newVal)
     if (newVal == 0)
     {
         AudioIO.setMasterVolume((MasterTracks)track, 0);
-        lv_label_set_text(OutVolText[track], "MUTE");
+        lv_label_set_text(Gui_ParamArcGetValueText(OutArc[track]), "MUTE");
     }
     else
     {
@@ -677,7 +646,7 @@ void AudioPage::updateOutVol(MasterTracks track, uint8_t newVal)
         int db = newVal - VOL_MAX + 10;
         float gain = dBtoGain(db);
         AudioIO.setMasterVolume((MasterTracks)track, gain);
-        lv_label_set_text(OutVolText[track], String(db).c_str());
+        lv_label_set_text(Gui_ParamArcGetValueText(OutArc[track]), String(db).c_str());
     }
 }
 
@@ -703,7 +672,7 @@ void AudioPage::updateInVol(InputTracks track, uint8_t newVal)
     if (newVal == 0)
     {
         AudioIO.setInputVolume((InputTracks)track, 0);
-        lv_label_set_text(InVolText[track], "MUTE");
+        lv_label_set_text(Gui_ParamArcGetValueText(InArc[track]), "MUTE");
     }
     else
     {
@@ -711,7 +680,7 @@ void AudioPage::updateInVol(InputTracks track, uint8_t newVal)
         int db = newVal - VOL_MAX + 10;
         float gain = dBtoGain(db);
         AudioIO.setInputVolume((InputTracks)track, gain);
-        lv_label_set_text(InVolText[track], String(db).c_str());
+        lv_label_set_text(Gui_ParamArcGetValueText(InArc[track]), String(db).c_str());
     }
 }
 
@@ -719,7 +688,7 @@ void AudioPage::updateInputGain(uint8_t newVal)
 {
     gain[inputSource] = newVal;
     sgtl5000_1.micGain(newVal);
-    lv_label_set_text(gainText, String(newVal).c_str());
+    lv_label_set_text(Gui_ParamArcGetValueText(gainArc), String(newVal).c_str());
 }
 
 void AudioPage::updateMixerVol(MixerTracks track, uint8_t newVal)
@@ -729,7 +698,7 @@ void AudioPage::updateMixerVol(MixerTracks track, uint8_t newVal)
     if (newVal == 0)
     {
         AudioIO.setMixerVolume((MasterTracks)currentMasterForMixer, track, 0);
-        lv_label_set_text(mixerVolText[track], "MUTE");
+        lv_label_set_text(Gui_ParamArcGetValueText(mixerArc[track]), "MUTE");
     }
     else
     {
@@ -737,6 +706,6 @@ void AudioPage::updateMixerVol(MixerTracks track, uint8_t newVal)
         int db = newVal - VOL_MAX + 10;
         float gain = dBtoGain(db);
         AudioIO.setMixerVolume((MasterTracks)currentMasterForMixer, track, gain);
-        lv_label_set_text(mixerVolText[track], String(db).c_str());
+        lv_label_set_text(Gui_ParamArcGetValueText(mixerArc[track]), String(db).c_str());
     }
 }

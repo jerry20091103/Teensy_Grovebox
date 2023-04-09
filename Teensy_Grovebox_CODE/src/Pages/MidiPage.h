@@ -17,10 +17,9 @@ private:
     const uint8_t recordMsg[4] = {0x7f, 0x01, 0x06, 0x07};
 
     // lvgl object refs
-    lv_obj_t *ccText[4];
     lv_obj_t *ccArc[4];
-    lv_obj_t *octaveText;
-    lv_obj_t *channelText;
+    lv_obj_t *octaveSpinbox;
+    lv_obj_t *channelSpinbox;
     lv_obj_t *pitchBtn;
     lv_obj_t *modBtn;
 
@@ -41,10 +40,8 @@ private:
     static void onArcValueChanged(lv_event_t *e);
     static void onTogglePitchbend(lv_event_t *e);
     static void onToggleModwheel(lv_event_t *e);
-    static void onOctaveInc(lv_event_t *e);
-    static void onOctaveDec(lv_event_t *e);
-    static void onChannelInc(lv_event_t *e);
-    static void onChannelDec(lv_event_t *e);
+    static void onOctaveSelect(lv_event_t *e);
+    static void onChannelSelect(lv_event_t *e);
 
 public:
     void onBtnPressed(uint8_t pin);

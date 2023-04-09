@@ -548,7 +548,9 @@ span.mainfunction {color: #993300; font-weight: bolder}
 		{"type":"AudioControlWM8731master","data":{"defaults":{"name":{"value":"new"}},"shortName":"wm8731m","inputs":0,"outputs":0,"category":"control-function","color":"#E6E0F8","icon":"arrow-in.png"}},
 		{"type":"AudioControlCS42448","data":{"defaults":{"name":{"value":"new"}},"shortName":"cs42448","inputs":0,"outputs":0,"category":"control-function","color":"#E6E0F8","icon":"arrow-in.png"}},
 
-		{"type":"AudioRecordSample","data":{"defaults":{"name":{"value":"new"}},"shortName":"sample","inputs":1,"outputs":0,"category":"custom-function","color":"#E6E0F8","icon":"arrow-in.png"}}
+		{"type":"AudioRecordSample","data":{"defaults":{"name":{"value":"new"}},"shortName":"sample","inputs":1,"outputs":0,"category":"custom-function","color":"#E6E0F8","icon":"arrow-in.png"}},
+		{"type":"AudioRecordClip","data":{"defaults":{"name":{"value":"new"}},"shortName":"clip","inputs":1,"outputs":0,"category":"custom-function","color":"#E6E0F8","icon":"arrow-in.png"}},
+		{"type":"AudioPlayClip","data":{"defaults":{"name":{"value":"new"}},"shortName":"playClip","inputs":0,"outputs":1,"category":"custom-function","color":"#E6E0F8","icon":"arrow-in.png"}}
 	]}
 </script>
 
@@ -5757,7 +5759,99 @@ value  frequency
 	</div>
 </script>
 
+<script type="text/x-red" data-help-name="AudioRecordClip">
+	<h3>Summary</h3>
+	<div class=tooltipinfo>
+	<p>Record an audio clip into to EXTMEM.
+		</p>
+	</div>
+	<h3>Audio Connections</h3>
+	<table class=doc align=center cellpadding=3>
+		<tr class=top><th>Port</th><th>Purpose</th></tr>
+		<tr class=odd><td align=center>In 0</td><td>Input signal</td></tr>
+	</table>
+	<h3>Functions</h3>
+	<p class=func><span class=keyword>getClip</span>();</p>
+	<p class=desc>Returns location of the recorded clip.
+	</p>
+	<p class=func><span class=keyword>getClipLength</span>();</p>
+	<p class=desc>Returns length of the recorded clip.
+	</p>
+	<p class=func><span class=keyword>startRecording</span>();</p>
+	<p class=desc>
+	</p>
+	<p class=func><span class=keyword>stopRecording</span>();</p>
+	<p class=desc>
+	</p>
+	<!--<h3>Examples</h3>
+	<p class=exam>File &gt; Examples &gt; Audio &gt; SamplePlayer
+	</p>-->
+	<h3>Notes</h3>
+	<p></p>
+	<p></p>
+</script>
+<script type="text/x-red" data-template-name="AudioRecordClip">
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
 
+<script type="text/x-red" data-help-name="AudioPlayClip">
+	<h3>Summary</h3>
+	<div class=tooltipinfo>
+	<p>Play an audio clip from EXTMEM, recorded with AudioRecordClip.
+		</p>
+	</div>
+	<h3>Audio Connections</h3>
+	<table class=doc align=center cellpadding=3>
+		<tr class=top><th>Port</th><th>Purpose</th></tr>
+		<tr class=odd><td align=center>Out 0</td><td>Player output</td></tr>
+	</table>
+	<h3>Functions</h3>
+	<p class=func><span class=keyword>setClip</span>(clip, length);</p>
+	<p class=desc>Sets the clip loaction and clip length
+	</p>
+	<p class=func><span class=keyword>play</span>();</p>
+	<p class=desc>Start playing the clip.
+	</p>
+	<p class=func><span class=keyword>stop</span>();</p>
+	<p class=desc>Stop playing the clip.
+	</p>
+	<p class=func><span class=keyword>setStartPoint</span>(position);</p>
+	<p class=desc>Sets the start position. Position is between 0 and 1. 0 and 1 represents the start and end of a clip
+	</p>
+	<p class=func><span class=keyword>setEndPoint</span>(position);</p>
+	<p class=desc>Sets the stop position. Position is between 0 and 1. 0 and 1 represents the start and end of a clip
+	</p>
+	<p class=func><span class=keyword>setLoopStartPoint</span>(position);</p>
+	<p class=desc>Sets the loop start position. Position is between 0 and 1. 0 and 1 represents the start and end of a clip
+	</p>
+	<p class=func><span class=keyword>loop</span>(enable);</p>
+	<p class=desc>Enable or disable looping.
+	</p>
+	<p class=func><span class=keyword>playing</span>();</p>
+	<p class=desc>Returns whether the clip is playing.
+	</p>
+	<p class=func><span class=keyword>getCurrentPosition</span>();</p>
+	<p class=desc>Returns the current position in the clip. Position is between 0 and 1. 0 and 1 represents the start and end of a clip
+	</p>
+	<p class=func><span class=keyword>setSpeed</span>(speed);</p>
+	<p class=desc>Sets the playback speed. 1.0 is normal speed, 0.5 is half speed, 2.0 is double speed...etc.
+	</p>
+	<!--<h3>Examples</h3>
+	<p class=exam>File &gt; Examples &gt; Audio &gt; SamplePlayer
+	</p>-->
+	<h3>Notes</h3>
+	<p></p>
+	<p></p>
+</script>
+<script type="text/x-red" data-template-name="AudioPlayClip">
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
 
 </body>
 </html>

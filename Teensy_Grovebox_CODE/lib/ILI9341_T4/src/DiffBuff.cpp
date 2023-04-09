@@ -5,7 +5,7 @@
 namespace ILI9341_T4
 {
 
-        void DiffBuffBase::rotationBox(int orientation, int xmin, int xmax, int ymin, int ymax, int& x1, int& x2, int& y1, int& y2)
+        FLASHMEM void DiffBuffBase::rotationBox(int orientation, int xmin, int xmax, int ymin, int ymax, int& x1, int& x2, int& y1, int& y2)
             {
             switch (orientation)
                 {
@@ -37,7 +37,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuffBase::copyfb(uint16_t* fb_old, const uint16_t* fb_new, int fb_new_orientation)
+        FLASHMEM void DiffBuffBase::copyfb(uint16_t* fb_old, const uint16_t* fb_new, int fb_new_orientation)
             {
             switch (fb_new_orientation)
                 {
@@ -59,7 +59,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuffBase::copyfb(uint16_t* fb_old, const uint16_t* fb_new, int xmin, int xmax, int ymin, int ymax, int src_stride, int fb_new_orientation)
+        FLASHMEM void DiffBuffBase::copyfb(uint16_t* fb_old, const uint16_t* fb_new, int xmin, int xmax, int ymin, int ymax, int src_stride, int fb_new_orientation)
             {
             int x1, x2, y1, y2;
             rotationBox(fb_new_orientation, xmin, xmax, ymin, ymax, x1, x2, y1, y2);
@@ -86,13 +86,13 @@ namespace ILI9341_T4
 
 
     
-        void DiffBuffBase::_copy_rotate_0(uint16_t* fb_dest, const uint16_t* fb_src)
+        FLASHMEM void DiffBuffBase::_copy_rotate_0(uint16_t* fb_dest, const uint16_t* fb_src)
             {
             memcpy(fb_dest, fb_src, sizeof(uint16_t) * DiffBuffBase::LX * DiffBuffBase::LY);
             }
 
 
-        void DiffBuffBase::_copy_rotate_90(uint16_t* fb_dest, const uint16_t* fb_src)
+        FLASHMEM void DiffBuffBase::_copy_rotate_90(uint16_t* fb_dest, const uint16_t* fb_src)
             {
             uint16_t* p = fb_dest;
             for (int i = 0; i < DiffBuffBase::LY; i++)
@@ -109,7 +109,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuffBase::_copy_rotate_180(uint16_t* fb_dest, const uint16_t* fb_src)
+        FLASHMEM void DiffBuffBase::_copy_rotate_180(uint16_t* fb_dest, const uint16_t* fb_src)
             {
             uint16_t* p = fb_dest;
             for (int j = DiffBuffBase::LY - 1; j >= 0; j--)
@@ -127,7 +127,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuffBase::_copy_rotate_270(uint16_t* fb_dest, const uint16_t* fb_src)
+        FLASHMEM void DiffBuffBase::_copy_rotate_270(uint16_t* fb_dest, const uint16_t* fb_src)
             {
             uint16_t* p = fb_dest;
             for (int i = DiffBuffBase::LY - 1; i >= 0; i--)
@@ -144,7 +144,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuffBase::_copy_rotate_0(uint16_t* fb_dest, const uint16_t* fb_src, int x1, int x2, int y1, int y2, int w, int h, int src_stride)
+        FLASHMEM void DiffBuffBase::_copy_rotate_0(uint16_t* fb_dest, const uint16_t* fb_src, int x1, int x2, int y1, int y2, int w, int h, int src_stride)
             {
             uint16_t* p = fb_dest + x1 + (DiffBuffBase::LX*y1);
             for (int j = 0; j < h; j++)
@@ -158,7 +158,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuffBase::_copy_rotate_90(uint16_t* fb_dest, const uint16_t* fb_src, int x1, int x2, int y1, int y2, int w, int h, int src_stride)
+        FLASHMEM void DiffBuffBase::_copy_rotate_90(uint16_t* fb_dest, const uint16_t* fb_src, int x1, int x2, int y1, int y2, int w, int h, int src_stride)
             {
             uint16_t* p = fb_dest + x1 + (DiffBuffBase::LX*y1);
             for (int j = 0; j < h; j++)
@@ -172,7 +172,7 @@ namespace ILI9341_T4
             }
         
 
-        void DiffBuffBase::_copy_rotate_180(uint16_t* fb_dest, const uint16_t* fb_src, int x1, int x2, int y1, int y2, int w, int h, int src_stride)
+        FLASHMEM void DiffBuffBase::_copy_rotate_180(uint16_t* fb_dest, const uint16_t* fb_src, int x1, int x2, int y1, int y2, int w, int h, int src_stride)
             {
             uint16_t* p = fb_dest + x1 + (DiffBuffBase::LX*y1);
             for (int j = h - 1; j >= 0; j--)
@@ -186,7 +186,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuffBase::_copy_rotate_270(uint16_t* fb_dest, const uint16_t* fb_src, int x1, int x2, int y1, int y2, int w, int h, int src_stride)
+        FLASHMEM void DiffBuffBase::_copy_rotate_270(uint16_t* fb_dest, const uint16_t* fb_src, int x1, int x2, int y1, int y2, int w, int h, int src_stride)
             {
             uint16_t* p = fb_dest + x1 + (DiffBuffBase::LX*y1);
             for (int j = h - 1; j >= 0; j--)
@@ -201,7 +201,7 @@ namespace ILI9341_T4
 
 
         template<bool COPY_NEW_OVER_OLD, bool USE_MASK>
-        void DiffBuff::_computeDiff(uint16_t* fb_old, const uint16_t* fb_new, int fb_new_orientation, int gap, uint16_t compare_mask)
+        FLASHMEM void DiffBuff::_computeDiff(uint16_t* fb_old, const uint16_t* fb_new, int fb_new_orientation, int gap, uint16_t compare_mask)
             {
             switch (fb_new_orientation)
                 {
@@ -278,7 +278,7 @@ namespace ILI9341_T4
 
 
         template<bool COPY_NEW_OVER_OLD, bool USE_MASK>
-        void DiffBuff::_computeDiff0(uint16_t* fb_old, const uint16_t* fb_new, int gap, uint16_t compare_mask)
+        FLASHMEM void DiffBuff::_computeDiff0(uint16_t* fb_old, const uint16_t* fb_new, int gap, uint16_t compare_mask)
             {
             int cgap = 0;   // current gap size;
             int pos = 0;    // number of pixel written in diffbuf
@@ -292,7 +292,7 @@ namespace ILI9341_T4
             }
 
         template<bool COPY_NEW_OVER_OLD, bool USE_MASK>
-        void DiffBuff::_computeDiff1(uint16_t* fb_old, const uint16_t* fb_new, int gap, uint16_t compare_mask)
+        FLASHMEM void DiffBuff::_computeDiff1(uint16_t* fb_old, const uint16_t* fb_new, int gap, uint16_t compare_mask)
             {
             int cgap = 0;   // current gap size;
             int pos = 0;    // number of pixel written in diffbuf
@@ -310,7 +310,7 @@ namespace ILI9341_T4
 
 
         template<bool COPY_NEW_OVER_OLD, bool USE_MASK>
-        void DiffBuff::_computeDiff2(uint16_t* fb_old, const uint16_t* fb_new, int gap, uint16_t compare_mask)
+        FLASHMEM void DiffBuff::_computeDiff2(uint16_t* fb_old, const uint16_t* fb_new, int gap, uint16_t compare_mask)
             {
             int cgap = 0;   // current gap size;
             int pos = 0;    // number of pixel written in diffbuf
@@ -329,7 +329,7 @@ namespace ILI9341_T4
 
 
         template<bool COPY_NEW_OVER_OLD, bool USE_MASK>
-        void DiffBuff::_computeDiff3(uint16_t* fb_old, const uint16_t* fb_new, int gap, uint16_t compare_mask)
+        FLASHMEM void DiffBuff::_computeDiff3(uint16_t* fb_old, const uint16_t* fb_new, int gap, uint16_t compare_mask)
             {
             int cgap = 0;   // current gap size;
             int pos = 0;    // number of pixel written in diffbuf
@@ -353,7 +353,7 @@ namespace ILI9341_T4
 #undef COMPUTE_DIFF_END
 
 
-        void DiffBuff::computeDiff(uint16_t* fb_old, const uint16_t* fb_new, int fb_new_orientation, int gap, bool copy_new_over_old, uint16_t compare_mask)
+        FLASHMEM void DiffBuff::computeDiff(uint16_t* fb_old, const uint16_t* fb_new, int fb_new_orientation, int gap, bool copy_new_over_old, uint16_t compare_mask)
             {
             elapsedMicros em; // for stats. 
             if (gap < 1) gap = 1;
@@ -394,7 +394,7 @@ namespace ILI9341_T4
             }
 
 
-        int DiffBuff::readDiff(int& x, int& y, int& len, int scanline)
+        FLASHMEM int DiffBuff::readDiff(int& x, int& y, int& len, int scanline)
             {
             if (!_r_cont)
                 { // we must load a new instruction. 
@@ -464,7 +464,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuff::computeDiff(uint16_t* fb_old, DiffBuffBase* diff_old, const uint16_t* sub_fb_new, int xmin, int xmax, int ymin, int ymax, int stride,
+        FLASHMEM void DiffBuff::computeDiff(uint16_t* fb_old, DiffBuffBase* diff_old, const uint16_t* sub_fb_new, int xmin, int xmax, int ymin, int ymax, int stride,
                 int fb_new_orientation, int gap, bool copy_new_over_old, uint16_t compare_mask)
             {
             elapsedMicros em; // for stats. 
@@ -497,7 +497,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuff::_computeDiff(uint16_t* fb_old, DiffBuffBase* diff_old, const uint16_t* sub_fb_new, int xmin, int xmax, int ymin, int ymax, int stride,
+        FLASHMEM void DiffBuff::_computeDiff(uint16_t* fb_old, DiffBuffBase* diff_old, const uint16_t* sub_fb_new, int xmin, int xmax, int ymin, int ymax, int stride,
             int fb_new_orientation, int gap, bool copy_new_over_old, uint16_t compare_mask)
             {
             DiffBuffDummy dd; 
@@ -771,7 +771,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuff::statsReset()
+        FLASHMEM void DiffBuff::statsReset()
             {
             _stat_overflow = 0;
             _stats_size.reset();
@@ -779,7 +779,7 @@ namespace ILI9341_T4
             }
 
 
-        void DiffBuff::printStats(Stream* outputStream) const
+        FLASHMEM void DiffBuff::printStats(Stream* outputStream) const
             {
             if (outputStream)
                 {
@@ -794,7 +794,7 @@ namespace ILI9341_T4
 
 
 
-        int DiffBuffDummy::readDiff(int& x, int& y, int& len, int scanline)
+        FLASHMEM int DiffBuffDummy::readDiff(int& x, int& y, int& len, int scanline)
             {
             if (_current_line >= _end) return -1; // we are done. 
             if (scanline >= _end)

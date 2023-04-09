@@ -40,7 +40,7 @@ void WaveTablePage::onOctaveSelect(lv_event_t *e)
 {
     WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
     lv_obj_t *btn = lv_event_get_target(e);
-    if (lv_obj_has_flag(btn, LV_OBJ_FLAG_USER_1))
+    if (Gui_getObjIdFlag(btn)== 1)
     {
         // increase
         instance->onBtnPressed(BTN_FN1);
@@ -95,7 +95,7 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
             {
                 octave = 1;
             }
-            lv_label_set_text_fmt(octaveText, "%d", octave);
+            Gui_SpinboxSetValue(octaveSpinbox, octave);
             break;
         case BTN_FN1:
             octave++;
@@ -103,7 +103,7 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
             {
                 octave = 8;
             }
-            lv_label_set_text_fmt(octaveText, "%d", octave);
+            Gui_SpinboxSetValue(octaveSpinbox, octave);
             break;
         }
     }
@@ -183,7 +183,7 @@ void WaveTablePage::configurePage()
 void WaveTablePage::setUserData()
 {
     // select area
-    lv_label_set_text_fmt(octaveText, "%d", octave);
+    Gui_SpinboxSetValue(octaveSpinbox, octave);
     setVolume(volume);
     lv_arc_set_value(volArc, volume);
     lv_dropdown_set_selected(pitchDropdown, pitchbendRange - 1);
@@ -218,13 +218,12 @@ void WaveTablePage::update()
     // peak indicator
     if (peakHold > 0)
     {
-        // !the leds are buggy now, so use set color to toggle on/off
-        lv_obj_set_style_bg_color(peakLed, color_Red, 0);
+        Gui_PeakLedOn(peakLed);
         peakHold--;
     }
     else
     {
-        lv_obj_set_style_bg_color(peakLed, color_RedDark, 0);
+        Gui_PeakLedOff(peakLed);
     }
 }
 
@@ -259,9 +258,6 @@ void WaveTablePage::init()
     // *volume arc
     volArc = Gui_CreateParamArc(selectArea, 4, "Gain", "dB", false);
     lv_obj_align(volArc, LV_ALIGN_TOP_RIGHT, -5, 20);
-    // gain text
-    volText = lv_label_create(volArc);
-    lv_obj_center(volText);
     // set value
     lv_arc_set_range(volArc, -15, 15);
     lv_obj_add_event_cb(volArc, onVolArcPressed, LV_EVENT_VALUE_CHANGED, this);
@@ -271,30 +267,11 @@ void WaveTablePage::init()
     lv_label_set_text(label, "Octave");
     lv_obj_set_style_text_font(label, font_small, 0);
     lv_obj_set_pos(label, 23, 38);
-    btn = Gui_CreateButton(selectArea, false, 1);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-    lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_MINUS);
-    lv_obj_center(label);
-
-    octaveText = lv_label_create(selectArea);
-    lv_obj_set_style_text_font(octaveText, font_large, 0);
-    lv_obj_align(octaveText, LV_ALIGN_BOTTOM_LEFT, 40, -3);
-
-    btn = Gui_CreateButton(selectArea, false, 1);
-    lv_obj_set_size(btn, 30, 30);
-    lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 60, 0);
-    lv_obj_add_flag(btn, LV_OBJ_FLAG_USER_1);
-    lv_obj_add_event_cb(btn, onOctaveSelect, LV_EVENT_CLICKED, this);
-    label = lv_label_create(btn);
-    lv_label_set_text(label, LV_SYMBOL_PLUS);
-    lv_obj_center(label);
+    octaveSpinbox = Gui_CreateSpinbox(selectArea, onOctaveSelect, this, 1);
+    lv_obj_align(octaveSpinbox, LV_ALIGN_BOTTOM_LEFT, 0, 0);
 
     // *velocity button
-    velocityBtn = Gui_CreateButton(selectArea, true);
-    lv_obj_set_size(velocityBtn, 60, 30);
+    velocityBtn = Gui_CreateButton(selectArea, 60, 30, NULL, true);
     lv_obj_align(velocityBtn, LV_ALIGN_BOTTOM_LEFT, 100, 0);
     lv_obj_add_event_cb(velocityBtn, onVelocityBtnPressed, LV_EVENT_CLICKED, this);
     label = lv_label_create(velocityBtn);
@@ -308,8 +285,7 @@ void WaveTablePage::init()
     lv_obj_align(pitchDropdown, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_dropdown_set_options(pitchDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12");
     lv_obj_add_event_cb(pitchDropdown, onPitchDropdownSelect, LV_EVENT_VALUE_CHANGED, this);
-    pitchBtn = Gui_CreateButton(selectArea, true);
-    lv_obj_set_size(pitchBtn, 60, 30);
+    pitchBtn = Gui_CreateButton(selectArea, 60, 30, NULL, true);
     lv_obj_align(pitchBtn, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_obj_add_event_cb(pitchBtn, onPitchBtnPressed, LV_EVENT_CLICKED, this);
     lv_obj_add_event_cb(pitchBtn, onPitchBtnHolded, LV_EVENT_LONG_PRESSED, this);
@@ -328,5 +304,5 @@ void WaveTablePage::setVolume(int8_t value)
 {
     volume = value;
     AudioSynth.setMasterVol(value);
-    lv_label_set_text_fmt(volText, "%d", value);
+    lv_label_set_text_fmt(Gui_ParamArcGetValueText(volArc), "%d", value);
 }

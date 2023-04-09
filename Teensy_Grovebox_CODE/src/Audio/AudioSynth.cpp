@@ -81,6 +81,24 @@ AudioSynth_::AudioSynth_()
     voiceArr[5].noise = &noise5;
     voiceArr[6].noise = &noise6;
     voiceArr[7].noise = &noise7;
+    // playClip (sample player)
+    voiceArr[0].playClip = &playClip0;
+    voiceArr[1].playClip = &playClip1;
+    voiceArr[2].playClip = &playClip2;
+    voiceArr[3].playClip = &playClip3;
+    voiceArr[4].playClip = &playClip4;
+    voiceArr[5].playClip = &playClip5;
+    voiceArr[6].playClip = &playClip6;
+    voiceArr[7].playClip = &playClip7;
+    // clip amp (sampler volume)
+    voiceArr[0].clipAmp = &clipAmp0;
+    voiceArr[1].clipAmp = &clipAmp1;
+    voiceArr[2].clipAmp = &clipAmp2;
+    voiceArr[3].clipAmp = &clipAmp3;
+    voiceArr[4].clipAmp = &clipAmp4;
+    voiceArr[5].clipAmp = &clipAmp5;
+    voiceArr[6].clipAmp = &clipAmp6;
+    voiceArr[7].clipAmp = &clipAmp7;
     // voice mode switch
     voiceArr[0].voiceSwitch = &voiceSwitch0;
     voiceArr[1].voiceSwitch = &voiceSwitch1;
@@ -199,31 +217,6 @@ AudioSynth_::AudioSynth_()
     envDc5.amplitude(1);
     envDc6.amplitude(1);
     envDc7.amplitude(1);
-    // set osc mixer
-    oscMixer0.gain(0, 1);
-    oscMixer0.gain(1, 1);
-    oscMixer0.gain(2, 1);
-    oscMixer1.gain(0, 1);
-    oscMixer1.gain(1, 1);
-    oscMixer1.gain(2, 1);
-    oscMixer2.gain(0, 1);
-    oscMixer2.gain(1, 1);
-    oscMixer2.gain(2, 1);
-    oscMixer3.gain(0, 1);
-    oscMixer3.gain(1, 1);
-    oscMixer3.gain(2, 1);
-    oscMixer4.gain(0, 1);
-    oscMixer4.gain(1, 1);
-    oscMixer4.gain(2, 1);
-    oscMixer5.gain(0, 1);
-    oscMixer5.gain(1, 1);
-    oscMixer5.gain(2, 1);
-    oscMixer6.gain(0, 1);
-    oscMixer6.gain(1, 1);
-    oscMixer6.gain(2, 1);
-    oscMixer7.gain(0, 1);
-    oscMixer7.gain(1, 1);
-    oscMixer7.gain(2, 1);
 
     setSF2Instrument(0);
     setOscWaveform(0, WAVE_OSC_SINE);
@@ -289,6 +282,13 @@ void AudioSynth_::noteOn(uint8_t note)
         voiceArr[voiceFound].noteOn(note, map(velocity, 0, 1, 0.2, 1));
     else
         voiceArr[voiceFound].noteOn(note, 0.8);
+
+    // todo: ugly fix here to apply oscPitchOffset to synth OSCs
+    if (curVoiceMode == VOICE_MODE_SYNTH)
+    {
+        calAndSetOscPitchOffset(0);
+        calAndSetOscPitchOffset(1);
+    }
 }
 
 void AudioSynth_::noteOff(uint8_t note)
@@ -347,13 +347,15 @@ void AudioSynth_::sustainOff()
 void AudioSynth_::pitchbend(float semitone, float amount)
 {
     curPitchbend = amount;
-    curPitchbendMult = pow(2.0, semitone / 12.0);
+    curPitchbendMult = pow(2.0f, semitone / 12.0f);
     for (uint8_t i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].setPitchbend(curPitchbendMult);
         // apply the pitcbend to the oscillators (force update modulation)
         modParamList.oscPitchOffset[0].modulate(i, modParamList.oscPitchOffset[0].getModValue(i));
         modParamList.oscPitchOffset[1].modulate(i, modParamList.oscPitchOffset[1].getModValue(i));
+        // apply pitchbend to sampler
+        voiceArr[i].setSampleNoteOffset(semitone);
     }
 }
 
@@ -403,7 +405,7 @@ void AudioSynth_::setVoiceMode(uint8_t mode)
             voiceArr[i].waveform[1]->amplitude(0);
         }
     }
-   
+
     for (int i = 0; i < MAX_VOICE; i++)
     {
         voiceArr[i].setVoiceMode(mode);
@@ -446,7 +448,7 @@ void AudioSynth_::setOscLevel(uint8_t id, uint8_t amount)
     // block level change if not in synth mode (to keep oscillators off)
     if (curVoiceMode != VOICE_MODE_SYNTH)
         return;
-    
+
     float gain;
     if (amount > 0)
         gain = dBtoGain(amount * 0.5f - 60); // the max level is -10 dB, to prevent clipping.
@@ -700,5 +702,94 @@ void AudioSynth_::updateModulation()
                 modParamList[i].modulate(voiceId, modTgtValue[i]);
             }
         }
+    }
+}
+
+void AudioSynth_::playClip()
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].noteOn(60); // the note number is not used in sample editor mode
+    }
+}
+void AudioSynth_::stopClip()
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].noteOff();
+    }
+}
+void AudioSynth_::setClip(audio_block_data_t *data, uint16_t len)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setClip(data, len);
+    }
+}
+void AudioSynth_::setClipLoop(bool loop)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->loop(loop);
+    }
+}
+
+void AudioSynth_::setClipStartPoint(float start)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setStartPoint(start);
+    }
+}
+void AudioSynth_::setClipLoopStartPoint(float start)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setLoopStartPoint(start);
+    }
+}
+void AudioSynth_::setClipLoopEndPoint(float end)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setLoopEndPoint(end);
+    }
+}
+void AudioSynth_::setClipEndPoint(float end)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setEndPoint(end);
+    }
+}
+
+void AudioSynth_::setClipLoopCrossfade(float crossfade)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].playClip->setLoopCrossFade(crossfade);
+    }
+}
+
+// todo: change to SynthModParam for modulation function.
+void AudioSynth_::setClipLevel(uint8_t amount)
+{
+    float gain;
+    if (amount > 0)
+        gain = dBtoGain(amount * 0.5f - 50); // the max level is 0 dB
+    else
+        gain = 0;
+
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].clipAmp->gain(gain);   
+    }
+}
+
+void AudioSynth_::setClipBaseNote(uint8_t note)
+{
+    for (uint8_t i = 0; i < MAX_VOICE; i++)
+    {
+        voiceArr[i].setSampleBaseNote(note);
     }
 }

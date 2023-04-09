@@ -11,7 +11,8 @@
 enum voiceMode
 {
     VOICE_MODE_WAVETABLE,
-    VOICE_MODE_SYNTH
+    VOICE_MODE_SYNTH,
+    VOICE_MODE_SAMPLE_EDITER
 };
 
 enum oscWaveformType
@@ -112,6 +113,8 @@ public:
     inline void setLadderDrive(float amount) { ladderFilter->inputDrive(amount); }
     inline void setLadderPassbandGain(float amount) { ladderFilter->passbandGain(amount); }
     void setLfoWaveform(uint8_t id, uint8_t wave);
+    void setSampleBaseNote(uint8_t note);
+    void setSampleNoteOffset(float offset);
 
     AudioMixer4 *voiceSwitch;
     AudioSynthWavetable *waveTable;
@@ -123,12 +126,16 @@ public:
     AudioRecordSample *lfoSample[2];
     AudioRecordSample *envSample[2];
     AudioRecordSample *ampEnvSample;
+    AudioPlayClip *playClip;
+    AudioAmplifier *clipAmp;
 
-    float frequency;
+    float frequency = 0.0f;
     float curAmp = 0.0f;
     float curPitchBendMult = 1.0f;
-    u_int8_t curNote;
-    uint8_t curVoiceMode;
+    float curSampleNoteOffset = 0.0f;
+    uint8_t curNote = 60;
+    uint8_t curVoiceMode = VOICE_MODE_WAVETABLE;
+    uint8_t curSampleBaseNote = 60;
     bool isNoteOn = false;
 };
 

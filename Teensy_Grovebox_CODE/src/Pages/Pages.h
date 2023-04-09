@@ -4,6 +4,7 @@
 #include "Hardware.h"
 #include "GuiUtility.h"
 #include "Utility/SimpleStack.h"
+#include "Utility/GuiUserData.h"
 
 #define MAX_PAGE_NAME 20
 
@@ -15,6 +16,7 @@ enum PageID : uint8_t{
     PG_AUDIO,
     PG_WAVE,
     PG_SYNTH,
+    PG_SAMPLEEDITOR,
     MAX_PAGE
 };
 
@@ -38,6 +40,7 @@ public:
     // Configure a page before swithcing to it. Sets encoders and prepare variables. This function should be called after HardwareSetup().
     virtual void configurePage() = 0;
     // set user data to GUI elements. This function should be called after HardwareSetup().
+    // todo: also ensure that user data is set into audio objects?
     virtual void setUserData() = 0;
 
     // this updates the page approximately every frame
@@ -97,5 +100,9 @@ private:
 };
 
 extern PageManager_ &PageManager;
+
+// common data shared by all pages
+extern int16_t samplerWaveformPointsMax[1000]; // todo: ugly?
+extern int16_t samplerWaveformPointsMin[1000];
 
 #endif

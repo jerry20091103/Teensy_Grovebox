@@ -37,24 +37,48 @@
 // only c++, no plain c
 #ifdef __cplusplus
 
+
+#include <Arduino.h>
+
+// This libray uses specify hardware features of IMXRT1062 and will not work with another MCU...
+#if (!defined(__IMXRT1062__))  ||  (!defined(CORE_TEENSY))
+    #error "Library ILI9341_T4 only supports Teensy 4/4.1/micromod."
+#endif
+
+
 #include "StatsVar.h"
 #include "DiffBuff.h"
 
-#include <Arduino.h>
 #include <DMAChannel.h>
 #include <SPI.h>
 #include <stdint.h>
 
-// This libray uses specify hardware features of Teensy 4/4.1 and will not work with another MCU...
-#if (!defined(__IMXRT1062__))  ||  (!defined(CORE_TEENSY))
-#error "This library only supports Teensy 4/4.1"
-#endif
 
 
 
 namespace ILI9341_T4
 {
 
+    /** a few colors */
+
+#define ILI9341_T4_COLOR_BLACK 0x0
+#define ILI9341_T4_COLOR_WHITE 0xffff
+#define ILI9341_T4_COLOR_RED 0xf800
+#define ILI9341_T4_COLOR_BLUE 0x1f
+#define ILI9341_T4_COLOR_GREEN 0x7e0
+#define ILI9341_T4_COLOR_PURPLE 0x8010
+#define ILI9341_T4_COLOR_ORANGE 0xfc20
+#define ILI9341_T4_COLOR_CYAN 0x7ff
+#define ILI9341_T4_COLOR_LIME 0x7e0
+#define ILI9341_T4_COLOR_SALMON 0xfc0e
+#define ILI9341_T4_COLOR_MAROON 0x8000
+#define ILI9341_T4_COLOR_YELLOW 0xffe0
+#define ILI9341_T4_COLOR_MAJENTA 0xf81f
+#define ILI9341_T4_COLOR_OLIVE 0x8400
+#define ILI9341_T4_COLOR_TEAL 0x410
+#define ILI9341_T4_COLOR_GRAY 0x8410
+#define ILI9341_T4_COLOR_SILVER 0xc618
+#define ILI9341_T4_COLOR_NAVY 0x10
 
 
     /** Configuration */
@@ -76,7 +100,7 @@ namespace ILI9341_T4
 #define ILI9341_T4_NB_PIXELS (ILI9341_T4_TFTWIDTH * ILI9341_T4_TFTHEIGHT)   // total number of pixels
 
 #define ILI9341_T4_MAX_VSYNC_SPACING 5              // maximum number of screen refresh between frames (for sync clock stability). 
-#define ILI9341_T4_IRQ_PRIORITY 128                 // priority at which we run the irqs (dma, pit timer and spi interrupts).
+#define ILI9341_T4_DEFAULT_IRQ_PRIORITY 128                 // default priority at which we run all irqs (dma, pit timer and spi interrupts).
 #define ILI9341_T4_MAX_DELAY_MICROSECONDS 1000000   // maximum waiting time (1 second)
 
 #define ILI9341_T4_TOUCH_Z_THRESHOLD     400        // for touch
@@ -85,10 +109,10 @@ namespace ILI9341_T4
 
 #define ILI9341_T4_SELFDIAG_OK 0xC0                 // value returned by selfDiagStatus() if everything is OK.
 
-#define ILI9441_T4_DEFAULT_FPS_COUNTER_COLOR_FG 0xFFFF  // default values (color/opacity/position)
-#define ILI9441_T4_DEFAULT_FPS_COUNTER_COLOR_BG 0x001F  // for the FPS counter
-#define ILI9441_T4_DEFAULT_FPS_COUNTER_OPACITY 0.5f     // 
-#define ILI9441_T4_DEFAULT_FPS_COUNTER_POSITION 0xFFFF  //
+#define ILI9441_T4_DEFAULT_FPS_COUNTER_COLOR_FG ILI9341_T4_COLOR_WHITE  // default values (color/opacity/position)
+#define ILI9441_T4_DEFAULT_FPS_COUNTER_COLOR_BG ILI9341_T4_COLOR_BLUE   // for the FPS counter
+#define ILI9441_T4_DEFAULT_FPS_COUNTER_OPACITY 0.5f                     // 
+#define ILI9441_T4_DEFAULT_FPS_COUNTER_POSITION 0                       //
 
 
 /** ILI9341 command codes */
@@ -328,7 +352,6 @@ public:
     void setSpiClockRead(int spi_clock = ILI9341_T4_DEFAULT_SPICLOCK_READ);
     
 
-
     /**
     * Query the spi speed for SPI reads.
     **/
@@ -336,6 +359,32 @@ public:
 
 
 
+    /**
+    * Set the priority at which all the driver interrupts run (dma, pit-timer and SPI). 
+    *
+    * ADVANCED METHOD: do not change the default value unless you know what you are doing. 
+    * The default value should be good for most use case...
+    *
+    * - the default value is ILI9341_T4_DEFAULT_IRQ_PRIORITY = 128.
+    *
+    * - Setting a smaller value (eg 64 or 32) increases the priority hence it will make 
+    *   the framerate more stable by prioritizing the screen driver interrupts over 
+    *   other ones (but, although unlikely, this could slow down/interfere with other operations).    
+    *
+    * - Setting a larger value (eg 192) will insure that the driver does not interrupt/interfere
+    *   with other operations with higher priorities but the framerate may oscillate a little more
+    *   if servicing the other interrupts takes a long time.
+    **/
+    void setIRQPriority(int irq_priority = ILI9341_T4_DEFAULT_IRQ_PRIORITY);
+
+
+    /**
+    * Return the priority at which the driver's interrupt are currently running.
+    **/
+    int getIRQPriority() const { return _irq_priority; }
+   
+   
+      
     /***************************************************************************************************
     ****************************************************************************************************
     *
@@ -997,6 +1046,32 @@ public:
     ****************************************************************************************************/
 
 
+
+    /**
+     * Overlay a text on the supplied framebuffer at a given position and with 
+     * given color (for text and background). 
+     * 
+     * This method is useful for printing out simple debug information... For more advance 
+     * text formatting, use a dedicated graphic library to draw on the framebuffer such as tgx 
+     * (https://github.com/vindar/tgx)
+     *
+     * - fb : the framebuffer to draw onto
+     * - position : position of the counter on the framebuffer:
+     *              0= top right,  1=bottom right,  2=bottom left,  3=top left
+     * - line : line offset for the beginning of text w.r.t. the position     
+     * - font : size of the font to use (10, 12, 14 or 16 pt)
+     * - fg_color : text color
+     * - fg_opacity : text opacity between 0.0f (fully transparent) and 1.0f (fully opaque).
+     * - bg_color : background color
+     * - bg_opacity : background opacity between 0.0f (fully transparent) and 1.0f (fully opaque).
+     * - extend_bk_whole_width : true to extend the background rectangle to the whole width of the screen
+    **/
+    void overlayText(uint16_t* fb, const char* text, int position, int line, int font_size,
+                     uint16_t fg_color = ILI9341_T4_COLOR_WHITE, float fg_opacity = 1.0f,
+                     uint16_t bg_color = ILI9341_T4_COLOR_BLACK, float bk_opacity = 0.0f,
+                     bool extend_bg_whole_width = false);
+
+
     /**
     * Draw the FPS counter on a corner of the supplied framebuffer with given colors 
     * and opacity.
@@ -1008,7 +1083,7 @@ public:
     * 
     * - fb : the framebuffer to draw onto
     * - position: position of the counter on the framebuffer:
-    *             0= top right,  1=bottom right,  3=bottom left,  4=top left
+    *             0= top right,  1=bottom right,  2=bottom left,  3=top left
     * - fg_color : foreground color.   
     * - bg_color : background color  
     * - opacity : opacity of the counter between 0.0f=transparent and 1.0f=opaque. 
@@ -1016,7 +1091,7 @@ public:
     void overlayFPS(uint16_t* fb, 
                     int position = ILI9441_T4_DEFAULT_FPS_COUNTER_POSITION, 
                     uint16_t fg_color = ILI9441_T4_DEFAULT_FPS_COUNTER_COLOR_FG, 
-                    uint16_t bk_color = ILI9441_T4_DEFAULT_FPS_COUNTER_COLOR_BG, 
+                    uint16_t bg_color = ILI9441_T4_DEFAULT_FPS_COUNTER_COLOR_BG, 
                     float opacity = ILI9441_T4_DEFAULT_FPS_COUNTER_OPACITY);
 
 
@@ -1204,6 +1279,21 @@ public:
     **/
     bool readTouch(int& x, int& y, int& z);
 
+    /**
+    * Read the touchscreen. Return the position (x,y). Same as above but do not store the pressure level.
+    * Return true if the screen is being touched.
+    * 
+    * The coord. (x,y) returned are given w.r.t. the current screen orientation if calibration
+    * data are loaded but are 'raw' value (independent of orientation) is no calibration data
+    * is currently loaded. 
+    * 
+    * If the touch_irq pin is assigned, the method will avoid using the SPI bus whenever possible.
+    *
+    * If the SPI bus must be used. The method will wait until the current ongoing transfer
+    * completes (if any). This means that this method may stall for a few milliseconds. 
+    **/
+    bool readTouch(int& x, int& y);
+
 
     /**
     * Set a mapping from touch coordinates to screen coordinates (or 
@@ -1293,7 +1383,8 @@ private:
     int     _rotation;                          // current screen orientation
     int     _refreshmode;                       // refresh mode (between 0 = fastest refresh rate and 15 = slowest refresh rate). 
     
-    mutable Stream * _outputStream;                      // output stream used for debugging
+    int     _irq_priority;                      // priority at which we run all IRQ's (dma, pit timer and spi interrupts)
+    mutable Stream * _outputStream;             // output stream used for debugging
 
     /** helper methods for writing to _outputStream (without using variadic parameters...) */
     template<typename T> void _print(const T & v) const { if (_outputStream) _outputStream->print(v); }
@@ -1480,12 +1571,14 @@ private:
     // called when doing partial diff redraw
     void _spiInterrupt_software() ILI9341_T4_ALWAYS_INLINE
         {
-        //noInterrupts();        // UNNEEDED ?
         _toggle(_dcport, _dcpinmask);
+        _pimxrt_spi->SR = 0x3f00; //Reset All flags and errors    
         if (_spi_int_phase >= 0)
             {            
+            noInterrupts(); // needed !  
             _pimxrt_spi->TDR = _spi_int_command[_spi_int_phase];
             _pimxrt_spi->TCR = (_spi_int_phase & 1) ? (_dma_spi_tcr_assert) : (_dma_spi_tcr_deassert);
+            interrupts();  
             _spi_int_phase--;
             }
         else
@@ -1493,9 +1586,7 @@ private:
             _pimxrt_spi->IER = 0; // disable interrupt            
             _dmatx.enable();
             }
-        _pimxrt_spi->SR = 0x3f00; //Reset All flags and errors    
         asm("dsb");
-        //interrupts();        // UNNEEDED ?
         }
 
 
@@ -1688,7 +1779,7 @@ private:
         _it.end(); // stop ongoing timer before changing callback method. 
         _pitcb = timercb;
         if ((us <= 3) || (us > ILI9341_T4_MAX_DELAY_MICROSECONDS)) { us = 3; } // asap
-        _it.priority(ILI9341_T4_IRQ_PRIORITY);
+        _it.priority(_irq_priority);
         _istimer = true;
         switch (_pitindex)
             {

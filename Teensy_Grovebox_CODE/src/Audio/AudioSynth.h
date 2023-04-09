@@ -140,6 +140,20 @@ public:
     void resetModulation(uint8_t id);
     void removeModulation(uint8_t id);
     void updateModulation();
+    // *sample editor / sampler
+    void playClip();
+    void stopClip();
+    void setClip(audio_block_data_t *data, uint16_t len);
+    void setClipLoop(bool loop);
+    void setClipStartPoint(float start);
+    void setClipLoopStartPoint(float start);
+    void setClipLoopEndPoint(float end);
+    void setClipEndPoint(float end);
+    void setClipLoopCrossfade(float crossfade);
+    void setClipLevel(uint8_t amount);
+    void setClipBaseNote(uint8_t note);
+    // todo: pitchoffset (pitchbend...) for sampler
+
 
     // set master output volume in dB
     void setMasterVol(int8_t vol);

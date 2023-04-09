@@ -13,9 +13,6 @@
 class SynthPage : public Pages
 {
 private:
-    // todo: add permenant memory
-    // todo: use the same menu for duplicate pages.
-    // todo: usd id flag to determine current menu, instead of using curMenu
     // *user data
     uint8_t octave = 4;
     int8_t volume = 0;
@@ -41,11 +38,17 @@ private:
     // lfo
     uint8_t lfoWaveform[2] = {0, 0};
     uint16_t lfoVal[2][2] = {{0, 50}, {0, 50}};
+    // sampler
+    uint8_t samplerRootKey = 60; // C4
+    int8_t samplerTune = 0;
+    uint8_t samplerLevel = 90;
 
     // *class variables
     // gslc_tsElemRef *peakBox;
     float peakAvg = 0;
     uint8_t peakHold = 0;
+    bool seletctingRootKey = false;
+    const char* setRootKeyBtns[2] = {"Set", ""};
 
     // *lvgl object refs
     lv_obj_t* menu;
@@ -57,50 +60,47 @@ private:
     lv_obj_t* menu_filter;
     lv_obj_t* menu_lfo[2];
     lv_obj_t* menu_mod;
+    lv_obj_t* menu_sampler;
     lv_obj_t* volArc;
-    lv_obj_t* volText;
     lv_obj_t* volBar;
     lv_obj_t* peakLed;
-    lv_obj_t* octaveText;
+    lv_obj_t* octaveSpinbox;
     lv_obj_t* pitchDropdown;
     lv_obj_t* pitchText;
     lv_obj_t* pitchBtn;
     lv_obj_t* velocityBtn;
-    // osc
-    lv_obj_t *oscWaveDropdown[2];
-    lv_obj_t* oscWaveImg[2];
-    lv_obj_t* oscWaveItemImg[2];
-    lv_obj_t* oscOctaveText[2];
-    lv_obj_t* oscSemiText[2];
-    lv_obj_t* oscArc[2][3];
-    lv_obj_t* oscPwmText[2];
-    lv_obj_t* oscDetuneText[2];
-    lv_obj_t* oscLevelText[2];
+    // osc1 and osc 2 share the same objects
+    lv_obj_t* oscMenuArea;
+    lv_obj_t* oscWaveDropdown;
+    lv_obj_t* oscWaveImg;
+    lv_obj_t* oscWaveItemImg[2]; // the is on the main menu buttons, so we need 2 for 2 OSCs
+    lv_obj_t* oscOctaveSpinbox;
+    lv_obj_t* oscSemiSpinbox;
+    lv_obj_t* oscArc[3];
     // noise
     lv_obj_t *noiseArc;
-    lv_obj_t *noiseLevelText;
-    // amp env
-    lv_obj_t* ampEnvGraph;
-    lv_point_t ampEnvPoints[10];
-    lv_obj_t* ampEnvText[5];
-    lv_obj_t* ampEnvArc[5];
-    // env1 and env2
-    lv_obj_t* envGraph[2];
-    lv_point_t envPoints[2][10];
-    lv_obj_t* envArc[2][5];
-    lv_obj_t* envText[2][5];
+    // ampEnv, env1 and env2 share the same objects
+    lv_obj_t* envMenuArea;
+    lv_obj_t* envGraph;
+    lv_point_t envPoints[10];
+    lv_obj_t* envArc[5];
     // filter
     lv_obj_t* filterArc[4];
-    lv_obj_t* filterText[4];
     // lfo
     lv_obj_t* lfoWaveDropdown[2];
     lv_obj_t* lfoWaveImg[2];
     lv_obj_t* lfoWaveItemImg[2];
     lv_obj_t* lfoArc[2][2];
-    lv_obj_t* lfoText[2][2];
     // modulation
     lv_obj_t* modMenuArea; // this object is used with column flex layout
     lv_obj_t* newModBtn;
+    // sampler
+    lv_obj_t* waveformChart;
+    lv_chart_series_t *serMax;
+    lv_chart_series_t *serMin;
+    lv_obj_t* rootKeyBtn;
+    lv_obj_t* samplerArc[2];
+    lv_obj_t* rootKeySelectTitleText;
 
     // *lvgl gui callbacks
     static void onVelocityBtnPressed(lv_event_t* e);
@@ -130,6 +130,11 @@ private:
     static void onModSourceChange(lv_event_t *e);
     static void onModTargetChange(lv_event_t *e);
     static void onModAmountChange(lv_event_t *e);
+    // sampler
+    static void onSamplerWaveformChartPressed(lv_event_t *e);
+    static void onSamplerArcPressed(lv_event_t *e);
+    static void onSamplerRootKeyBtnPressed(lv_event_t *e);
+    static void onSamplerRootKeySelectSetPressed(lv_event_t *e);
 
     // *helper functions
     void configureEncoders();
@@ -137,8 +142,9 @@ private:
     lv_obj_t* createItemMenuArea(lv_obj_t* menu);
     const lv_img_dsc_t* getOscWaveImg(uint8_t id);
     const lv_img_dsc_t* getLfoWaveImg(uint8_t id);
-    lv_obj_t* createModEntry(lv_obj_t* parent);
+    lv_obj_t* createModEntry(lv_obj_t* parent, int8_t id);
     lv_obj_t* createNewModBtn(lv_obj_t* parent);
+    static String noteNumToNoteName(uint8_t keyNum);
 
 public:
     void onBtnPressed(uint8_t pin);
