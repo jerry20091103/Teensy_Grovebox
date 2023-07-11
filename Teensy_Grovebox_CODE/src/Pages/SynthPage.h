@@ -202,7 +202,8 @@ private:
     "ENV2-Attack\n"
     "ENV2-Decay\n"
     "ENV2-Sustain\n"
-    "ENV2-Release"};
+    "ENV2-Release\n"
+    "Clip-Level"};
 };
 
 #endif

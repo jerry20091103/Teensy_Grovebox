@@ -17,7 +17,8 @@ AudioSynth_::ModParamList::ModParamList(AudioVoice *voiceArr) : oscPitchOffset{O
                                                                 envAttack{EnvAttack(voiceArr, 0), EnvAttack(voiceArr, 1), EnvAttack(voiceArr, 2)},
                                                                 envDecay{EnvDecay(voiceArr, 0), EnvDecay(voiceArr, 1), EnvDecay(voiceArr, 2)},
                                                                 envSustain{EnvSustain(voiceArr, 0), EnvSustain(voiceArr, 1), EnvSustain(voiceArr, 2)},
-                                                                envRelease{EnvRelease(voiceArr, 0), EnvRelease(voiceArr, 1), EnvRelease(voiceArr, 2)}
+                                                                envRelease{EnvRelease(voiceArr, 0), EnvRelease(voiceArr, 1), EnvRelease(voiceArr, 2)},
+                                                                clipLevel(voiceArr)
 {
 }
 
@@ -283,7 +284,7 @@ void AudioSynth_::noteOn(uint8_t note)
     else
         voiceArr[voiceFound].noteOn(note, 0.8);
 
-    // todo: ugly fix here to apply oscPitchOffset to synth OSCs
+    // apply oscPitchOffset to synth OSCs
     if (curVoiceMode == VOICE_MODE_SYNTH)
     {
         calAndSetOscPitchOffset(0);
@@ -771,7 +772,6 @@ void AudioSynth_::setClipLoopCrossfade(float crossfade)
     }
 }
 
-// todo: change to SynthModParam for modulation function.
 void AudioSynth_::setClipLevel(uint8_t amount)
 {
     float gain;
@@ -780,10 +780,7 @@ void AudioSynth_::setClipLevel(uint8_t amount)
     else
         gain = 0;
 
-    for (uint8_t i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].clipAmp->gain(gain);   
-    }
+    modParamList.clipLevel.set(gain);
 }
 
 void AudioSynth_::setClipBaseNote(uint8_t note)

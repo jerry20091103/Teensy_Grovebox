@@ -79,6 +79,7 @@ enum modTarget
     MOD_TGT_ENV2_DECAY,
     MOD_TGT_ENV2_SUSTAIN,
     MOD_TGT_ENV2_RELEASE,
+    MOD_TGT_CLIP_LEVEL,
     MOD_TGT_MAX
 };
 
