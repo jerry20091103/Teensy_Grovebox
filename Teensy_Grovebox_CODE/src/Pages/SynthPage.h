@@ -3,6 +3,10 @@
 
 #include "Pages.h"
 #include "Audio/AudioFX.h"
+#include "GuiObjects/ParamArc.h"
+#include "GuiObjects/Buttons.h"
+#include "GuiObjects/Spinbox.h"
+#include "GuiObjects/EnvelopeGraph.h"
 
 #define PEAK_AVG_TIME 2
 #define VOL_OFFSET 15
@@ -17,7 +21,7 @@ private:
     uint8_t octave = 4;
     int8_t volume = 0;
     uint8_t pitchbendRange = 2;
-    bool useVelocity = true;
+    bool useVelocity = false;
     bool usePitchbend = false;
     bool useModwheel = true;
     // osc
@@ -64,11 +68,10 @@ private:
     lv_obj_t* volArc;
     lv_obj_t* volBar;
     lv_obj_t* peakLed;
-    lv_obj_t* octaveSpinbox;
+    Spinbox* octaveSpinboxNew;
     lv_obj_t* pitchDropdown;
-    lv_obj_t* pitchText;
-    lv_obj_t* pitchBtn;
-    lv_obj_t* velocityBtn;
+    Button* pitchBtnNew;
+    Button* velocityBtnNew;
     // osc1 and osc 2 share the same objects
     lv_obj_t* oscMenuArea;
     lv_obj_t* oscWaveDropdown;
@@ -77,12 +80,12 @@ private:
     lv_obj_t* oscOctaveSpinbox;
     lv_obj_t* oscSemiSpinbox;
     lv_obj_t* oscArc[3];
+    ParamArc* oscArcNew;
     // noise
     lv_obj_t *noiseArc;
     // ampEnv, env1 and env2 share the same objects
     lv_obj_t* envMenuArea;
-    lv_obj_t* envGraph;
-    lv_point_t envPoints[10];
+    EnvelopeGraph* envGraphNew;
     lv_obj_t* envArc[5];
     // filter
     lv_obj_t* filterArc[4];
@@ -101,6 +104,12 @@ private:
     lv_obj_t* rootKeyBtn;
     lv_obj_t* samplerArc[2];
     lv_obj_t* rootKeySelectTitleText;
+
+    static void onVelocityBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled);
+    static void onPitchBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled);
+    static void onPitchBtnHolded(void *targetPointer, lv_obj_t *labelObj);
+    static void onOscPwmArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
+    static void onOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value);
 
     // *lvgl gui callbacks
     static void onVelocityBtnPressed(lv_event_t* e);
@@ -158,6 +167,8 @@ public:
 
     void update();
     PROGMEM void init();
+    void load();
+    void unload();
     
     // *user data
     FXFreeverb_Mem reverbMem;

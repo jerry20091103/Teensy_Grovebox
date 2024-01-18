@@ -47,6 +47,10 @@ public:
     virtual void update() = 0;
     // Initialize a page at program startup
     virtual void init() = 0;
+    // Load a page before switching to it
+    virtual void load() = 0;
+    // Unload a page before switching to another page
+    virtual void unload() = 0;
 
     int pageID;
     char pageName[MAX_PAGE_NAME];
@@ -70,7 +74,7 @@ public:
     // Initial all pages at program start
     PROGMEM void Init();
     // Switch to a page, will auto hide popup when in a popup.
-    void switchPage(uint8_t pageID);
+    void switchPage(uint8_t pageID, bool isGoBack = false);
     // Show power off popup
     void showPowerPopup();
     // Go back to previous page

@@ -4,8 +4,8 @@
 #include "misc/lv_log.h"
 
 // 2 diff buffers for the LCD
-ILI9341_T4::DiffBuffStatic<8000> tft_diff1;
-ILI9341_T4::DiffBuffStatic<8000> tft_diff2;
+DMAMEM ILI9341_T4::DiffBuffStatic<8000> tft_diff1;
+DMAMEM ILI9341_T4::DiffBuffStatic<8000> tft_diff2;
 
 // Display driver object
 ILI9341_T4::ILI9341Driver tft(TFT_CS, TFT_DC, TFT_SCK, TFT_MOSI, TFT_MISO, TFT_RST, TFT_TOUCH_CS, TFT_TOUCH_IRQ);
@@ -213,5 +213,7 @@ void HardwareSetup()
     }
 
     // Setup midi callbacks
+#ifndef DEBUG
     usbMIDI.setHandleControlChange(onControlChange);
+#endif
 }

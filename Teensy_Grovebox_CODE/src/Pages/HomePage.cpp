@@ -1,5 +1,6 @@
 #include "HomePage.h"
 #include "Hardware.h"
+#include "GuiObjects/Colors.h"
 
 void HomePage::onBtnPressed(lv_event_t *e)
 {
@@ -106,4 +107,12 @@ void HomePage::init()
     lv_obj_set_y(btnMatrix, 35);
     lv_btnmatrix_set_map(btnMatrix, btnMap);
     lv_obj_add_event_cb(btnMatrix, onBtnPressed, LV_EVENT_VALUE_CHANGED, this);
+}
+
+void HomePage::load()
+{
+}
+
+void HomePage::unload()
+{
 }

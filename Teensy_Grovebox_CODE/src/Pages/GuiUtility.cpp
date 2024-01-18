@@ -1,4 +1,5 @@
 #include "GuiUtility.h"
+#include "GuiObjects/Colors.h"
 
 // Global styles
 static lv_style_t style_paramArcMain;

@@ -4,6 +4,46 @@
 #include "Audio/AudioSynth.h"
 #include "Audio/AudioIO.h"
 #include "Audio/AudioUtility.h"
+#include "GuiObjects/Colors.h"
+
+
+void SynthPage::onVelocityBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
+{
+    SynthPage *instance = (SynthPage *)targetPointer;
+    instance->useVelocity = isToggled;
+    AudioSynth.setUseVelocity(isToggled);
+}
+
+void SynthPage::onPitchBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
+{
+    SynthPage *instance = (SynthPage *)targetPointer;
+    instance->usePitchbend = isToggled;
+    if (!isToggled)
+        AudioSynth.pitchbend(0, 0);
+}
+
+void SynthPage::onPitchBtnHolded(void *targetPointer, lv_obj_t *labelObj)
+{
+    SynthPage *instance = (SynthPage *)targetPointer;
+    lv_dropdown_open(instance->pitchDropdown);
+}
+
+void SynthPage::onOscPwmArcPressed(void * targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
+{
+    SynthPage *instance = (SynthPage *)targetPointer;
+    instance->oscPwm[0] = value;
+    AudioSynth.setOscPwm(0, value);
+    lv_label_set_text_fmt(valueTextObj, "%d", value);
+}
+
+void SynthPage::onOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value)
+{
+    SynthPage *instance = (SynthPage *)targetPointer;
+    // set value text
+    lv_label_set_text_fmt(valueTextObj, "%d", value);
+    // set octave
+    instance->octave = value;
+}
 
 void SynthPage::onVelocityBtnPressed(lv_event_t *e)
 {
@@ -32,7 +72,7 @@ void SynthPage::onPitchDropdownSelect(lv_event_t *e)
     lv_obj_t *dropdown = lv_event_get_target(e);
     uint8_t id = lv_dropdown_get_selected(dropdown);
     instance->pitchbendRange = id + 1;
-    lv_label_set_text_fmt(instance->pitchText, "Pitch: %d", instance->pitchbendRange);
+    lv_label_set_text_fmt(instance->pitchBtnNew->getLabelObject(), "Pitch: %d", instance->pitchbendRange);
 }
 
 void SynthPage::onOctaveSelect(lv_event_t *e)
@@ -107,8 +147,8 @@ void SynthPage::onMenuPageChange(lv_event_t *e)
         Gui_SpinboxSetValue(instance->oscSemiSpinbox, instance->oscSemi[id]);
         AudioSynth.setOscSemi(id, instance->oscSemi[id]);
 
-        lv_arc_set_value(instance->oscArc[0], instance->oscPwm[id]);
-        lv_event_send(instance->oscArc[0], LV_EVENT_VALUE_CHANGED, NULL);
+        // lv_arc_set_value(instance->oscArc[0], instance->oscPwm[id]);
+        // lv_event_send(instance->oscArc[0], LV_EVENT_VALUE_CHANGED, NULL);
 
         lv_arc_set_value(instance->oscArc[1], instance->oscDetune[id]);
         lv_event_send(instance->oscArc[1], LV_EVENT_VALUE_CHANGED, NULL);
@@ -162,11 +202,11 @@ void SynthPage::onOscArcPressed(lv_event_t *e)
     {
     case 0:
         // pwm
-        if (enc[0] != NULL)
-            enc[0]->setCurrentReading(value);
-        instance->oscPwm[menuId] = value;
-        AudioSynth.setOscPwm(menuId, value);
-        lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
+        // if (enc[0] != NULL)
+        //     enc[0]->setCurrentReading(value);
+        // instance->oscPwm[menuId] = value;
+        // AudioSynth.setOscPwm(menuId, value);
+        // lv_label_set_text_fmt(Gui_ParamArcGetValueText(arc), "%d", value);
         break;
     case 1:
         // detune
@@ -318,7 +358,7 @@ void SynthPage::onEnvArcPressed(lv_event_t *e)
         break;
     }
     // envelope graph needs all envelope values...
-    Gui_SetEnvelopeGraph(instance->envGraph, instance->envPoints,
+    instance->envGraphNew->setEnvelope(
                          powf(ENV_VAL_INCREMENT, curVal[0]) - 1,
                          powf(ENV_VAL_INCREMENT, curVal[1]) - 1,
                          powf(ENV_VAL_INCREMENT, curVal[2]) - 1,
@@ -598,20 +638,10 @@ void SynthPage::onBtnPressed(uint8_t pin)
             AudioSynth.sustainOn();
             break;
         case BTN_FN0:
-            octave--;
-            if (octave < 1)
-            {
-                octave = 1;
-            }
-            Gui_SpinboxSetValue(octaveSpinbox, octave);
+            octaveSpinboxNew->pressButtonMinus();
             break;
         case BTN_FN1:
-            octave++;
-            if (octave > 8)
-            {
-                octave = 8;
-            }
-            Gui_SpinboxSetValue(octaveSpinbox, octave);
+            octaveSpinboxNew->pressButtonPlus();
             break;
         }
     }
@@ -666,7 +696,8 @@ void SynthPage::onEncTurned(uint8_t id, int value)
         switch (id)
         {
         case 0: // pwm
-            lv_arc_set_value(oscArc[id], value);
+            // lv_arc_set_value(oscArc[id], value);
+            paramArcBindingTable[0]->encoderCallback(value);
             break;
         case 1: // detune
             lv_arc_set_value(oscArc[id], value - 100);
@@ -675,7 +706,8 @@ void SynthPage::onEncTurned(uint8_t id, int value)
             lv_arc_set_value(oscArc[id], value);
             break;
         }
-        lv_event_send(oscArc[id], LV_EVENT_VALUE_CHANGED, NULL);
+        if (id != 0)
+            lv_event_send(oscArc[id], LV_EVENT_VALUE_CHANGED, NULL);
     }
     else if (curMenu == menu_noise)
     {
@@ -767,7 +799,9 @@ void SynthPage::configureEncoders()
     else if (curMenu == menu_osc[0])
     {
         // pwm
-        enc[0]->changePrecision(100, oscPwm[0], false);
+        // enc[0]->changePrecision(100, oscPwm[0], false);
+        oscArcNew->bindEncoder(0);
+        oscArcNew->setValue(oscPwm[0]);
         // detune
         enc[1]->changePrecision(200, oscDetune[0] + 100, false);
         // level
@@ -841,20 +875,14 @@ void SynthPage::configureEncoders()
 void SynthPage::setUserData()
 {
     // main menu
-    Gui_SpinboxSetValue(octaveSpinbox, octave);
+    octaveSpinboxNew->setValue(octave);
     lv_arc_set_value(volArc, volume);
     lv_event_send(volArc, LV_EVENT_VALUE_CHANGED, NULL);
     AudioSynth.setUseVelocity(useVelocity);
-    if (useVelocity)
-        lv_obj_add_state(velocityBtn, LV_STATE_CHECKED);
-    else
-        lv_obj_clear_state(velocityBtn, LV_STATE_CHECKED);
+    velocityBtnNew->setToggle(useVelocity);
     lv_dropdown_set_selected(pitchDropdown, pitchbendRange - 1);
-    lv_label_set_text_fmt(pitchText, "Pitch: %d", pitchbendRange);
-    if (usePitchbend)
-        lv_obj_add_state(pitchBtn, LV_STATE_CHECKED);
-    else
-        lv_obj_clear_state(pitchBtn, LV_STATE_CHECKED);
+    lv_label_set_text_fmt(pitchBtnNew->getLabelObject(), "Pitch: %d", pitchbendRange);
+    pitchBtnNew->setToggle(usePitchbend);
     lv_img_set_src(oscWaveItemImg[0], getOscWaveImg(oscWaveform[0]));
     lv_img_set_src(oscWaveItemImg[1], getOscWaveImg(oscWaveform[1]));
 
@@ -967,12 +995,19 @@ void SynthPage::init()
     oscSemiSpinbox = Gui_CreateSpinbox(oscMenuArea, onOscSemiSelect, this);
     lv_obj_align(oscSemiSpinbox, LV_ALIGN_TOP_LEFT, 210, 43);
     // *pwm arc
-    oscArc[0] = Gui_CreateParamArc(oscMenuArea, 1, "PWM", "%", false);
-    Gui_setObjIdFlag(oscArc[0], 0);
-    lv_obj_align(oscArc[0], LV_ALIGN_TOP_LEFT, 0, 100);
+    oscArcNew =  new ParamArc(oscMenuArea, 1, "PWM", "%", false);
+    lv_obj_align(oscArcNew->getLvglObject(), LV_ALIGN_TOP_LEFT, 0, 100);
     // set value
-    lv_arc_set_range(oscArc[0], 0, 100);
-    lv_obj_add_event_cb(oscArc[0], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
+    oscArcNew->setRangeMax(100);
+    oscArcNew->setCallback(onOscPwmArcPressed, this);
+    // oscArcNew->bindEncoder(0);
+
+    // oscArc[0] = Gui_CreateParamArc(oscMenuArea, 1, "PWM", "%", false);
+    // Gui_setObjIdFlag(oscArc[0], 0);
+    // lv_obj_align(oscArc[0], LV_ALIGN_TOP_LEFT, 0, 100);
+    // // set value
+    // lv_arc_set_range(oscArc[0], 0, 100);
+    // lv_obj_add_event_cb(oscArc[0], onOscArcPressed, LV_EVENT_VALUE_CHANGED, this);
     // *detune arc
     oscArc[1] = Gui_CreateParamArc(oscMenuArea, 2, "Detune", "cent", false);
     Gui_setObjIdFlag(oscArc[1], 1);
@@ -1012,7 +1047,7 @@ void SynthPage::init()
     envMenuArea = createItemMenuArea(menu_ampenv); // set parent to amp env menu for now
     lv_obj_clear_flag(envMenuArea, LV_OBJ_FLAG_SCROLLABLE);
     // *envelope graph
-    envGraph = Gui_CreateEnvelopeGraph(envMenuArea, 320, 90);
+    envGraphNew = new EnvelopeGraph(envMenuArea, 320, 90);
     // *5 envelope arcs
     const char *envTitle[] = {"Delay", "Attack", "Decay", "Sustain", "Release"};
     for (uint8_t arcId = 0; arcId < 5; arcId++)
@@ -1153,17 +1188,17 @@ void SynthPage::init()
     lv_label_set_text(label, "Octave");
     lv_obj_set_style_text_font(label, font_small, 0);
     lv_obj_set_pos(label, 23, 38);
-    octaveSpinbox = Gui_CreateSpinbox(selectArea, onOctaveSelect, this, 1);
-    lv_obj_align(octaveSpinbox, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+    octaveSpinboxNew = new Spinbox(selectArea, 1);
+    octaveSpinboxNew->setRange(1, 8);
+    octaveSpinboxNew->setCallback(onOctaveSelect, this);
+    lv_obj_align(octaveSpinboxNew->getLvglObject(), LV_ALIGN_BOTTOM_LEFT, 0, 0);
 
     // *velocity button
-    velocityBtn = Gui_CreateButton(selectArea, 60, 30, NULL, true);
-    lv_obj_align(velocityBtn, LV_ALIGN_BOTTOM_LEFT, 100, 0);
-    lv_obj_add_event_cb(velocityBtn, onVelocityBtnPressed, LV_EVENT_CLICKED, this);
-    label = lv_label_create(velocityBtn);
-    lv_label_set_text(label, "Velocity");
-    lv_obj_set_style_text_font(label, font_small, 0);
-    lv_obj_center(label);
+    velocityBtnNew = new Button(selectArea, 60, 30, "Velocity", true);
+    lv_obj_align(velocityBtnNew->getLvglObject(), LV_ALIGN_BOTTOM_LEFT, 100, 0);
+    velocityBtnNew->setPressedCallback(onVelocityBtnPressed, this);
+    lv_obj_set_style_text_font(velocityBtnNew->getLabelObject(), font_small, 0);
+
     // *pitch bend button
     // add a dropdown right under it
     pitchDropdown = lv_dropdown_create(selectArea);
@@ -1171,13 +1206,12 @@ void SynthPage::init()
     lv_obj_align(pitchDropdown, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_dropdown_set_options(pitchDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12");
     lv_obj_add_event_cb(pitchDropdown, onPitchDropdownSelect, LV_EVENT_VALUE_CHANGED, this);
-    pitchBtn = Gui_CreateButton(selectArea, 60, 30, NULL, true);
-    lv_obj_align(pitchBtn, LV_ALIGN_BOTTOM_LEFT, 170, 0);
-    lv_obj_add_event_cb(pitchBtn, onPitchBtnPressed, LV_EVENT_CLICKED, this);
-    lv_obj_add_event_cb(pitchBtn, onPitchBtnHolded, LV_EVENT_LONG_PRESSED, this);
-    pitchText = lv_label_create(pitchBtn);
-    lv_obj_set_style_text_font(pitchText, font_small, 0);
-    lv_obj_center(pitchText);
+
+    pitchBtnNew = new Button(selectArea, 60, 30, "Pitch", true);
+    lv_obj_align(pitchBtnNew->getLvglObject(), LV_ALIGN_BOTTOM_LEFT, 170, 0);
+    pitchBtnNew->setPressedCallback(onPitchBtnPressed, this);
+    pitchBtnNew->setHoldCallback(onPitchBtnHolded, this);
+    lv_obj_set_style_text_font(pitchBtnNew->getLabelObject(), font_small, 0);
 
     //  *volume bar
     volBar = Gui_CreateVolumeMeter(selectArea, 115, 10);
@@ -1281,6 +1315,14 @@ void SynthPage::init()
 
     // *At last, add menu change callback
     lv_obj_add_event_cb(menu, onMenuPageChange, LV_EVENT_VALUE_CHANGED, this);
+}
+
+void SynthPage::load()
+{
+}
+
+void SynthPage::unload()
+{
 }
 
 lv_obj_t *SynthPage::createItemBtn(lv_obj_t *parent, const char *text)

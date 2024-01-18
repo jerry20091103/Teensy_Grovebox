@@ -2,6 +2,7 @@
 #define RECORD_CLIP_H
 #include "Audio.h"
 #include "../AudioUtility.h"
+#include "Utility/SerialPrint.h"
 
 // Record an audio clip into to EXTMEM
 
@@ -16,7 +17,7 @@ public:
         clip = (audio_block_data_t*) extmem_malloc(AUDIO_RECORD_CLIP_MAX_LENGTH * sizeof(audio_block_data_t));
         if (clip == NULL)
         {
-            Serial.println("ERROR: AudioRecordClip::AudioRecordClip(), could not allocate memory for clip");
+            serialPrintln("ERROR: AudioRecordClip::AudioRecordClip(), could not allocate memory for clip");
         }
     }
     virtual void update(void)

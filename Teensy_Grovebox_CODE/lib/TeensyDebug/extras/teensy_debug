@@ -1,0 +1,488 @@
+#!/usr/bin/env python
+# Copyright 2020 by Fernando Trias
+
+#
+# Program Teensy, wait for it to come back online and start GDB.
+# This program will:
+#   1. Run teensy_post_compile to upload program.
+#   2. Run teensy_ports to figure out what ports to use.
+#   3. Run GDB in new window pointing to right port.
+#
+# Use with "-i" to install the program as the default uploader.
+# This will:
+#   1. copy this script to the "tools" directory.
+#   2. create a boards.local.txt and platform.local.txt file.
+#      These files will redirect uploads to this script.
+#    
+
+from __future__ import print_function
+
+import subprocess
+import sys
+import os
+import os.path
+import time
+import sys
+import re
+import tempfile
+import stat
+import shutil
+from os.path import expanduser
+import glob
+
+try:
+  import customize
+  customRun = customize.customRun
+except:
+  customRun = None
+
+#####################################
+#
+# Process args in style of teensy_post_compile
+#
+#####################################
+
+class args:
+  def set(self, k, v):
+    self.__dict__[k] = v
+  def has(self, k):
+    return k in self.__dict__
+
+def parseCommandLine(x=None):
+  ret = args()
+  if x is None:
+    x = sys.argv[1:]
+
+  for arg in x:
+    a = arg.split('=')
+    name = a[0]
+    if name[0] == '-':
+      name = name[1:]
+    else:
+      print("Invalid parameter", name)
+      continue
+    if len(a) > 1:
+      ret.set(name, a[1])
+    else:
+      ret.set(name, 1)
+  return ret
+
+#####################################
+#
+# Installation code
+#
+#####################################
+
+def askUser(question):
+  global args
+  if args.has("y"):
+    return True
+  print(question)
+  # print("[y/N]? ", end='')
+  sys.stdout.write("[y/N]? ")
+  sys.stdout.flush()
+  ask = sys.stdin.readline()
+  if ask[0] == 'y' or ask[0] == 'Y':
+    return True
+  return False
+
+def pauseUser():
+  global args
+  if args.has("y"):
+    return
+  print("Press Enter to close")
+  sys.stdin.readline()
+
+def installGDB():
+  global args
+
+  print("Install GDB in Teensyduino")
+
+  if os.name == 'nt':
+    EXT = ".exe"
+  elif sys.platform == 'darwin':
+    EXT = ""
+  else:
+    EXT = ""
+
+  # find the Arduino directory
+  if args.has("i") and args.i != 1:
+    DIR = args.i
+  else:
+    if os.name == 'nt':
+      DIR = "C:/Program Files (x86)/Arduino/"
+    elif sys.platform == 'darwin':
+      APPDIR = "/Applications/"
+      if os.path.exists(APPDIR + "Teensyduino.app"):
+        DIR = APPDIR + "Teensyduino.app/"
+      # elif os.path.exists(DIR + "Arduino.app"):
+      else:
+        DIR = APPDIR + "Arduino.app/"    
+    else:
+      try:
+        DIR = os.readlink("/usr/local/bin/arduino")
+        DIR = os.path.dirname(DIR) + "/"
+      except:
+        DIR = ''
+
+  while(True):
+    if os.path.exists(DIR + "hardware/teensy"):
+      TOOLS = DIR + "hardware/tools/"
+      AVR = DIR + "hardware/teensy/avr/"
+      break
+    elif os.path.exists(DIR + "Contents/Java/hardware/teensy"):
+      TOOLS = DIR + "Contents/Java/hardware/tools/"
+      AVR = DIR + "Contents/Java/hardware/teensy/avr/"
+      break
+    else:
+      if os.path.exists(DIR + "hardware"):
+        print("Arduino found in %s" % DIR)
+      print("Teensyduino not found inside %s" % DIR)
+      print("Where is Arduino installed? ")
+      print("? ", end='')
+      DIR = input()
+      DIR = DIR.strip() + "/"
+
+  # find the custom library folder
+  HOME = expanduser("~")
+  DEST = HOME + "/Arduino/libraries/"
+  if not os.path.exists(DEST):
+    DEST = HOME + "/Documents/Arduino/libraries/"
+
+  while(not os.path.exists(DEST)):
+    print("Custom library folder not found in %s" % DEST)
+    print("Where are custom libraries installed? ")
+    print("? ", end='')
+    DEST = input()
+    DEST = DEST.strip() + "/"
+
+  DEST += "TeensyDebug/"
+
+  # confirm locations
+  print("Teensyduino found in %s" % DIR)
+  print("Teensyduino tools in %s" % TOOLS)
+  print("Teensyduino custom library in %s" % DEST)
+
+  ask = askUser("Is this OK?")
+  if not ask:
+    return 0
+
+  if os.path.exists(DEST):
+    print("Already installed. Updating.")
+
+  createFiles(AVR)
+
+  # shutil.copy("run.command", TOOLS)
+  if EXT == ".exe":
+    print("Copy teensy_debug.exe to %s" % TOOLS)
+    shutil.copy("teensy_debug.exe", TOOLS)
+  elif EXT == "command":
+    print("Copy teensy_debug to %s" % TOOLS)
+    shutil.copy("teensy_debug", TOOLS + "teensy_debug")
+  else:
+    print("Copy teensy_debug to %s" % TOOLS)
+    shutil.copy("teensy_debug", TOOLS + "teensy_debug")
+
+  if not os.path.exists(DEST):
+    os.makedirs(DEST)
+
+  for i in ("../README.md", "../library.properties", "../keywords.txt", "../license.txt"):
+    print("Copy %s to %s" % (i, DEST))
+    shutil.copy(i, DEST)
+
+  for dir in ("src", "examples"):
+    print("Copy %s to %s" % (dir, DEST))
+    try:
+      shutil.rmtree(DEST + '/'  + dir)
+    except:
+      pass
+    shutil.copytree('../' +  dir, DEST + '/'  + dir)
+
+  print("\nInstallation complete\n")
+
+def createFiles(AVR):
+  mode = "w"
+  board = AVR + "boards.local.txt"
+  if os.path.exists(board):
+    ask = askUser("File %s already exists. Would you like to overwrite it? " % board)
+    if not ask:
+      ask = askUser("Would you like to append to it? ")
+      if not ask:
+        return
+      mode = "a"
+
+  print("Create %s" % (board))
+  with open(board, mode) as f:
+    f.write("menu.gdb=GDB\n")
+    for ver in ('41','40','31','36'):
+      f.write("""
+teensy%s.menu.gdb.serial=Take over Serial
+teensy%s.menu.gdb.serial.build.gdb=2
+teensy%s.menu.gdb.serial.build.flags.optimize=-Og -g -DGDB_TAKE_OVER_SERIAL
+teensy%s.menu.gdb.serial.upload.tool=gdbtool
+teensy%s.menu.gdb.dual=Use Dual Serial
+teensy%s.menu.gdb.dual.build.gdb=1
+teensy%s.menu.gdb.dual.build.flags.optimize=-Og -g -DGDB_DUAL_SERIAL
+teensy%s.menu.gdb.dual.upload.tool=gdbtool
+teensy%s.menu.gdb.manual=Manual device selection
+teensy%s.menu.gdb.manual.build.gdb=3
+teensy%s.menu.gdb.manual.build.flags.optimize=-Og -g -DGDB_MANUAL_SELECTION
+teensy%s.menu.gdb.manual.upload.tool=gdbtool
+teensy%s.menu.gdb.compile=Just compile
+teensy%s.menu.gdb.compile.build.gdb=0
+teensy%s.menu.gdb.compile.build.flags.optimize=-Og -g -DGDB_MANUAL_SELECTION
+teensy%s.menu.gdb.compile.upload.tool=gdbtool
+teensy%s.menu.gdb.off=Off
+teensy%s.menu.gdb.off.build.gdb=0
+""".replace("%s", ver))
+
+  print("Create %s/platform.local.txt" % (AVR))
+  with open(AVR + "platform.local.txt", mode) as f:
+    f.write("""
+tools.gdbtool.cmd.path={runtime.hardware.path}/../tools
+tools.gdbtool.upload.params.quiet=
+tools.gdbtool.upload.params.verbose=-verbose
+tools.gdbtool.upload.pattern="{cmd.path}/teensy_debug" "-gdb={build.gdb}" "-file={build.project_name}" "-path={build.path}" "-tools={cmd.path}" "-board={build.board}" -reboot "-port={serial.port}" "-portlabel={serial.port.label}" "-portprotocol={serial.port.protocol}"
+""")
+
+
+#####################################
+#
+# Execution code
+#
+#####################################
+
+def getPort():
+  global args
+
+  usedev = None
+
+  # wait for Teensy to come online
+  for i in range(10):
+    out = subprocess.Popen([args.tools + '/teensy_ports', '-L'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = out.communicate()
+    if len(stdout) > 10: 
+      info = stdout.decode().split(' ')
+      # print("dev", info)
+      dev = info[1]
+      if dev != '[no_device]':
+        break
+    time.sleep(0.5)
+
+  # couldn't find it within timeout?
+  if len(stdout) < 10:
+    print("Could not find Teensy")
+    return None
+
+  if args.port.startswith("/dev/tty"):
+    dev = args.port
+  if args.port.upper().startswith("COM"):
+    dev = args.port
+
+  # For Windows, com port determination is complex so I'll just guess
+  if os.name == 'nt':
+    p = re.match(r'COM(\d+)', dev.upper())
+    comport = int(p.group(1))
+    # If taking over serial, return the passed in port
+    if args.gdb == "2":
+      usedev = "COM%d" % (comport)
+    #  it's the one
+    # after the programming port in Dual Serial mode
+    elif args.gdb == "1":
+      usedev = "COM%d" % (comport+1)
+    else:
+      usedev = "COM%d" % (comport)
+    return "\\\\.\\"+usedev
+
+  # If we're taking over the serial port, return what was passed in
+  if args.gdb == "2":
+    return dev
+
+  p = re.search(r'^([^\d]+)(\d+)$', dev)
+  if p is None:
+    print("Could not find serial port id in ", dev)
+    return None
+
+  # For Mac/Linux, find the file pattern for serial devices, list them all
+  # and pick the one after our programming port
+  prefix = p.group(1)
+  found = False
+  for n in sorted(glob.glob(prefix + "*")):
+    if n == dev:
+      found = True
+    elif found:
+      return n
+
+  return None
+
+  # Get the port status and find the right port to connect with. The right port
+  # is any port that we are not using for programming and serial monitor. Probably
+  # should be smarter
+  out = subprocess.Popen([args.tools + '/teensy_ports'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  # wait for results
+  time.sleep(2)
+  # program stays on indefinitely, must kill it
+  out.kill()
+  # get output to parse
+  stdout,stderr = out.communicate()
+
+  devs = []
+  # parse the output to get the ports
+  for line in stdout.decode().splitlines():
+    if not re.search('label', line): continue
+    if re.search('no_device', line): continue
+    if not re.search('Serial', line): continue
+    a = line.split(': ')
+    dev = a[1][1:].split(' ')[0]
+    # if using dual serials and it's the programming port, ignore it
+    if args.gdb == "1" and dev == args.port: continue
+    # print(dev)
+    devs.append(dev)
+
+  if len(devs) <= 0:
+    print("Could not find an extra Serial device. Did you compile one?")
+    return None
+
+  # get the last port found
+  usedev = sorted(devs)[-1]
+  if len(devs)==1:
+    usedev = devs[0]
+    print("Using device", usedev)
+  else:
+    usedev = sorted(devs)[-1]
+    print("Using device", usedev, "from available", devs)
+
+  return usedev
+
+def runGDB(arguments):
+  global args
+
+  # just install
+  if args.has("i"): 
+    installGDB()
+    exit(0)
+
+  # create boards.local.txt, etc.
+  if args.has("c"): 
+    createFiles("./")
+    exit(0)
+
+  elf = convertPathSlashes("%s/%s.elf" % (args.path, args.file))
+
+  # run command for programming Teensy
+  post = convertPathSlashes('%s/teensy_post_compile' % args.tools)
+  print("Programming...")
+  if os.name == 'nt':
+    x = subprocess.run([post] + arguments)
+    x = x.returncode
+  else:
+    argline = '" "'.join(arguments)
+    cmd1='"%s" "%s"' % (post, argline)
+    x = os.system(cmd1)
+
+  # something went wrong with programming
+  if x != 0:
+    exit(x)
+    
+  # wait for programming to complete properly, as teensy_post_compile
+  # returns before this, and even then the ports may not yet be enumerated
+  # Shows as "Bootloader" while loading, then blank while enumerating: we
+  # exit after these have occurred. We don't check for Serial in the
+  # final output, in case the user messed up!
+  print("wait for enumeration...")
+  ready = convertPathSlashes('%s/teensy_ports' % args.tools)
+  for i in range(0,20):
+    time.sleep(0.5)
+    x = subprocess.run([ready,'-L'],capture_output=True) # OK for Linux / macOS? Should be...
+    stdo = str(x.stdout)
+    mtch = re.search('Bootloader',stdo)
+    if not mtch and b'' != x.stdout:
+        print('Enumerated as %s' % stdo)
+        break
+    
+
+  # if gdb option is off or missing, don't run gdb so just end here
+  if args.has("gdb"):
+    if args.gdb == "0": 
+      return
+  else:
+    return
+
+  usedev = getPort()
+  if usedev is None:
+    return
+
+  gpath = args.tools + "/arm/bin/"
+  GDB = convertPathSlashes("%s/arm-none-eabi-gdb" % gpath)
+
+  if not customRun is None:
+    customRun(GDB, usedev, elf)
+    return
+
+  if args.gdb == "3":
+    gdbcommand = '"%s" "%s"' % (GDB, elf)
+  else:
+    gdbcommand = '"%s" -ex "target extended-remote %s" "%s"' % (GDB, usedev, elf)
+
+  print("RUN:", gdbcommand)
+  runCommand(gdbcommand)
+
+def convertPathSlashes(f):
+  if os.name == 'nt':
+    return f.replace("/", "\\")
+  return f
+
+def runOnMac(command):
+  f = tempfile.NamedTemporaryFile("w", suffix=".command", delete=False)
+  f.write(command)
+  f.write("\n")
+  f.close()
+  # make sure it's executable for Unix-like systems
+  os.chmod(f.name, stat.S_IREAD | stat.S_IEXEC)
+  # run in separate terminal
+  os.system("/usr/bin/open -a Terminal %s &" % f.name)
+
+def runOnLinux(command):
+  f = tempfile.NamedTemporaryFile("w", suffix=".sh", delete=False)
+  f.write("#!/bin/sh\n")
+  f.write(command)
+  f.write("\n")
+  f.close()
+  # make sure it's executable for Unix-like systems
+  os.chmod(f.name, stat.S_IREAD | stat.S_IEXEC)
+  # run in separate terminal
+  os.system("/usr/bin/xterm -e %s &" % f.name)
+
+def runOnWindows(command):
+  f = tempfile.NamedTemporaryFile("w", suffix=".bat", delete=False)
+  f.write(command)
+  f.write("\n")
+  f.close()
+  # run in separate terminal
+  # print("batch file is %s" % f.name)
+  os.system("start %s" % f.name)
+  # os.system(command)
+  # subprocess.run(["cmd.exe", "/k", f.name])
+
+def runCommand(command):
+  if os.name == 'nt':
+    runOnWindows(command)
+  elif sys.platform == 'darwin':
+    runOnMac(command)
+  else:
+    runOnLinux(command)
+
+#
+# Main code
+#
+
+args = parseCommandLine(sys.argv[1:])
+
+if len(sys.argv)==1:
+  try:
+    installGDB()
+  except Exception as ex:
+    print(ex)
+  pauseUser()
+else:
+  runGDB(sys.argv[1:])

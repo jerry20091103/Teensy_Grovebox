@@ -1,77 +1,54 @@
 #include "MidiPage.h"
 #include "Controls.h"
+#include "GuiObjects/Colors.h"
+#include "Utility/SerialPrint.h"
 
-// lvgl event callbacks
-void MidiPage::onArcValueChanged(lv_event_t *e)
+// Gui object callbacks
+void MidiPage::onCcArcTurned(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
 {
-    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
-    lv_obj_t *arc = lv_event_get_target(e);
+    MidiPage *instance = (MidiPage *)targetPointer;
+    // update CC
+    if (instance->encConfigure[encoderIndex])
+        return;
+    instance->updateCC(instance->curCC[encoderIndex], value);
+    // find other Arcs that are bound to the same CC and update them (without calling the setValue function, this will casuse infinite loop)
     for (uint8_t i = 0; i < 4; i++)
     {
-        if (arc == instance->ccArc[i])
+        if (i != encoderIndex && instance->curCC[i] == instance->curCC[encoderIndex] && !instance->encConfigure[i] && instance->ccArc[i] != NULL)
         {
-            instance->updateCC(instance->curCC[i], lv_arc_get_value(arc));
-            break;
+            lv_arc_set_value(instance->ccArc[i]->getLvglObject(), value);
+            if (instance->ccArc[i]->getEncoderIndex() >= 0)
+            {
+                enc[instance->ccArc[i]->getEncoderIndex()]->setCurrentReading(value);
+            }
         }
     }
 }
 
-void MidiPage::onTogglePitchbend(lv_event_t *e)
+void MidiPage::onTogglePitchbend(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
 {
-    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
-    instance->usePitchbend = !instance->usePitchbend;
+    MidiPage *instance = (MidiPage *)targetPointer;
+    instance->usePitchbend = isToggled;
 }
 
-void MidiPage::onToggleModwheel(lv_event_t *e)
+void MidiPage::onToggleModwheel(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
 {
-    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
-    instance->useModwheel = !instance->useModwheel;
+    MidiPage *instance = (MidiPage *)targetPointer;
+    instance->useModwheel = isToggled;
 }
 
-void MidiPage::onOctaveSelect(lv_event_t *e)
+void MidiPage::onOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value)
 {
-    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
-    lv_obj_t *btn = lv_event_get_target(e);
-    if (Gui_getObjIdFlag(btn) == 1)
-    {
-        // increase
-        instance->octave++;
-        if (instance->octave > 8)
-        {
-            instance->octave = 8;
-        }
-    }
-    else
-    {
-        // decrease
-        instance->octave--;
-        if (instance->octave < 1)
-        {
-            instance->octave = 1;
-        }
-    }
-    Gui_SpinboxSetValue(instance->octaveSpinbox, instance->octave);
+    MidiPage *instance = (MidiPage *)targetPointer;
+    instance->octave = value;
+    lv_label_set_text_fmt(valueTextObj, "%d", value);
 }
 
-void MidiPage::onChannelSelect(lv_event_t *e)
+void MidiPage::onChannelSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value)
 {
-    MidiPage *instance = (MidiPage *)lv_event_get_user_data(e);
-    lv_obj_t *btn = lv_event_get_target(e);
-    if (Gui_getObjIdFlag(btn) == 1)
-    {
-        // increase
-        instance->midiChannel++;
-        if (instance->midiChannel > 16)
-            instance->midiChannel = 16;
-    }
-    else
-    {
-        // decrease
-        instance->midiChannel--;
-        if (instance->midiChannel < 1)
-            instance->midiChannel = 1;
-    }
-    Gui_SpinboxSetValue(instance->channelSpinbox, instance->midiChannel);
+    MidiPage *instance = (MidiPage *)targetPointer;
+    instance->midiChannel = value;
+    lv_label_set_text_fmt(valueTextObj, "%d", value);
 }
 
 void MidiPage::onBtnPressed(uint8_t pin)
@@ -81,7 +58,9 @@ void MidiPage::onBtnPressed(uint8_t pin)
     if (keyNum > 0)
     {
         noteNum = keyNum - 1 + 12 * octave;
+#ifndef DEBUG 
         usbMIDI.sendNoteOn(noteNum, 120, midiChannel);
+#endif
     }
     else
     {
@@ -90,6 +69,7 @@ void MidiPage::onBtnPressed(uint8_t pin)
         case BTN_PWR:
             PageManager.switchPage(PG_AUDIO);
             break;
+#ifndef DEBUG
         case BTN_JOY:
             usbMIDI.sendControlChange(64, 127, midiChannel); // sustain
             break;
@@ -118,6 +98,7 @@ void MidiPage::onBtnPressed(uint8_t pin)
         case BTN_FN7:
             usbMIDI.sendControlChange(23, 127, midiChannel);
             break;
+#endif
         // ENC btns
         case BTN_ENC1:
             toggleEncConfigure(0);
@@ -157,12 +138,15 @@ void MidiPage::onBtnReleased(uint8_t pin)
     if (keyNum > 0)
     {
         noteNum = keyNum - 1 + 12 * octave;
+#ifndef DEBUG
         usbMIDI.sendNoteOff(noteNum, 120, midiChannel);
+#endif
     }
     else
     {
         switch (pin)
         {
+#ifndef DEBUG
         case BTN_JOY:
             usbMIDI.sendControlChange(64, 0, midiChannel);
             break;
@@ -184,7 +168,7 @@ void MidiPage::onBtnReleased(uint8_t pin)
         case BTN_FN7:
             usbMIDI.sendControlChange(23, 0, midiChannel);
             break;
-
+#endif
         default:
             break;
         }
@@ -196,22 +180,23 @@ void MidiPage::onEncTurned(uint8_t id, int value)
     if (encConfigure[id])
     {
         curCC[id] = value + CC_MIN;
-        lv_label_set_text_fmt(Gui_ParamArcGetValueText(ccArc[id]), "%d", curCC[id]);
+        lv_label_set_text_fmt(ccArc[id]->getValueTextObject(), "%d", curCC[id]);
     }
     else
     {
-        usbMIDI.sendControlChange(curCC[id], value, midiChannel);
-        updateCC(curCC[id], value);
+        paramArcBindingTable[id]->encoderCallback(value);
     }
 }
 
 void MidiPage::onJoyUpdate(int joy_x, int joy_y)
 {
     // TODO: joystick centering
+#ifndef DEBUG
     if (usePitchbend)
         usbMIDI.sendPitchBend(map(joy_x, 0, 1019, 8191, -8192), midiChannel);
     if (useModwheel)
         usbMIDI.sendControlChange(1, map(joy_y, 0, 1019, 0, 127), midiChannel);
+#endif
 }
 
 void MidiPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
@@ -237,49 +222,75 @@ void MidiPage::init()
     // create screen
     screen = lv_obj_create(NULL);
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
+    // lvgl object creation was moved to load() function
+}
+
+void MidiPage::load()
+{
+    // set encConfigure to false (exit the configure state when loading the page)
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        encConfigure[i] = false;
+    }
     // create lvgl objects
     // 4 CC arcs and CC text
-    lv_obj_t *arcGroup = lv_obj_create(screen);
+    arcGroup = lv_obj_create(screen);
     lv_obj_remove_style_all(arcGroup);
     lv_obj_set_size(arcGroup, 320, 80);
     lv_obj_set_pos(arcGroup, 0, 35);
 
     for (uint8_t i = 0; i < 4; i++)
     {
-        ccArc[i] = Gui_CreateParamArc(arcGroup, i + 1, NULL, NULL);
-        lv_arc_set_range(ccArc[i], 0, 127);
-        lv_obj_set_x(ccArc[i], lv_pct(25 * i));
-        lv_obj_add_event_cb(ccArc[i], onArcValueChanged, LV_EVENT_VALUE_CHANGED, this);
+        ccArc[i] = new ParamArc(arcGroup, i + 1);
+        serialPrintln("ccArc" + String(i) + " created");
+        ccArc[i]->setRangeMax(127);
+        ccArc[i]->bindEncoder(i);
+        ccArc[i]->setCallback(onCcArcTurned, this);
+        lv_obj_set_x(ccArc[i]->getLvglObject(), lv_pct(25 * i));
+        serialPrintln("ccArc" + String(i) + " enter setValue");
+        // set user data
+        ccArc[i]->setValue(storeCC[curCC[i] - CC_MIN]);
+        lv_label_set_text_fmt(ccArc[i]->getValueTextObject(), "%d", curCC[i]);
     }
     // button group
-    lv_obj_t *btnGroup = lv_obj_create(screen);
+    btnGroup = lv_obj_create(screen);
     lv_obj_remove_style_all(btnGroup);
     lv_obj_set_style_pad_all(btnGroup, 10, 0);
     lv_obj_set_size(btnGroup, 320, 135);
     lv_obj_set_pos(btnGroup, 0, 105);
     lv_obj_clear_flag(btnGroup, LV_OBJ_FLAG_SCROLLABLE);
     // pitchbend button
-    pitchBtn = Gui_CreateButton(btnGroup, 90, -1, "PitchBend", true);
-    lv_obj_add_event_cb(pitchBtn, onTogglePitchbend, LV_EVENT_CLICKED, this);
+    pitchBtn = new Button(btnGroup, 90, -1, "PitchBend", true);
+    pitchBtn->setPressedCallback(onTogglePitchbend, this);
+    pitchBtn->setToggle(usePitchbend);
     // mod button
-    modBtn = Gui_CreateButton(btnGroup, 90, -1, "ModWheel", true);
-    lv_obj_add_event_cb(modBtn, onToggleModwheel, LV_EVENT_CLICKED, this);
-    lv_obj_set_y(modBtn, 45);
+    modBtn = new Button(btnGroup, 90, -1, "ModWheel", true);
+    modBtn->setPressedCallback(onToggleModwheel, this);
+    modBtn->setToggle(useModwheel);
+    lv_obj_set_y(modBtn->getLvglObject(), 45);
     // octave select
     lv_obj_t *label = lv_label_create(btnGroup);
     lv_label_set_text(label, "Octave:");
     lv_obj_set_pos(label, 135, 7);
 
-    octaveSpinbox =  Gui_CreateSpinbox(btnGroup, onOctaveSelect, this);
-    lv_obj_set_x(octaveSpinbox, 205);
+    octaveSpinbox = new Spinbox(btnGroup);
+    octaveSpinbox->setRange(1, 8);
+    octaveSpinbox->setValue(octave);
+    octaveSpinbox->setCallback(onOctaveSelect, this);
+    lv_obj_set_x(octaveSpinbox->getLvglObject(), 205);
+    octaveSpinbox->setValue(octave);
 
     // channel select
     label = lv_label_create(btnGroup);
     lv_label_set_text(label, "Channel:");
     lv_obj_set_pos(label, 130, 52);
 
-    channelSpinbox = Gui_CreateSpinbox(btnGroup, onChannelSelect, this);
-    lv_obj_set_pos(channelSpinbox, 205, 45);
+    channelSpinbox = new Spinbox(btnGroup);
+    channelSpinbox->setRange(1, 16);
+    channelSpinbox->setValue(midiChannel);
+    channelSpinbox->setCallback(onChannelSelect, this);
+    lv_obj_set_pos(channelSpinbox->getLvglObject(), 205, 45);
+    channelSpinbox->setValue(midiChannel);
 
     // bottom buttons
     lv_obj_t *btn = Gui_CreateButton(btnGroup, 30, 30, LV_SYMBOL_PLAY, false, 1);
@@ -315,18 +326,39 @@ void MidiPage::init()
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 }
 
+void MidiPage::unload()
+{
+    serialPrintln("MidiPage unload");
+    // delete GUI objects
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        delete ccArc[i];
+    }
+    delete pitchBtn;
+    delete modBtn;
+    delete octaveSpinbox;
+    delete channelSpinbox;
+    // remember to set pointers to NULL
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        ccArc[i] = NULL;
+    }
+    pitchBtn = NULL;
+    modBtn = NULL;
+    octaveSpinbox = NULL;
+    channelSpinbox = NULL;
+    // delete parent lvgl object
+    lv_obj_del(arcGroup);
+    lv_obj_del(btnGroup);
+}
+
 void MidiPage::updateCC(uint8_t control, uint8_t value)
 {
     storeCC[control - CC_MIN] = value;
-    // did not use else if because two encoders may be mapped to the same CC
-    for (uint8_t i = 0; i < 4; i++)
-    {
-        if (control == curCC[i])
-        {
-            lv_arc_set_value(ccArc[i], value);
-            enc[i]->setCurrentReading(value);
-        }
-    }
+    // send the midi message
+#ifndef DEBUG
+    usbMIDI.sendControlChange(control, value, midiChannel);
+#endif
 }
 
 void MidiPage::toggleEncConfigure(uint8_t id)
@@ -335,67 +367,55 @@ void MidiPage::toggleEncConfigure(uint8_t id)
     {
         // enter configure state
         encConfigure[id] = true;
-        lv_obj_set_style_arc_color(ccArc[id], lv_color_white(), LV_PART_INDICATOR);
-        lv_arc_set_value(ccArc[id], 127);
-        switches.changeEncoderPrecision(0, CC_MAX - CC_MIN, curCC[id] - CC_MIN, true);
+        // set arc color to white and set knob size to 0
+        lv_obj_set_style_arc_color(ccArc[id]->getLvglObject(), lv_color_white(), LV_PART_INDICATOR);
+        lv_obj_set_style_bg_color(ccArc[id]->getLvglObject(), lv_color_white(), LV_PART_KNOB);
+        lv_obj_set_style_pad_all(ccArc[id]->getLvglObject(), -1, LV_PART_KNOB);
+        // fill the arc
+        lv_arc_set_value(ccArc[id]->getLvglObject(), 127);
+        // disable touch
+        lv_obj_clear_flag(ccArc[id]->getLvglObject(), LV_OBJ_FLAG_CLICKABLE);
+        switches.changeEncoderPrecision(id, CC_MAX - CC_MIN, curCC[id] - CC_MIN, false);
     }
     else
     {
         // exit configure state
         encConfigure[id] = false;
+        // set arc color back to original color and set knob size to 2
         switch (id)
         {
         case 0:
-            lv_obj_set_style_arc_color(ccArc[id], color_Red, LV_PART_INDICATOR);
+            lv_obj_set_style_arc_color(ccArc[id]->getLvglObject(), color_Red, LV_PART_INDICATOR);
+            lv_obj_set_style_bg_color(ccArc[id]->getLvglObject(), color_Red, LV_PART_KNOB);
             break;
         case 1:
-            lv_obj_set_style_arc_color(ccArc[id], color_Yellow, LV_PART_INDICATOR);
+            lv_obj_set_style_arc_color(ccArc[id]->getLvglObject(), color_Yellow, LV_PART_INDICATOR);
+            lv_obj_set_style_bg_color(ccArc[id]->getLvglObject(), color_Yellow, LV_PART_KNOB);
             break;
         case 2:
-            lv_obj_set_style_arc_color(ccArc[id], color_Blue, LV_PART_INDICATOR);
+            lv_obj_set_style_arc_color(ccArc[id]->getLvglObject(), color_Blue, LV_PART_INDICATOR);
+            lv_obj_set_style_bg_color(ccArc[id]->getLvglObject(), color_Blue, LV_PART_KNOB);
             break;
         case 3:
-            lv_obj_set_style_arc_color(ccArc[id], color_Green, LV_PART_INDICATOR);
+            lv_obj_set_style_arc_color(ccArc[id]->getLvglObject(), color_Green, LV_PART_INDICATOR);
+            lv_obj_set_style_bg_color(ccArc[id]->getLvglObject(), color_Green, LV_PART_KNOB);
             break;
         }
-        lv_arc_set_value(ccArc[id], storeCC[curCC[id] - CC_MIN]);
-        switches.changeEncoderPrecision(0, 127, storeCC[curCC[id] - CC_MIN], false);
+        lv_obj_set_style_pad_all(ccArc[id]->getLvglObject(), 2, LV_PART_KNOB);
+        // set the arc value back to the stored value
+        lv_arc_set_value(ccArc[id]->getLvglObject(), storeCC[curCC[id] - CC_MIN]);
+        // enable touch
+        lv_obj_add_flag(ccArc[id]->getLvglObject(), LV_OBJ_FLAG_CLICKABLE);
+        switches.changeEncoderPrecision(id, 127, storeCC[curCC[id] - CC_MIN], true);
     }
 }
 
 void MidiPage::configurePage()
 {
-    for (int i = 0; i < MAX_ROTARY_ENCODERS; i++)
-    {
-        if (encConfigure[i])
-        {
-            switches.changeEncoderPrecision(i, CC_MAX - CC_MIN, curCC[i] - CC_MIN, false);
-        }
-        else
-        {
-            switches.changeEncoderPrecision(i, 127, storeCC[curCC[i] - CC_MIN], false);
-        }
-    }
+    
 }
 
 void MidiPage::setUserData()
 {
-    for (uint8_t i = 0; i < 4; i++)
-    {
-        lv_arc_set_value(ccArc[i], storeCC[curCC[i] - CC_MIN]);
-        lv_label_set_text_fmt(Gui_ParamArcGetValueText(ccArc[i]), "%d", curCC[i]);
-    }
-
-    Gui_SpinboxSetValue(octaveSpinbox, octave);
-    Gui_SpinboxSetValue(channelSpinbox, midiChannel);
-
-    if (usePitchbend)
-        lv_obj_add_state(pitchBtn, LV_STATE_CHECKED);
-    else
-        lv_obj_clear_state(pitchBtn, LV_STATE_CHECKED);
-
-    if (useModwheel)
-        lv_obj_add_state(modBtn, LV_STATE_CHECKED);
-    else
-        lv_obj_clear_state(modBtn, LV_STATE_CHECKED);
+    
 }

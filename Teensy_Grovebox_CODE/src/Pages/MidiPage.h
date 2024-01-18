@@ -2,6 +2,9 @@
 #define MIDIPAGE_H
 
 #include "Pages.h"
+#include "GuiObjects/ParamArc.h"
+#include "GuiObjects/Spinbox.h"
+#include "GuiObjects/Buttons.h"
 
 #define CC_MAX 119
 #define CC_MIN 11
@@ -16,12 +19,16 @@ private:
     const uint8_t rewindMsg[4] = {0x7f, 0x01, 0x06, 0x05};
     const uint8_t recordMsg[4] = {0x7f, 0x01, 0x06, 0x07};
 
-    // lvgl object refs
-    lv_obj_t *ccArc[4];
-    lv_obj_t *octaveSpinbox;
-    lv_obj_t *channelSpinbox;
-    lv_obj_t *pitchBtn;
-    lv_obj_t *modBtn;
+    // lvgl objects refs (parents)
+    lv_obj_t *arcGroup;
+    lv_obj_t *btnGroup;
+
+    // GUI object refs
+    ParamArc *ccArc[4];
+    Spinbox *octaveSpinbox;
+    Spinbox *channelSpinbox;
+    Button *pitchBtn;
+    Button *modBtn;
 
     // user data
     uint8_t curCC[4] = {11, 12, 13, 14}; // stores the current CC number each encoder is set to
@@ -36,12 +43,12 @@ private:
     void updateCC(uint8_t control, uint8_t value);
     // toggle configuire state of an encoder
     void toggleEncConfigure(uint8_t id);
-    // lvgl gui callbacks
-    static void onArcValueChanged(lv_event_t *e);
-    static void onTogglePitchbend(lv_event_t *e);
-    static void onToggleModwheel(lv_event_t *e);
-    static void onOctaveSelect(lv_event_t *e);
-    static void onChannelSelect(lv_event_t *e);
+    // Gui object callbacks
+    static void onCcArcTurned(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
+    static void onTogglePitchbend(void *targetPointer, lv_obj_t *labelObj, bool isToggled);
+    static void onToggleModwheel(void *targetPointer, lv_obj_t *labelObj, bool isToggled);
+    static void onOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value);
+    static void onChannelSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value);
 
 public:
     void onBtnPressed(uint8_t pin);
@@ -55,6 +62,8 @@ public:
 
     void update();
     PROGMEM void init(); 
+    void load();
+    void unload();
 };
 
 #endif

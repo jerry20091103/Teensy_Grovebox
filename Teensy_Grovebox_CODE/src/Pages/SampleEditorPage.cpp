@@ -2,6 +2,8 @@
 #include "Controls.h"
 #include "Audio/AudioSynth.h"
 #include "Audio/AudioObjects.h"
+#include "GuiObjects/Colors.h"
+#include "Utility/SerialPrint.h"
 
 #define CURSOR_INCREMENT 0.002f
 
@@ -203,7 +205,7 @@ void SampleEditorPage::onCursorDragged(lv_event_t *event)
     lv_obj_t *cursor = lv_obj_get_parent(lv_event_get_target(event));
     // get cursor index
     int cursorIndex = lv_obj_get_index(cursor);
-    Serial.println(point.x);
+    serialPrintln(point.x);
     
     instance->setCursorPos(cursorIndex, (point.x - 10) / 300.0f);
 }
@@ -379,4 +381,12 @@ void SampleEditorPage::init()
     lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
     lv_obj_set_style_pad_all(slider, 2, LV_PART_KNOB);
     lv_obj_add_event_cb(slider, onCrossFadeSliderPressed, LV_EVENT_VALUE_CHANGED, this);
+}
+
+void SampleEditorPage::load()
+{
+}
+
+void SampleEditorPage::unload()
+{
 }

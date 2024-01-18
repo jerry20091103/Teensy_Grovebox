@@ -88,6 +88,8 @@ public:
 
     void update();
     PROGMEM void init();
+    void load();
+    void unload();
 };
 
 #endif

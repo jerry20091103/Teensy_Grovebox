@@ -6,6 +6,8 @@
 #include "SynthPage.h"
 #include "SampleEditorPage.h"
 // #include "ReverbPopup.h"
+#include "GuiObjects/Colors.h"
+#include "Utility/SerialPrint.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -41,7 +43,7 @@ void PageManager_::Init()
     // PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
     // PageArr[E_PG_POPUP_SF2_SELECT] = new Sf2SelectPopup();
 
-    Serial.println("Page constructor");
+    serialPrintln("Page constructor");
 
     // setup top layer (status bar)
     statusBar = lv_obj_create(lv_layer_top());
@@ -69,7 +71,7 @@ void PageManager_::Init()
         if(i == nullptr)
             continue;
         i->init();
-        Serial.println("Page init" + String(i->pageID));
+        serialPrintln("Page init" + String(i->pageID));
     }
 }
 
@@ -80,15 +82,21 @@ void PageManager_::setUserData()
         if(i == nullptr)
             continue;
         i->setUserData();
-        Serial.println("Page setUserData" + String(i->pageID));
+        serialPrintln("Page setUserData" + String(i->pageID));
     }
 }
 
-void PageManager_::switchPage(uint8_t pageID)
+void PageManager_::switchPage(uint8_t pageID, bool isGoBack)
 {
-    navStack.push(pageID);
+    PageArr[getCurPage()]->unload();
+    if (isGoBack)
+        navStack.pop();
+    else
+        navStack.push(pageID);
     // set title text
     lv_label_set_text(title, PageArr[pageID]->pageName);
+    PageArr[pageID]->load();
+    // todo: maybe get rid of this and use load() instead
     PageArr[pageID]->configurePage();
     // change back button icon if previous page is home page
     lv_obj_t *label = lv_obj_get_child(backBtn, 0);
@@ -141,8 +149,8 @@ void PageManager_::onBackBtnPressed(lv_event_t *e)
 {
     if(PageManager.navStack.size() > 1)
     {
-        PageManager.navStack.pop();
-        PageManager.switchPage(PageManager.navStack.pop());
+        // go back to previous page
+        PageManager.switchPage(PageManager.getPrevPage(), true);
     }
 }
 

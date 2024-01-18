@@ -2,6 +2,7 @@
 #include "Hardware.h"
 #include "Controls.h"
 #include "Audio/AudioUtility.h"
+#include "GuiObjects/Colors.h"
 
 // reconfigure encoders when switching tabs
 void AudioPage::onTabSwitch(lv_event_t *e)
@@ -413,7 +414,7 @@ void AudioPage::update()
             for (uint8_t j = 0; j < 2; j++)
             {
                 // peak level meter
-                if (out_peak >= 0)
+                if (out_peak[j] >= 0)
                 {
                     // convert to dB
                     out_peak[j] = gaintodB(out_peak[j]);
@@ -591,6 +592,15 @@ void AudioPage::init()
 
     // hide mixer window
     lv_obj_add_flag(mixerWindow, LV_OBJ_FLAG_HIDDEN);
+}
+
+void AudioPage::load()
+{
+
+}
+
+void AudioPage::unload()
+{
 }
 
 void AudioPage::createTrackGui(lv_obj_t *&parent, lv_obj_t *&arcRef, lv_obj_t **barArrRef, lv_obj_t **peakArrRef, uint8_t color, const char *name)

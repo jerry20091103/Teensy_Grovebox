@@ -300,6 +300,14 @@ void WaveTablePage::init()
     lv_obj_align(peakLed, LV_ALIGN_RIGHT_MID, 15, 0);
 }
 
+void WaveTablePage::load()
+{
+}
+
+void WaveTablePage::unload()
+{
+}
+
 void WaveTablePage::setVolume(int8_t value)
 {
     volume = value;
