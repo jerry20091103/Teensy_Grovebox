@@ -175,7 +175,11 @@ AudioFilterBiquad        freeverbBiquadR; //xy=2025.9999771118164,1583.500030517
 AudioMixer4              freeverbMixerL; //xy=2039.9999771118164,1648.5000305175781
 AudioMixer4              freeverbMixerR; //xy=2040.9999771118164,1715.5000305175781
 AudioInputI2S            i2sIN;          //xy=2090.9999771118164,1024.5000305175781
+#ifndef DEBUG
 AudioInputUSB            usbIN;          //xy=2098.9999771118164,1282.5000305175781
+#else
+AudioInputSPDIF3    usbIN;
+#endif
 AudioAmplifier           ampI2sInR;      //xy=2252.9999771118164,1046.5000305175781
 AudioAmplifier           ampI2sInL;      //xy=2255.9999771118164,1006.5000305175781
 AudioAmplifier           ampUsbInR;      //xy=2257.9999771118164,1302.5000305175781
@@ -213,7 +217,11 @@ AudioMixer4              mixerSWPeakI2sR; //xy=3222.9999771118164,1101.500053405
 AudioMixer4              mixerSWPeakUsbR; //xy=3228.9999771118164,1482.5000305175781
 AudioMixer4              mixerSWPeakUsbL; //xy=3237.9999771118164,1273.5000305175781
 AudioOutputI2S           i2sOUT;         //xy=3263.9999771118164,978.5000514984131
+#ifndef DEBUG
 AudioOutputUSB           usbOUT;         //xy=3276.9999771118164,1385.5000305175781
+#else
+AudioOutputSPDIF3        usbOUT;
+#endif
 AudioAnalyzePeak         peakI2sL;       //xy=3392.9999809265137,917.5000514984131
 AudioAnalyzePeak         peakI2sR;       //xy=3401.9999771118164,1100.5000534057617
 AudioAnalyzePeak         peakUsbR;       //xy=3410.9999771118164,1483.5000305175781

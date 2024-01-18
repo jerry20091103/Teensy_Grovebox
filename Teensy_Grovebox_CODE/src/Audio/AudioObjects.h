@@ -178,7 +178,11 @@ extern AudioFilterBiquad        freeverbBiquadR; //xy=2025.9999771118164,1583.50
 extern AudioMixer4              freeverbMixerL; //xy=2039.9999771118164,1648.5000305175781
 extern AudioMixer4              freeverbMixerR; //xy=2040.9999771118164,1715.5000305175781
 extern AudioInputI2S            i2sIN;          //xy=2090.9999771118164,1024.5000305175781
+#ifndef DEBUG
 extern AudioInputUSB            usbIN;          //xy=2098.9999771118164,1282.5000305175781
+#else
+extern AudioInputSPDIF3    usbIN;
+#endif
 extern AudioAmplifier           ampI2sInR;      //xy=2252.9999771118164,1046.5000305175781
 extern AudioAmplifier           ampI2sInL;      //xy=2255.9999771118164,1006.5000305175781
 extern AudioAmplifier           ampUsbInR;      //xy=2257.9999771118164,1302.5000305175781
@@ -216,7 +220,11 @@ extern AudioMixer4              mixerSWPeakI2sR; //xy=3222.9999771118164,1101.50
 extern AudioMixer4              mixerSWPeakUsbR; //xy=3228.9999771118164,1482.5000305175781
 extern AudioMixer4              mixerSWPeakUsbL; //xy=3237.9999771118164,1273.5000305175781
 extern AudioOutputI2S           i2sOUT;         //xy=3263.9999771118164,978.5000514984131
+#ifndef DEBUG
 extern AudioOutputUSB           usbOUT;         //xy=3276.9999771118164,1385.5000305175781
+#else
+extern AudioOutputSPDIF3        usbOUT;
+#endif
 extern AudioAnalyzePeak         peakI2sL;       //xy=3392.9999809265137,917.5000514984131
 extern AudioAnalyzePeak         peakI2sR;       //xy=3401.9999771118164,1100.5000534057617
 extern AudioAnalyzePeak         peakUsbR;       //xy=3410.9999771118164,1483.5000305175781

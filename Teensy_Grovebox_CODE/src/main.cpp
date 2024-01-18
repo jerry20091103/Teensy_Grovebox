@@ -5,6 +5,11 @@
 #include "Audio/AudioObjects.h"
 #include "Audio/AudioIO.h"
 #include "Audio/AudioSynth.h"
+#include "Utility/SerialPrint.h"
+
+#ifdef DEBUG
+#include "TeensyDebug.h"
+#endif
 
 int bar_test;
 int batt_level;
@@ -29,18 +34,18 @@ extern float tempmonGetTemp(void);
 
 void checkAudioUsage()
 {
-    Serial.println("=======================");
-    Serial.println("Audio Memory:  " + String(AudioMemoryUsageMax()));
-    Serial.println("Audio CPU:     " + String(AudioProcessorUsageMax()) + " %");
-    Serial.println("CPU Temp:      " + String(tempmonGetTemp()) + " C");
+    serialPrintln("=======================");
+    serialPrintln("Audio Memory:  " + String(AudioMemoryUsageMax()));
+    serialPrintln("Audio CPU:     " + String(AudioProcessorUsageMax()) + " %");
+    serialPrintln("CPU Temp:      " + String(tempmonGetTemp()) + " C");
     AudioMemoryUsageMaxReset();
     AudioProcessorUsageMaxReset();
 
     lv_mem_monitor_t mon;
     lv_mem_monitor(&mon);
-    Serial.println("lvgl mem free: " + String(mon.free_size) + " kB");
-    Serial.println("lvgl mem used: " + String(mon.used_pct) + " %");
-    Serial.println("lvgl mem frag: " + String(mon.frag_pct) + " %");
+    serialPrintln("lvgl mem free: " + String(mon.free_size) + " B");
+    serialPrintln("lvgl mem used: " + String(mon.used_pct) + " %");
+    serialPrintln("lvgl mem frag: " + String(mon.frag_pct) + " %");
 }
 
 void readKeyVeloctiy()
@@ -56,12 +61,16 @@ void setup()
     pinMode(0, OUTPUT);
     digitalWrite(0, LOW);
 
-    Serial.begin(9600);
+#ifdef DEBUG
+    while (!SerialUSB1) {}
+    debug.begin(SerialUSB1);
+#endif
+Serial.begin(9600);
 #if LV_USE_LOG != 0
     while (!Serial)
          ; // wait for Arduino Serial Monitor
 #endif
-    Serial.println("Setup begin!");
+    serialPrintln("Setup begin!");
 
     digitalWrite(BAR_MODE, HIGH);
     bar_test = 10;
@@ -80,7 +89,7 @@ void setup()
     // Initialize hardware
     HardwareSetup();
     // set GUI data and switch to first page
-    PageManager.setUserData();
+    PageManager.setUserData(); // TODO: maybe merge this to load()
     PageManager.switchPage(PG_HOME);
     // Schedule regular tasks
     taskManager.scheduleFixedRate(3, updateSynthModulation);
