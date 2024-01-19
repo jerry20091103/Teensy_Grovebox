@@ -4,7 +4,6 @@
 #include <list>
 #include "Audio/AudioVoice.h"
 #include "Audio/SynthModParam.h"
-#include "Utility/SerialPrint.h"
 
 // converts midi note number to pitch frequency
 float noteToFreq(uint8_t note);
@@ -78,7 +77,7 @@ private:
             case MOD_TGT_ENV2_RELEASE: return envRelease[2];
             case MOD_TGT_CLIP_LEVEL: return clipLevel;
             default:
-                serialPrintln("ERROR: ModParamList::operator[], index out of range.");
+                Serial.println("ERROR: ModParamList::operator[], index out of range.");
                 return oscPitchOffset[0];
             }
         }

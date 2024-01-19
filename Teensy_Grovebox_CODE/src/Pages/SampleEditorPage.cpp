@@ -3,7 +3,6 @@
 #include "Audio/AudioSynth.h"
 #include "Audio/AudioObjects.h"
 #include "GuiObjects/Colors.h"
-#include "Utility/SerialPrint.h"
 
 #define CURSOR_INCREMENT 0.002f
 
@@ -205,7 +204,7 @@ void SampleEditorPage::onCursorDragged(lv_event_t *event)
     lv_obj_t *cursor = lv_obj_get_parent(lv_event_get_target(event));
     // get cursor index
     int cursorIndex = lv_obj_get_index(cursor);
-    serialPrintln(point.x);
+    Serial.println(point.x);
     
     instance->setCursorPos(cursorIndex, (point.x - 10) / 300.0f);
 }

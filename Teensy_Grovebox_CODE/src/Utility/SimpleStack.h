@@ -1,4 +1,3 @@
-#include "Utility/SerialPrint.h"
 template <class T, uint8_t i>
 class SimpleStack
 {
@@ -48,12 +47,12 @@ public:
     {
         for (int ind = 0; ind < i; ind++)
         {
-            serialPrint(data[ind]);
-            serialPrint(" ");
+            Serial.print(data[ind]);
+            Serial.print(" ");
         }
-        serialPrintln(" ");
-        serialPrint("top: ");
-        serialPrintln(topInd);
+        Serial.println(" ");
+        Serial.print("top: ");
+        Serial.println(topInd);
     }
 
 private:

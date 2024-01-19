@@ -1,7 +1,6 @@
 #include "ParamArc.h"
 #include "Pages/GuiUtility.h"
 #include "Colors.h"
-#include "Utility/SerialPrint.h"
 
 // binding table for ParamArc
 ParamArc *paramArcBindingTable[4] = {NULL, NULL, NULL, NULL};
@@ -130,10 +129,10 @@ void ParamArc::setValue(int16_t value)
     // set lvgl object
     lv_arc_set_value(arc, value);
     // do target stuff
-    serialPrintln("ParamArc::setValue target callback");
+    Serial.println("ParamArc::setValue target callback");
     if (targetPointer != NULL && callback != NULL)
         callback(targetPointer, valueText, value, encoderIndex);
-    serialPrintln("ParamArc::setValue target callback dnoe");
+    Serial.println("ParamArc::setValue target callback dnoe");
     // update hardware binding if any
     if (encoderIndex >= 0)
         enc[encoderIndex]->setCurrentReading(value);

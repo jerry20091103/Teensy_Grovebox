@@ -2,7 +2,6 @@
 #define PLAY_CLIP_H
 #include "Audio.h"
 #include "../AudioUtility.h"
-#include "Utility/SerialPrint.h"
 
 // Play an audio clip from EXTMEM, recorded with AudioRecordClip
 // Has start/stop and looping functionality
@@ -37,7 +36,7 @@ public:
                 if (currentFade < 0)
                 {
                     currentFade = 0;
-                    serialPrintln("ERROR: AudioPlayClip::update(), currentFade < 0");
+                    Serial.println("ERROR: AudioPlayClip::update(), currentFade < 0");
                 }
                 for (int i = 0; i < AUDIO_BLOCK_SAMPLES; i++)
                 {
@@ -62,7 +61,7 @@ public:
                 if (currentFade < 0)
                 {
                     currentFade = 0;
-                    serialPrintln("ERROR: AudioPlayClip::update(), currentFade < 0");
+                    Serial.println("ERROR: AudioPlayClip::update(), currentFade < 0");
                 }
                 // interpolate data with crossfade
                 for (int i = 0; i < AUDIO_BLOCK_SAMPLES; i++)
@@ -124,7 +123,7 @@ public:
     {
         if (clip == NULL)
         {
-            serialPrintln("ERROR: AudioPlayClip::play(), clip is NULL");
+            Serial.println("ERROR: AudioPlayClip::play(), clip is NULL");
             return;
         }
         __disable_irq();

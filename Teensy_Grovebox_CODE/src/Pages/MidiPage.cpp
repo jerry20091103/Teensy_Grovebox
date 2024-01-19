@@ -1,7 +1,6 @@
 #include "MidiPage.h"
 #include "Controls.h"
 #include "GuiObjects/Colors.h"
-#include "Utility/SerialPrint.h"
 
 // Gui object callbacks
 void MidiPage::onCcArcTurned(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
@@ -242,12 +241,12 @@ void MidiPage::load()
     for (uint8_t i = 0; i < 4; i++)
     {
         ccArc[i] = new ParamArc(arcGroup, i + 1);
-        serialPrintln("ccArc" + String(i) + " created");
+        Serial.println("ccArc" + String(i) + " created");
         ccArc[i]->setRangeMax(127);
         ccArc[i]->bindEncoder(i);
         ccArc[i]->setCallback(onCcArcTurned, this);
         lv_obj_set_x(ccArc[i]->getLvglObject(), lv_pct(25 * i));
-        serialPrintln("ccArc" + String(i) + " enter setValue");
+        Serial.println("ccArc" + String(i) + " enter setValue");
         // set user data
         ccArc[i]->setValue(storeCC[curCC[i] - CC_MIN]);
         lv_label_set_text_fmt(ccArc[i]->getValueTextObject(), "%d", curCC[i]);
@@ -328,7 +327,7 @@ void MidiPage::load()
 
 void MidiPage::unload()
 {
-    serialPrintln("MidiPage unload");
+    Serial.println("MidiPage unload");
     // delete GUI objects
     for (uint8_t i = 0; i < 4; i++)
     {
@@ -339,10 +338,10 @@ void MidiPage::unload()
     delete octaveSpinbox;
     delete channelSpinbox;
     // remember to set pointers to NULL
-    for (uint8_t i = 0; i < 4; i++)
-    {
-        ccArc[i] = NULL;
-    }
+    // for (uint8_t i = 0; i < 4; i++)
+    // {
+    //     ccArc[i] = NULL;
+    // }
     pitchBtn = NULL;
     modBtn = NULL;
     octaveSpinbox = NULL;

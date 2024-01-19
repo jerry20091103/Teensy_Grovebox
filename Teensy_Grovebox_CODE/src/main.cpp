@@ -1,3 +1,7 @@
+#ifdef DEBUG
+#pragma GCC optimize ("O0")
+#endif
+
 #include "Hardware.h"
 #include "font_Arial.h"
 #include "Controls.h"
@@ -5,7 +9,6 @@
 #include "Audio/AudioObjects.h"
 #include "Audio/AudioIO.h"
 #include "Audio/AudioSynth.h"
-#include "Utility/SerialPrint.h"
 
 #ifdef DEBUG
 #include "TeensyDebug.h"
@@ -34,18 +37,18 @@ extern float tempmonGetTemp(void);
 
 void checkAudioUsage()
 {
-    serialPrintln("=======================");
-    serialPrintln("Audio Memory:  " + String(AudioMemoryUsageMax()));
-    serialPrintln("Audio CPU:     " + String(AudioProcessorUsageMax()) + " %");
-    serialPrintln("CPU Temp:      " + String(tempmonGetTemp()) + " C");
+    Serial.println("=======================");
+    Serial.println("Audio Memory:  " + String(AudioMemoryUsageMax()));
+    Serial.println("Audio CPU:     " + String(AudioProcessorUsageMax()) + " %");
+    Serial.println("CPU Temp:      " + String(tempmonGetTemp()) + " C");
     AudioMemoryUsageMaxReset();
     AudioProcessorUsageMaxReset();
 
     lv_mem_monitor_t mon;
     lv_mem_monitor(&mon);
-    serialPrintln("lvgl mem free: " + String(mon.free_size) + " B");
-    serialPrintln("lvgl mem used: " + String(mon.used_pct) + " %");
-    serialPrintln("lvgl mem frag: " + String(mon.frag_pct) + " %");
+    Serial.println("lvgl mem free: " + String(mon.free_size) + " B");
+    Serial.println("lvgl mem used: " + String(mon.used_pct) + " %");
+    Serial.println("lvgl mem frag: " + String(mon.frag_pct) + " %");
 }
 
 void readKeyVeloctiy()
@@ -62,6 +65,9 @@ void setup()
     digitalWrite(0, LOW);
 
 #ifdef DEBUG
+    /*
+    Somehow if we comment out the reset_PFD() on line 101 of cores/teensy4/startup.c, the debugging works.
+    */
     while (!SerialUSB1) {}
     debug.begin(SerialUSB1);
 #endif
@@ -70,7 +76,7 @@ Serial.begin(9600);
     while (!Serial)
          ; // wait for Arduino Serial Monitor
 #endif
-    serialPrintln("Setup begin!");
+    Serial.println("Setup begin!");
 
     digitalWrite(BAR_MODE, HIGH);
     bar_test = 10;

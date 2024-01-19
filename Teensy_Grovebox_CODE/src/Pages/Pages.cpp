@@ -7,7 +7,6 @@
 #include "SampleEditorPage.h"
 // #include "ReverbPopup.h"
 #include "GuiObjects/Colors.h"
-#include "Utility/SerialPrint.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -43,7 +42,7 @@ void PageManager_::Init()
     // PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
     // PageArr[E_PG_POPUP_SF2_SELECT] = new Sf2SelectPopup();
 
-    serialPrintln("Page constructor");
+    Serial.println("Page constructor");
 
     // setup top layer (status bar)
     statusBar = lv_obj_create(lv_layer_top());
@@ -71,7 +70,7 @@ void PageManager_::Init()
         if(i == nullptr)
             continue;
         i->init();
-        serialPrintln("Page init" + String(i->pageID));
+        Serial.println("Page init" + String(i->pageID));
     }
 }
 
@@ -82,7 +81,7 @@ void PageManager_::setUserData()
         if(i == nullptr)
             continue;
         i->setUserData();
-        serialPrintln("Page setUserData" + String(i->pageID));
+        Serial.println("Page setUserData" + String(i->pageID));
     }
 }
 
