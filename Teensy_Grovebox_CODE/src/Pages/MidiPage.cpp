@@ -338,10 +338,10 @@ void MidiPage::unload()
     delete octaveSpinbox;
     delete channelSpinbox;
     // remember to set pointers to NULL
-    // for (uint8_t i = 0; i < 4; i++)
-    // {
-    //     ccArc[i] = NULL;
-    // }
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        ccArc[i] = NULL;
+    }
     pitchBtn = NULL;
     modBtn = NULL;
     octaveSpinbox = NULL;
