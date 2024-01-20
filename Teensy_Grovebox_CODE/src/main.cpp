@@ -70,6 +70,7 @@ void setup()
     */
     while (!SerialUSB1) {}
     debug.begin(SerialUSB1);
+    halt_cpu();
 #endif
 Serial.begin(9600);
 #if LV_USE_LOG != 0
