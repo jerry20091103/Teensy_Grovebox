@@ -129,10 +129,8 @@ void ParamArc::setValue(int16_t value)
     // set lvgl object
     lv_arc_set_value(arc, value);
     // do target stuff
-    Serial.println("ParamArc::setValue target callback");
     if (targetPointer != NULL && callback != NULL)
         callback(targetPointer, valueText, value, encoderIndex);
-    Serial.println("ParamArc::setValue target callback dnoe");
     // update hardware binding if any
     if (encoderIndex >= 0)
         enc[encoderIndex]->setCurrentReading(value);

@@ -241,12 +241,10 @@ void MidiPage::load()
     for (uint8_t i = 0; i < 4; i++)
     {
         ccArc[i] = new ParamArc(arcGroup, i + 1);
-        Serial.println("ccArc" + String(i) + " created");
         ccArc[i]->setRangeMax(127);
         ccArc[i]->bindEncoder(i);
         ccArc[i]->setCallback(onCcArcTurned, this);
         lv_obj_set_x(ccArc[i]->getLvglObject(), lv_pct(25 * i));
-        Serial.println("ccArc" + String(i) + " enter setValue");
         // set user data
         ccArc[i]->setValue(storeCC[curCC[i] - CC_MIN]);
         lv_label_set_text_fmt(ccArc[i]->getValueTextObject(), "%d", curCC[i]);
@@ -277,7 +275,6 @@ void MidiPage::load()
     octaveSpinbox->setValue(octave);
     octaveSpinbox->setCallback(onOctaveSelect, this);
     lv_obj_set_x(octaveSpinbox->getLvglObject(), 205);
-    octaveSpinbox->setValue(octave);
 
     // channel select
     label = lv_label_create(btnGroup);
@@ -349,6 +346,8 @@ void MidiPage::unload()
     // delete parent lvgl object
     lv_obj_del(arcGroup);
     lv_obj_del(btnGroup);
+    arcGroup = NULL;
+    btnGroup = NULL;
 }
 
 void MidiPage::updateCC(uint8_t control, uint8_t value)
