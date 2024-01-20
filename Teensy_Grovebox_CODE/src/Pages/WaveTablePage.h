@@ -3,8 +3,11 @@
 
 #include "Pages.h"
 #include "Audio/AudioFX.h"
+#include "GuiObjects/ParamArc.h"
+#include "GuiObjects/Spinbox.h"
+#include "GuiObjects/Buttons.h"
+#include "GuiObjects/VolumeBar.h"
 
-#define PEAK_AVG_TIME 2
 #define VOL_OFFSET 15
 
 // sf2 Wave table synth page
@@ -26,23 +29,25 @@ private:
     uint8_t peakHold = 0;
 
     // *lvgl object refs
+    lv_obj_t* selectGroup;
     lv_obj_t* sf2SelectDropdown;
-    lv_obj_t* volArc;
-    lv_obj_t* volBar;
-    lv_obj_t* peakLed;
-    lv_obj_t* octaveSpinbox;
     lv_obj_t* pitchDropdown;
-    lv_obj_t* pitchText;
-    lv_obj_t* pitchBtn;
-    lv_obj_t* velocityBtn;
 
+    // *GUI object refs
+    ParamArc* volArc;
+    Spinbox* octaveSpinbox;
+    Button* velocityBtn;
+    Button* pitchBtn;
+    VolumeBar* volBar;
+
+    // Gui object callbacks
+    static void onVolArcTurned(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
+    static void onOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value);
+    static void onVelocityBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled);
+    static void onPitchBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled);
+    static void onPitchBtnHolded(void *targetPointer, lv_obj_t *labelObj);
     // lvgl gui callbacks
-    static void onVelocityBtnPressed(lv_event_t* e);
-    static void onPitchBtnPressed(lv_event_t* e);
-    static void onPitchBtnHolded(lv_event_t* e);
     static void onPitchDropdownSelect(lv_event_t *e);
-    static void onOctaveSelect(lv_event_t* e);
-    static void onVolArcPressed(lv_event_t *e);
     static void onSF2DropdownSelect(lv_event_t *e);
     // helper functions
     void setVolume(int8_t value);
