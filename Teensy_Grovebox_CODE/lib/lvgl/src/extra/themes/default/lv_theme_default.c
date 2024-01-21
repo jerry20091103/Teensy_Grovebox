@@ -164,7 +164,7 @@ typedef enum {
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void theme_apply(lv_theme_t * th, lv_obj_t * obj);
+PROGMEM static void theme_apply(lv_theme_t * th, lv_obj_t * obj);
 static void style_init_reset(lv_style_t * style);
 
 /**********************
@@ -202,7 +202,7 @@ static lv_color_t grey_filter_cb(const lv_color_filter_dsc_t * f, lv_color_t col
     else return lv_color_mix(lv_palette_lighten(LV_PALETTE_GREY, 2), color, opa);
 }
 
-static void style_init(void)
+PROGMEM static void style_init(void)
 {
     static const lv_style_prop_t trans_props[] = {
         LV_STYLE_BG_OPA, LV_STYLE_BG_COLOR,

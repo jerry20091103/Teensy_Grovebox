@@ -58,8 +58,8 @@ public:
 
     void update();
     PROGMEM void init();
-    void load();
-    void unload();
+    PROGMEM void load();
+    PROGMEM void unload();
     
     // *user data
     FXFreeverb_Mem reverbMem;
