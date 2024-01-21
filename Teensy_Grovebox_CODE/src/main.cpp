@@ -72,7 +72,7 @@ void setup()
     debug.begin(SerialUSB1);
     halt_cpu();
 #endif
-Serial.begin(9600);
+    Serial.begin(9600);
 #if LV_USE_LOG != 0
     while (!Serial)
          ; // wait for Arduino Serial Monitor

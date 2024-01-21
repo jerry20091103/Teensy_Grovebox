@@ -22,12 +22,6 @@ private:
     bool useVelocity = true;
     bool usePitchbend = false;
 
-
-    // *class variables
-    // gslc_tsElemRef *peakBox;
-    float peakAvg = 0;
-    uint8_t peakHold = 0;
-
     // *lvgl object refs
     lv_obj_t* selectGroup;
     lv_obj_t* sf2SelectDropdown;

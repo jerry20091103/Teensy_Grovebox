@@ -137,6 +137,7 @@ void WaveTablePage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t val
 
 void WaveTablePage::configurePage()
 {
+    // todo: maybe move this to load()?
     // setup micorphone for velocity sensing
     sgtl5000_1.inputSelect(AUDIO_INPUT_MIC);
     sgtl5000_1.micGain(40);
@@ -244,7 +245,7 @@ void WaveTablePage::load()
     lv_event_send(pitchDropdown, LV_EVENT_VALUE_CHANGED, NULL);
 
     // *volume bar
-    volBar = new VolumeBar(selectGroup, 130, 10, false);
+    volBar = new VolumeBar(selectGroup, 130, 10);
     volBar->setRange(-50, 0);
     volBar->setSmoothing(2);
     lv_obj_align(volBar->getBarObject(), LV_ALIGN_BOTTOM_LEFT, 100, -35);
