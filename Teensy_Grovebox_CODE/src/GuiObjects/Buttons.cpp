@@ -108,5 +108,9 @@ void Button::setToggle(bool toggle)
             lv_obj_add_state(button, LV_STATE_CHECKED);
         else
             lv_obj_clear_state(button, LV_STATE_CHECKED);
+        // do target stuff
+        // *this is responsible for updating the target controll value and the label text
+        if (pressedTargetPointer != NULL && pressedCallback != NULL)
+            pressedCallback(pressedTargetPointer, label, toggle);
     }
 }

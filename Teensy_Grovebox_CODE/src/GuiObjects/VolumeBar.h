@@ -23,7 +23,7 @@ private:
     bool useAnimation = true;
 public:
     // constructor
-    VolumeBar(lv_obj_t *parent, int16_t w, int16_t h, bool vertical, uint8_t color = 0);
+    VolumeBar(lv_obj_t *parent, int16_t w, int16_t h, bool vertical = false, uint8_t color = 0);
     // destructor
     ~VolumeBar();
     // methods
