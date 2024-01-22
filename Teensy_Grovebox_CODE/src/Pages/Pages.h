@@ -105,7 +105,7 @@ private:
 extern PageManager_ &PageManager;
 
 // common data shared by all pages
-extern int16_t samplerWaveformPointsMax[1000]; // todo: ugly?
-extern int16_t samplerWaveformPointsMin[1000];
+DMAMEM extern int16_t samplerWaveformPointsMax[1000]; // todo: ugly?
+DMAMEM extern int16_t samplerWaveformPointsMin[1000];
 
 #endif

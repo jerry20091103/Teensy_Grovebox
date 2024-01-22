@@ -214,7 +214,6 @@ void SampleEditorPage::onCursorDragged(lv_event_t *event)
     lv_obj_t *cursor = lv_obj_get_parent(lv_event_get_target(event));
     // get cursor index
     int cursorIndex = lv_obj_get_index(cursor);
-    Serial.println(point.x);
     
     instance->setCursorPos(cursorIndex, (point.x - 10) / 300.0f);
 }
@@ -394,8 +393,7 @@ void SampleEditorPage::unload()
     delete reverseBtn;
     delete volBar;
     delete crossFadeSlider;
-    lv_obj_del(waveformChart);
-    lv_obj_del(cursorGroup);
+    lv_obj_clean(screen);
     recordBtn = NULL;
     playBtn = NULL;
     loopBtn = NULL;

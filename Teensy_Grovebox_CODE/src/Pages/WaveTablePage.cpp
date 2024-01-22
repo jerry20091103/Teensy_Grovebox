@@ -258,7 +258,7 @@ void WaveTablePage::unload()
     delete velocityBtn;
     delete pitchBtn;
     delete volBar;
-    lv_obj_del(selectGroup);
+    lv_obj_clean(screen);
     volArc = NULL;
     octaveSpinbox = NULL;
     velocityBtn = NULL;

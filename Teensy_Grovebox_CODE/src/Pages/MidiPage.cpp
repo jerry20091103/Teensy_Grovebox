@@ -343,9 +343,8 @@ void MidiPage::unload()
     modBtn = NULL;
     octaveSpinbox = NULL;
     channelSpinbox = NULL;
-    // delete parent lvgl object
-    lv_obj_del(arcGroup);
-    lv_obj_del(btnGroup);
+    // delete all lvgl objects on screen
+    lv_obj_clean(screen);
     arcGroup = NULL;
     btnGroup = NULL;
 }
