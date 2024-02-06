@@ -14,7 +14,7 @@ void ParamArc::lvglCallback(lv_event_t *event)
     // do target stuff
     // *this is responsible for updating the target controll value and the value text
     if (paramArc->targetPointer != NULL && paramArc->callback != NULL)
-        paramArc->callback(paramArc->targetPointer, paramArc->valueText, value, paramArc->encoderIndex);
+        paramArc->callback(paramArc->targetPointer, paramArc->valueText, value + paramArc->rangeOffset, paramArc->encoderIndex);
     // update hardware binding if any
     if (paramArc->encoderIndex >= 0)
         enc[paramArc->encoderIndex]->setCurrentReading(value);
@@ -28,7 +28,7 @@ void ParamArc::encoderCallback(int16_t value)
     // do target stuff
     // *this is responsible for updating the target controll value and the value text
     if (targetPointer != NULL && callback != NULL)
-        callback(targetPointer, valueText, value, encoderIndex);
+        callback(targetPointer, valueText, value + rangeOffset, encoderIndex);
 };
 
 // other private methods
@@ -127,20 +127,23 @@ ParamArc::~ParamArc()
 void ParamArc::setValue(int16_t value)
 {
     // set lvgl object
-    lv_arc_set_value(arc, value);
+    lv_arc_set_value(arc, value - rangeOffset);
     // do target stuff
     if (targetPointer != NULL && callback != NULL)
         callback(targetPointer, valueText, value, encoderIndex);
     // update hardware binding if any
     if (encoderIndex >= 0)
-        enc[encoderIndex]->setCurrentReading(value);
+        enc[encoderIndex]->setCurrentReading(value - rangeOffset);
 }
 
-void ParamArc::setRangeMax(int16_t rangeMax)
+void ParamArc::setRange(int16_t rangeMin, int16_t rangeMax)
 {
-    lv_arc_set_range(arc, 0, rangeMax);
+    // set range offset
+    rangeOffset = rangeMin;
+    // set lvgl object
+    lv_arc_set_range(arc, 0, rangeMax - rangeMin);
     if (encoderIndex >= 0)
-        enc[encoderIndex]->changePrecision(rangeMax, lv_arc_get_value(arc), false);
+        enc[encoderIndex]->changePrecision(rangeMax - rangeMin, lv_arc_get_value(arc), false);
 }
 
 void ParamArc::setCallback(ParamArcCallback_t callback, void *targetPointer)
@@ -160,4 +163,10 @@ void ParamArc::bindEncoder(int8_t encoderIndex)
     // set encoder value and range
     enc[encoderIndex]->setCurrentReading(lv_arc_get_value(arc));
     enc[encoderIndex]->changePrecision(lv_arc_get_max_value(arc), lv_arc_get_value(arc), false);
+}
+
+void encoderBindCallback(uint8_t encoderId, int value)
+{
+    if (paramArcBindingTable[encoderId] != nullptr)
+        paramArcBindingTable[encoderId]->encoderCallback(value);
 }

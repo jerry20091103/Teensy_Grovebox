@@ -17,6 +17,8 @@ private:
     lv_obj_t *valueText = NULL;
     lv_obj_t *titleText = NULL;
     lv_obj_t *unitText = NULL;
+    // range offset to allow min value other than 0
+    int16_t rangeOffset = 0;
     // target to control
     void *targetPointer = NULL;
     // hardware binding
@@ -34,7 +36,7 @@ public:
     ~ParamArc();
     // methods
     void setValue(int16_t value);
-    void setRangeMax(int16_t rangeMax);
+    void setRange(int16_t rangeMin, int16_t rangeMax);
     void setCallback(ParamArcCallback_t callback, void *targetPointer);
     void bindEncoder(int8_t encoderIndex);
 
@@ -43,6 +45,8 @@ public:
 
     lv_obj_t* getLvglObject() { return arc; }
     lv_obj_t* getValueTextObject() { return valueText; }
+    lv_obj_t* getTitleTextObject() { return titleText; }
+    lv_obj_t* getUnitTextObject() { return unitText; }
     int8_t getEncoderIndex() { return encoderIndex; }
 
 };
@@ -50,5 +54,6 @@ public:
 // shared variables
 // binding table for ParamArc
 extern ParamArc *paramArcBindingTable[4];
+void encoderBindCallback(uint8_t encoderId, int value);
 
 #endif // PARAM_ARC_H
