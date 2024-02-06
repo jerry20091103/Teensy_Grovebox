@@ -7,6 +7,7 @@
 #include "SampleEditorPage.h"
 // #include "ReverbPopup.h"
 #include "GuiObjects/Colors.h"
+#include "Pages.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -156,3 +157,60 @@ void PageManager_::onBackBtnPressed(lv_event_t *e)
 // common data shared by all pages
 int16_t samplerWaveformPointsMax[1000]; // todo: ugly?
 int16_t samplerWaveformPointsMin[1000];
+
+void PageWithSubPage::onBtnPressed(uint8_t pin)
+{
+    curSubPage->onBtnPressed(pin);
+}
+
+void PageWithSubPage::onBtnHold(uint8_t pin)
+{
+    curSubPage->onBtnHold(pin);
+}
+
+void PageWithSubPage::onBtnReleased(uint8_t pin)
+{
+    curSubPage->onBtnReleased(pin);
+}
+
+void PageWithSubPage::onEncTurned(uint8_t id, int value)
+{
+    curSubPage->onEncTurned(id, value);
+}
+
+void PageWithSubPage::onJoyUpdate(int joy_x, int joy_y)
+{
+    curSubPage->onJoyUpdate(joy_x, joy_y);
+}
+
+void PageWithSubPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
+{
+    curSubPage->onCCReceive(channel, control, value);
+}
+
+void PageWithSubPage::update()
+{
+    curSubPage->update();
+}
+
+void PageWithSubPage::load()
+{
+    curSubPage->load();
+}
+
+void PageWithSubPage::unload()
+{
+    curSubPage->unload();
+}
+
+void PageWithSubPage::switchSubPage(SubPage *subPage)
+{
+    if(subPage == nullptr)
+    {
+        Serial.println("subPage is null");
+        return;
+    }
+    curSubPage->unload();
+    subPage->load();
+    curSubPage = subPage;
+}

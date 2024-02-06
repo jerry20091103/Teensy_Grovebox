@@ -55,8 +55,8 @@ void WaveTablePage::onSF2DropdownSelect(lv_event_t *e)
 void WaveTablePage::onVolArcTurned(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
 {
     WaveTablePage *instance = (WaveTablePage *)targetPointer;
-    lv_label_set_text_fmt(valueTextObj, "%d", value - VOL_OFFSET);
-    instance->setVolume(value - VOL_OFFSET);
+    lv_label_set_text_fmt(valueTextObj, "%d", value);
+    instance->setVolume(value);
 }
 
 void WaveTablePage::onBtnPressed(uint8_t pin)
@@ -120,7 +120,7 @@ void WaveTablePage::onBtnReleased(uint8_t pin)
 
 void WaveTablePage::onEncTurned(uint8_t id, int value)
 {
-    paramArcBindingTable[id]->encoderCallback(value);
+    encoderBindCallback(id, value);
 }
 
 void WaveTablePage::onJoyUpdate(int joy_x, int joy_y)
@@ -145,7 +145,6 @@ void WaveTablePage::configurePage()
     // setup peak module for level meter
     AudioIO.setMixerLevelMode(LevelMeterMode::PRE_FADER);
     setVolume(volume);
-    enc[3]->changePrecision(30, volume + VOL_OFFSET, false);
     // update current velocity settings
     AudioSynth.setUseVelocity(useVelocity);
     // set reverb FX
@@ -185,7 +184,6 @@ void WaveTablePage::load()
     lv_obj_set_y(selectGroup, 35);
 
     lv_obj_t *label;
-    lv_obj_t *btn;
 
     // *drop down menu for sound selection
     sf2SelectDropdown = lv_dropdown_create(selectGroup);
@@ -203,10 +201,10 @@ void WaveTablePage::load()
 
     // *volume arc
     volArc = new ParamArc(selectGroup, 4, "Gain", "dB", false);
-    volArc->setRangeMax(30);
+    volArc->setRange(-15, 15);
     volArc->bindEncoder(3);
     volArc->setCallback(onVolArcTurned, this);
-    volArc->setValue(volume + VOL_OFFSET);
+    volArc->setValue(volume);
     lv_obj_align(volArc->getLvglObject(), LV_ALIGN_TOP_RIGHT, -5, 20);
 
     // *octave select

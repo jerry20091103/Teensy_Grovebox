@@ -8,8 +8,6 @@
 #include "GuiObjects/Buttons.h"
 #include "GuiObjects/VolumeBar.h"
 
-#define VOL_OFFSET 15
-
 // sf2 Wave table synth page
 class WaveTablePage : public Pages
 {

@@ -183,7 +183,7 @@ void MidiPage::onEncTurned(uint8_t id, int value)
     }
     else
     {
-        paramArcBindingTable[id]->encoderCallback(value);
+        encoderBindCallback(id, value);
     }
 }
 
@@ -241,7 +241,7 @@ void MidiPage::load()
     for (uint8_t i = 0; i < 4; i++)
     {
         ccArc[i] = new ParamArc(arcGroup, i + 1);
-        ccArc[i]->setRangeMax(127);
+        ccArc[i]->setRange(0, 127);
         ccArc[i]->bindEncoder(i);
         ccArc[i]->setCallback(onCcArcTurned, this);
         lv_obj_set_x(ccArc[i]->getLvglObject(), lv_pct(25 * i));
