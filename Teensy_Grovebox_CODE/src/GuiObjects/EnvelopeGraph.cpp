@@ -42,10 +42,10 @@ void EnvelopeGraph::createGraph(lv_obj_t *parent, int16_t w, int16_t h, int16_t 
 }
 
 EnvelopeGraph::EnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h, int16_t lineWidth, int16_t padding)
+: lineWidth(lineWidth), padding(padding), width(w), height(h)
 {
-    this->lineWidth = lineWidth;
-    this->padding = padding;
     createGraph(parent, w, h, lineWidth, padding);
+    this->setEnvelope(0, 0, 0, 0, 0);
 }
 
 EnvelopeGraph::~EnvelopeGraph()
@@ -56,8 +56,8 @@ EnvelopeGraph::~EnvelopeGraph()
 void EnvelopeGraph::setEnvelope(float delay, float attack, float decay, float sustain, float release)
 {
     // get graph width and height (minus the padding)
-    int16_t graphWidth = lv_obj_get_width(graph) - padding - lineWidth/2;
-    int16_t graphHeight = lv_obj_get_height(graph)  - padding - lineWidth/2;
+    int16_t graphWidth = width - padding - lineWidth/2;
+    int16_t graphHeight = height - padding - lineWidth/2;
     // get total time length in ms
     float total = delay + attack + decay + release;
     // add padding if total length is less then 200ms (value debatable)

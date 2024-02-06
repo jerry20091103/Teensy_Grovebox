@@ -23,6 +23,8 @@ private:
     // other variables
     int16_t lineWidth = 8;
     int16_t padding = 5;
+    int16_t width = 0;
+    int16_t height = 0;
 public:
     EnvelopeGraph(lv_obj_t *parent, int16_t w, int16_t h, int16_t lineWidth = 8, int16_t padding = 5);
     ~EnvelopeGraph();
