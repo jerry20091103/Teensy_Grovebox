@@ -16,7 +16,10 @@ void Button::lvglCallback(lv_event_t *event)
     else if (event->code == LV_EVENT_LONG_PRESSED)
     {
         // reverse toggle state since long press also toggles lvgl object's LV_STATE_CHECKED state
-        button->setToggle(!lv_obj_has_state(button->button, LV_STATE_CHECKED));
+        if (lv_obj_has_state(button->button, LV_STATE_CHECKED))
+            lv_obj_clear_state(button->button, LV_STATE_CHECKED);
+        else
+            lv_obj_add_state(button->button, LV_STATE_CHECKED);
         // do target stuff
         // *this is responsible for updating the target controll value and the label text
         if (button->holdTargetPointer != NULL && button->holdCallback != NULL)
