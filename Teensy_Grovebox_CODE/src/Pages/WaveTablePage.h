@@ -21,16 +21,16 @@ private:
     bool usePitchbend = false;
 
     // *lvgl object refs
-    lv_obj_t* selectGroup;
-    lv_obj_t* sf2SelectDropdown;
-    lv_obj_t* pitchDropdown;
+    lv_obj_t* selectGroup = nullptr;
+    lv_obj_t* sf2SelectDropdown = nullptr;
+    lv_obj_t* pitchDropdown = nullptr;
 
     // *GUI object refs
-    ParamArc* volArc;
-    Spinbox* octaveSpinbox;
-    Button* velocityBtn;
-    Button* pitchBtn;
-    VolumeBar* volBar;
+    ParamArc* volArc = nullptr;
+    Spinbox* octaveSpinbox = nullptr;
+    Button* velocityBtn = nullptr;
+    Button* pitchBtn = nullptr;
+    VolumeBar* volBar = nullptr;
 
     // Gui object callbacks
     static void onVolArcTurned(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);

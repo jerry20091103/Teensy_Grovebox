@@ -13,18 +13,18 @@ public:
 
 private:
     // * lvgl objects
-    lv_obj_t *waveformChart;
-    lv_obj_t *cursorGroup;
-    lv_obj_t *currentPosCursor;
-    lv_chart_series_t *serMax;
-    lv_chart_series_t *serMin;
+    lv_obj_t *waveformChart = nullptr;
+    lv_obj_t *cursorGroup = nullptr;
+    lv_obj_t *currentPosCursor = nullptr;
+    lv_chart_series_t *serMax = nullptr;
+    lv_chart_series_t *serMin = nullptr;
     // * gui objects
-    Button *playBtn;
-    Button *loopBtn;
-    Button *normalizeBtn;
-    Button *reverseBtn;
-    VolumeBar *volBar;
-    Slider *crossFadeSlider;
+    Button *playBtn = nullptr;
+    Button *loopBtn = nullptr;
+    Button *normalizeBtn = nullptr;
+    Button *reverseBtn = nullptr;
+    VolumeBar *volBar = nullptr;
+    Slider *crossFadeSlider = nullptr;
     // * other variables
     taskid_t cancelRecordTaskId;
     // create a cursor on the waveform display

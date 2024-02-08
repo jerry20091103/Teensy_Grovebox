@@ -55,7 +55,7 @@ public:
 
     uint8_t pageID;
     char pageName[MAX_PAGE_NAME];
-    lv_obj_t *screen;
+    lv_obj_t *screen = nullptr;
 
 protected:
 };
@@ -72,7 +72,7 @@ class PageWithSubPage : public Pages
 {
     friend class SubPage;
 protected:
-    SubPage *curSubPage;
+    SubPage *curSubPage = nullptr;
 public:
     // Page button press callback function
     void onBtnPressed(uint8_t pin) final;
@@ -115,7 +115,7 @@ protected:
 class SubPage
 {
 protected:
-    PageWithSubPage *parentPage;
+    PageWithSubPage *parentPage = nullptr;
 public:
     virtual void onBtnPressed(uint8_t pin) {parentPage->onBtnPressedDefault(pin);}
     virtual void onBtnHold(uint8_t pin) {parentPage->onBtnHoldDefault(pin);}
@@ -160,10 +160,10 @@ public:
 private:
     bool inPopup = false;   // true if a popup is active
     int curPopupID;         // stores current acitve popup ID
-    lv_obj_t *statusBar;
-    lv_obj_t *backBtn;
-    lv_obj_t *title;
-    lv_obj_t *battLabel;
+    lv_obj_t *statusBar = nullptr;
+    lv_obj_t *backBtn = nullptr;
+    lv_obj_t *title = nullptr;
+    lv_obj_t *battLabel = nullptr;
 
     const char* powerBtns[3] = {"Yes", "No", NULL};
 

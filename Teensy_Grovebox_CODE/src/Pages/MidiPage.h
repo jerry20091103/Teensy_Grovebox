@@ -19,16 +19,12 @@ private:
     const uint8_t rewindMsg[4] = {0x7f, 0x01, 0x06, 0x05};
     const uint8_t recordMsg[4] = {0x7f, 0x01, 0x06, 0x07};
 
-    // lvgl objects refs (parents)
-    lv_obj_t *arcGroup;
-    lv_obj_t *btnGroup;
-
     // GUI object refs
-    ParamArc *ccArc[4];
-    Spinbox *octaveSpinbox;
-    Spinbox *channelSpinbox;
-    Button *pitchBtn;
-    Button *modBtn;
+    ParamArc *ccArc[4] = {nullptr};
+    Spinbox *octaveSpinbox = nullptr;
+    Spinbox *channelSpinbox = nullptr;
+    Button *pitchBtn = nullptr;
+    Button *modBtn = nullptr;
 
     // user data
     uint8_t curCC[4] = {11, 12, 13, 14}; // stores the current CC number each encoder is set to

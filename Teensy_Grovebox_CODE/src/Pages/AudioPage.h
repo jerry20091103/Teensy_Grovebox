@@ -23,11 +23,11 @@ private:
     class MixerPage;
 
     // subpage instances
-    MainPage *mainPage;
-    MixerPage *mixerPage[2];
+    MainPage *mainPage = nullptr;
+    MixerPage *mixerPage[2] = {nullptr};
 
     // *lvgl object refs
-    lv_obj_t* subpageGroup;
+    lv_obj_t* subpageGroup = nullptr;
 
     // helper functions
     static void createTrackGui(lv_obj_t *parent, ParamArc *&arcRef, VolumeBar **barArrRef, uint8_t color, const char *name);
@@ -65,13 +65,13 @@ private:
         bool inputSource = false; // 0-> line; 1-> mic
         // *gui objects
         // output tab
-        ParamArc *OutArc[2] = {nullptr, nullptr};
-        VolumeBar *OutBar[2][2] = {{nullptr, nullptr}, {nullptr, nullptr}};
+        ParamArc *OutArc[2] = {nullptr};
+        VolumeBar *OutBar[2][2] = {{nullptr}};
         Button *OutPflBtn = nullptr;
         ParamArc *hpArc = nullptr;
         // input tab
-        ParamArc *InArc[2] = {nullptr, nullptr};
-        VolumeBar *InBar[2][2] = {{nullptr, nullptr}, {nullptr, nullptr}};
+        ParamArc *InArc[2] = {nullptr};
+        VolumeBar *InBar[2][2] = {{nullptr}};
         ParamArc *gainArc = nullptr;
         Button *lineBtn = nullptr;
         Button *micBtn = nullptr;
@@ -108,9 +108,9 @@ private:
         uint8_t mixerVol[4] = {51, 51, 51 ,51};
         uint8_t mixerPan[4] = {0, 0, 0, 0};
         // gui objects
-        VolumeBar *mixerBar[4][2] = {{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}};
-        ParamArcMini *mixerPanArc[4] = {nullptr, nullptr, nullptr, nullptr};
-        ParamArcMini *mixerVolArc[4] = {nullptr, nullptr, nullptr, nullptr};
+        VolumeBar *mixerBar[4][2] = {{nullptr}};
+        ParamArcMini *mixerPanArc[4] = {nullptr};
+        ParamArcMini *mixerVolArc[4] = {nullptr};
         // lvgl object refs
     public:
         MixerPage(PageWithSubPage *parent, uint8_t id) : SubPage(parent), id(id) {}

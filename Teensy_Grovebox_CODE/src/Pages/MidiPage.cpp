@@ -233,7 +233,7 @@ void MidiPage::load()
     }
     // create lvgl objects
     // 4 CC arcs and CC text
-    arcGroup = lv_obj_create(screen);
+    lv_obj_t *arcGroup = lv_obj_create(screen);
     lv_obj_remove_style_all(arcGroup);
     lv_obj_set_size(arcGroup, 320, 80);
     lv_obj_set_pos(arcGroup, 0, 35);
@@ -250,7 +250,7 @@ void MidiPage::load()
         lv_label_set_text_fmt(ccArc[i]->getValueTextObject(), "%d", curCC[i]);
     }
     // button group
-    btnGroup = lv_obj_create(screen);
+    lv_obj_t *btnGroup = lv_obj_create(screen);
     lv_obj_remove_style_all(btnGroup);
     lv_obj_set_style_pad_all(btnGroup, 10, 0);
     lv_obj_set_size(btnGroup, 320, 135);
@@ -345,8 +345,6 @@ void MidiPage::unload()
     channelSpinbox = NULL;
     // delete all lvgl objects on screen
     lv_obj_clean(screen);
-    arcGroup = NULL;
-    btnGroup = NULL;
 }
 
 void MidiPage::updateCC(uint8_t control, uint8_t value)

@@ -28,14 +28,14 @@ private:
     class LfoPage;
 
     // subpages
-    MainPage* mainPage;
-    OscPage* oscPage[2];
-    SamplerPage* samplerPage;
-    NoisePage* noisePage;
-    FilterPage* filterPage;
-    ModPage* modPage;
-    EnvPage* envPage[3];
-    LfoPage* lfoPage[2];
+    MainPage* mainPage = nullptr;
+    OscPage* oscPage[2] = {nullptr};
+    SamplerPage* samplerPage = nullptr;
+    NoisePage* noisePage = nullptr;
+    FilterPage* filterPage = nullptr;
+    ModPage* modPage = nullptr;
+    EnvPage* envPage[3] = {nullptr};
+    LfoPage* lfoPage[2] = {nullptr};
 
     // *lvgl object refs
     lv_obj_t* subpageGroup;
@@ -78,15 +78,15 @@ private:
         bool usePitchbend = false;
         bool useModwheel = true; // TODO: Add modwheel enable button?
         // gui objects
-        ParamArc* volArc;
-        Spinbox* octaveSpinbox;
-        Button* velocityBtn;
-        Button* pitchBtn;
-        VolumeBar* volBar;
+        ParamArc* volArc = nullptr;
+        Spinbox* octaveSpinbox = nullptr;
+        Button* velocityBtn = nullptr;
+        Button* pitchBtn = nullptr;
+        VolumeBar* volBar = nullptr;
         // lvgl object refs
         lv_obj_t* pitchDropdown;
-        lv_obj_t* oscWaveItemImg[2]; // the is on the main menu buttons, so we need 2 for 2 OSCs
-        lv_obj_t* lfoWaveItemImg[2];
+        lv_obj_t* oscWaveItemImg[2] = {nullptr}; // the is on the main menu buttons, so we need 2 for 2 OSCs
+        lv_obj_t* lfoWaveItemImg[2] = {nullptr};
     public:
         MainPage(PageWithSubPage* parent) : SubPage(parent) {}
         void load() override;
@@ -120,12 +120,12 @@ private:
         int8_t oscDetune = 0;
         uint8_t oscLevel = 90;
         // gui objects
-        Spinbox* oscOctaveSpinbox;
-        Spinbox* oscSemiSpinbox;
-        ParamArc* oscArc[3];
+        Spinbox* oscOctaveSpinbox = nullptr;
+        Spinbox* oscSemiSpinbox = nullptr;
+        ParamArc* oscArc[3] = {nullptr};
         // lvgl object refs
-        lv_obj_t* oscWaveDropdown;
-        lv_obj_t* oscWaveImg;
+        lv_obj_t* oscWaveDropdown = nullptr;
+        lv_obj_t* oscWaveImg = nullptr;
     public:
         OscPage(PageWithSubPage* parent, uint8_t id) : SubPage(parent), id(id) {}
         void load() override;
@@ -150,13 +150,13 @@ private:
         int8_t samplerTune = 0;
         uint8_t samplerLevel = 90;
         // gui objects
-        ParamArc* samplerArc[2];
-        Button* rootKeyBtn;
+        ParamArc* samplerArc[2] = {nullptr};
+        Button* rootKeyBtn = nullptr;
         // lvgl object refs
-        lv_obj_t* waveformChart;
-        lv_chart_series_t *serMax;
-        lv_chart_series_t *serMin;
-        lv_obj_t* rootKeySelectTitleText;
+        lv_obj_t* waveformChart = nullptr;
+        lv_chart_series_t *serMax = nullptr;
+        lv_chart_series_t *serMin = nullptr;
+        lv_obj_t* rootKeySelectTitleText = nullptr;
         // other variables
         bool seletctingRootKey = false;
         const char* setRootKeyBtns[2] = {"Set", ""};
@@ -181,7 +181,7 @@ private:
         // user data
         uint8_t noiseLevel = 0;
         // gui objects
-        ParamArc* noiseArc;
+        ParamArc* noiseArc = nullptr;
         // lvgl object refs
     public:
         NoisePage(PageWithSubPage* parent) : SubPage(parent) {}
@@ -199,7 +199,7 @@ private:
         // user data
         uint16_t filterVal[4] = {300, 0, 0, 0};
         // gui objects
-        ParamArc* filterArc[4];
+        ParamArc* filterArc[4] = {nullptr};
     public:
         FilterPage(PageWithSubPage* parent) : SubPage(parent) {}
         void load() override;
@@ -217,8 +217,8 @@ private:
         // TODO: save modulation list here
         // gui objects
         // lvgl object refs
-        lv_obj_t* modMenuArea; // this object is used with column flex layout
-        lv_obj_t* newModBtn;
+        lv_obj_t* modMenuArea = nullptr; // this object is used with column flex layout
+        lv_obj_t* newModBtn = nullptr;
     public:
         ModPage(PageWithSubPage* parent) : SubPage(parent) {}
         void load() override;
@@ -286,8 +286,8 @@ private:
         // user data
         uint8_t envVal[5] = {0, 0, 0, 100, 0};
         // gui objects
-        EnvelopeGraph* envGraph;
-        ParamArc* envArc[5];
+        EnvelopeGraph* envGraph = nullptr;
+        ParamArc* envArc[5] = {nullptr};
     public:
         EnvPage(PageWithSubPage* parent, uint8_t id) : SubPage(parent), id(id) {}
         void load() override;
@@ -307,10 +307,10 @@ private:
         uint8_t lfoWaveform = 0;
         uint16_t lfoVal[2] = {0, 50};
         // gui objects
-        ParamArc* lfoArc[2];
+        ParamArc* lfoArc[2] = {nullptr};
         // lvgl object refs
-        lv_obj_t* lfoWaveDropdown;
-        lv_obj_t* lfoWaveImg;
+        lv_obj_t* lfoWaveDropdown = nullptr;
+        lv_obj_t* lfoWaveImg = nullptr;
     public:
         LfoPage(PageWithSubPage* parent, uint8_t id) : SubPage(parent), id(id) {}
         void load() override;

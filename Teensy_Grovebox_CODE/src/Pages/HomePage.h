@@ -8,7 +8,7 @@ class HomePage : public Pages
 {
 private:
     // lvgl object refs
-    lv_obj_t *btnMatrix;
+    lv_obj_t *btnMatrix = nullptr;
 
     // lvgl gui callbacks
     static void onBtnPressed(lv_event_t *e);
