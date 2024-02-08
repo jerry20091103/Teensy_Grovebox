@@ -77,6 +77,10 @@ void ParamArc::createArc(lv_obj_t *parent, uint8_t color, const char* title, con
         lv_obj_set_style_text_font(unitText, font_small, 0);
         lv_obj_align(unitText, LV_ALIGN_BOTTOM_MID, 0, 0);
     }
+    setArcColor(color);
+}
+void ParamArc::setArcColor(uint8_t color)
+{
     // set color
     switch (color)
     {
@@ -105,7 +109,7 @@ void ParamArc::createArc(lv_obj_t *parent, uint8_t color, const char* title, con
         lv_obj_set_style_bg_color(arc, lv_color_white(), LV_PART_KNOB);
         break;
     }
-};
+}
 
 // constructor
 ParamArc::ParamArc(lv_obj_t *parent, uint8_t color, const char* title, const char* unit, bool padding)
@@ -152,6 +156,14 @@ void ParamArc::setCallback(ParamArcCallback_t callback, void *targetPointer)
     this->targetPointer = targetPointer;
 }
 
+void ParamArc::setSymmetric(bool symmetric)
+{
+    if (symmetric)
+        lv_arc_set_mode(arc, LV_ARC_MODE_SYMMETRICAL);
+    else
+        lv_arc_set_mode(arc, LV_ARC_MODE_NORMAL);
+}
+
 void ParamArc::bindEncoder(int8_t encoderIndex)
 {
     // unbind previous encoder
@@ -163,6 +175,62 @@ void ParamArc::bindEncoder(int8_t encoderIndex)
     // set encoder value and range
     enc[encoderIndex]->setCurrentReading(lv_arc_get_value(arc));
     enc[encoderIndex]->changePrecision(lv_arc_get_max_value(arc), lv_arc_get_value(arc), false);
+}
+
+void ParamArcMini::createArc(lv_obj_t *parent, uint8_t color, const char *title, const char *unit, bool padding)
+{
+    arc = lv_arc_create(parent);
+    lv_arc_set_rotation(arc, 135);
+    lv_arc_set_bg_angles(arc, 0, 270);
+    lv_arc_set_value(arc, 0);
+    lv_obj_clear_flag(arc, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_style_arc_width(arc, 5, 0);
+    if (padding)
+    {
+        lv_obj_set_style_size(arc, 43, 0);
+        lv_obj_set_style_pad_all(arc, 4, 0);
+    }
+    else
+    {
+        lv_obj_set_style_size(arc, 35, 0);
+        lv_obj_set_style_pad_all(arc, 0, 0);
+    }
+    // indicator part
+    lv_obj_set_style_arc_width(arc, 5, LV_PART_INDICATOR);
+    // knob part
+    lv_obj_set_style_pad_all(arc, 2, LV_PART_KNOB);
+
+    lv_obj_add_flag(arc, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+
+    // create value
+    valueText = lv_label_create(arc);
+    lv_obj_center(valueText);
+    lv_obj_set_style_text_font(valueText, font_small, 0);
+    // create title
+    if (title != NULL)
+    {
+        titleText = lv_label_create(arc);
+        lv_label_set_text(titleText, title);
+        lv_obj_align(titleText, LV_ALIGN_CENTER, 0, -25);
+        lv_obj_set_style_text_align(titleText, LV_TEXT_ALIGN_CENTER, 0);
+        lv_obj_set_style_text_font(titleText, font_small, 0);
+    }
+    // create unit
+    if (unit != NULL)
+    {
+        unitText = lv_label_create(arc);
+        lv_label_set_text(unitText, unit);
+        lv_obj_set_style_text_font(unitText, font_extraSmall, 0);
+        lv_obj_align(unitText, LV_ALIGN_BOTTOM_MID, 0, 0);
+    }
+    // set color
+    setArcColor(color);
+}
+
+ParamArcMini::ParamArcMini(lv_obj_t *parent, uint8_t color, const char *title, const char *unit, bool padding)
+{
+    createArc(parent, color, title, unit, padding);
+    lv_obj_add_event_cb(arc, lvglCallback, LV_EVENT_VALUE_CHANGED, this);
 }
 
 void encoderBindCallback(uint8_t encoderId, int value)
