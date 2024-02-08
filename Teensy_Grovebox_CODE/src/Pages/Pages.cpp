@@ -74,14 +74,14 @@ void PageManager_::Init()
     }
 }
 
-void PageManager_::setUserData()
+void PageManager_::loadAll()
 {
     for(auto i : PageArr)
     {
         if(i == nullptr)
             continue;
-        i->setUserData();
-        Serial.println("Page setUserData" + String(i->pageID));
+        i->loadAll();
+        Serial.println("Page loadAll(): " + String(i->pageID));
     }
 }
 

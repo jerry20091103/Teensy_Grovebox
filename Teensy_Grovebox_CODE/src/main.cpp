@@ -96,7 +96,7 @@ void setup()
     // Initialize hardware
     HardwareSetup();
     // set GUI data and switch to first page
-    PageManager.setUserData(); // TODO: maybe merge this to load()
+    PageManager.loadAll();
     PageManager.switchPage(PG_HOME);
     // Schedule regular tasks
     taskManager.scheduleFixedRate(3, updateSynthModulation);

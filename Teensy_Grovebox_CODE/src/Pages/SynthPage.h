@@ -54,7 +54,6 @@ public:
     void onJoyUpdateDefault(int joy_x, int joy_y) override;
     void onCCReceiveDefault(u_int8_t channel, u_int8_t control, u_int8_t value) override;
     void configurePage() override;
-    void setUserData() override;
 
     void updateDefault() override;
     PROGMEM void init() override;

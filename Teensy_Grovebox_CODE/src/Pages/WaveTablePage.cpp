@@ -153,11 +153,6 @@ void WaveTablePage::configurePage()
     AudioSynth.setVoiceMode(VOICE_MODE_WAVETABLE);
 }
 
-void WaveTablePage::setUserData()
-{
-
-}
-
 void WaveTablePage::update()
 {
     float temp_peak = AudioIO.getMixerPeak(MasterTracks::ANALOG_OUT, MixerTracks::INSTRUMENTS).l;

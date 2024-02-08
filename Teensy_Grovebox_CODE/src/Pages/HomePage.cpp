@@ -80,11 +80,6 @@ void HomePage::configurePage()
 
 }
 
-void HomePage::setUserData()
-{
-    // nothing to set
-}
-
 void HomePage::update()
 {
 

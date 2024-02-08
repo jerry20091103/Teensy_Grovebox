@@ -409,8 +409,3 @@ void MidiPage::configurePage()
 {
     
 }
-
-void MidiPage::setUserData()
-{
-    
-}

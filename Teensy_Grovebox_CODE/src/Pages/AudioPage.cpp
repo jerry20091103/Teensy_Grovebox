@@ -80,10 +80,6 @@ void AudioPage::configurePage()
     }
 }
 
-void AudioPage::setUserData()
-{
-}
-
 void AudioPage::updateDefault()
 {
 }

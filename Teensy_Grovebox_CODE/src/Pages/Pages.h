@@ -38,9 +38,6 @@ public:
     virtual void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value) = 0;
     // Configure a page before swithcing to it. Sets the audio system and other stuff This function should be called after HardwareSetup().
     virtual void configurePage() = 0;
-    // set user data to GUI elements. This function should be called after HardwareSetup().
-    // todo: also ensure that user data is set into audio objects?
-    virtual void setUserData() = 0;
 
     // this updates the page approximately every frame
     virtual void update() = 0;
@@ -50,7 +47,7 @@ public:
     virtual void load() = 0;
     // Unload a page before switching to another page
     virtual void unload() = 0;
-    // Load all pages, including the subpages
+    // Load all pages, including the subpages, to load user data to GUI elements. This function should be called after HardwareSetup().
     virtual void loadAll() {load();}
 
     uint8_t pageID;
@@ -154,7 +151,7 @@ public:
     // Go back to previous page
     void goBack();
     // set user data to GUI elements in all pages. This function should be called after HardwareSetup().
-    void setUserData();
+    void loadAll();
     // a global pointer variable for parameter passing when switching pages
     void *pageParam;
 private:

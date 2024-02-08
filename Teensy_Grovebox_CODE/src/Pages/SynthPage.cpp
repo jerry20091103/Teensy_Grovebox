@@ -100,11 +100,6 @@ void SynthPage::configurePage()
     AudioSynth.setVoiceMode(VOICE_MODE_SYNTH);
 }
 
-void SynthPage::setUserData()
-{
-    
-}
-
 void SynthPage::updateDefault()
 {
     

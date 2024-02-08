@@ -266,9 +266,6 @@ void SampleEditorPage::configurePage()
 {
     
 }
-void SampleEditorPage::setUserData()
-{
-}
 
 void SampleEditorPage::update()
 {
