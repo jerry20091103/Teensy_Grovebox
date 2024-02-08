@@ -95,7 +95,6 @@ void PageManager_::switchPage(uint8_t pageID, bool isGoBack)
     // set title text
     lv_label_set_text(title, PageArr[pageID]->pageName);
     PageArr[pageID]->load();
-    // todo: maybe get rid of this and use load() instead
     PageArr[pageID]->configurePage();
     // change back button icon if previous page is home page
     lv_obj_t *label = lv_obj_get_child(backBtn, 0);

@@ -144,7 +144,6 @@ void WaveTablePage::configurePage()
     AudioIO.setInputVolume(InputTracks::LINEMIC_IN, 0);
     // setup peak module for level meter
     AudioIO.setMixerLevelMode(LevelMeterMode::PRE_FADER);
-    setVolume(volume);
     // update current velocity settings
     AudioSynth.setUseVelocity(useVelocity);
     // set reverb FX
