@@ -44,7 +44,6 @@ private:
 
     // *helper functions
     lv_obj_t* createTopBar(lv_obj_t* parent, const char* title);
-    lv_obj_t* createItemMenuArea(lv_obj_t* menu);
     static String noteNumToNoteName(uint8_t keyNum);
 
 public:

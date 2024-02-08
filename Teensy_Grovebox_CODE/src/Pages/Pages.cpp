@@ -33,7 +33,6 @@ uint8_t PageManager_::getPrevPage()
 
 void PageManager_::Init()
 {
-    Gui_InitStyles();
     PageArr[PG_HOME] = new HomePage();
     PageArr[PG_MIDI] = new MidiPage();
     PageArr[PG_AUDIO] = new AudioPage();
@@ -213,4 +212,16 @@ void PageWithSubPage::switchSubPage(SubPage *subPage)
     curSubPage->unload();
     subPage->load();
     curSubPage = subPage;
+}
+
+lv_obj_t *SubPage::createSubPageItemArea(lv_obj_t *parent)
+{
+    lv_obj_t *itemArea = lv_obj_create(parent);
+    lv_obj_remove_style_all(itemArea);
+    lv_obj_set_style_pad_all(itemArea, 5, 0);
+    lv_obj_set_size(itemArea, 320, 178);
+    lv_obj_clear_flag(itemArea, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_y(itemArea, 27);
+
+    return itemArea;
 }

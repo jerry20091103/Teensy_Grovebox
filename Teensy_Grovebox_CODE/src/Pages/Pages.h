@@ -129,6 +129,8 @@ public:
     
     PageWithSubPage* getParentPage() {return parentPage;}
     SubPage(PageWithSubPage *parentPage) : parentPage(parentPage) {}
+    // common functions for sub pages
+    static lv_obj_t* createSubPageItemArea(lv_obj_t* parent);
 };
 
 // PagesManager class

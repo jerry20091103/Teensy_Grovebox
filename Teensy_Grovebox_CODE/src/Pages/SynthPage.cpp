@@ -139,6 +139,7 @@ void SynthPage::init()
     lfoPage[0] = new LfoPage(this, 0);
     lfoPage[1] = new LfoPage(this, 1);
     // set default subpage
+    // TODO: maybe store curSubPage into user data?
     curSubPage = mainPage;
 }
 
@@ -179,6 +180,7 @@ lv_obj_t *SynthPage::createTopBar(lv_obj_t *parent, const char *title)
     lv_obj_set_style_pad_all(topBar, 2, 0);
     lv_obj_set_style_border_width(topBar, 0, 0);
     lv_obj_set_size(topBar, 320, 27);
+    lv_obj_clear_flag(topBar, LV_OBJ_FLAG_SCROLLABLE);
     // back button
     lv_obj_t *btn = Gui_CreateButton(topBar, -1, 25, " Back ");
     lv_obj_add_event_cb(btn, [](lv_event_t *e) {
@@ -191,18 +193,6 @@ lv_obj_t *SynthPage::createTopBar(lv_obj_t *parent, const char *title)
     lv_obj_align(label, LV_ALIGN_LEFT_MID, 80, 0);
 
     return topBar;
-}
-
-lv_obj_t *SynthPage::createItemMenuArea(lv_obj_t *menu)
-{
-    lv_obj_t *menu_area = lv_obj_create(menu);
-    lv_obj_remove_style_all(menu_area);
-    lv_obj_set_style_pad_all(menu_area, 5, 0);
-    lv_obj_set_size(menu_area, 320, 178);
-    lv_obj_clear_flag(menu_area, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_y(menu_area, 27);
-
-    return menu_area;
 }
 
 // convert midi note number to note name
@@ -537,7 +527,7 @@ void SynthPage::OscPage::load()
     // create top bar
     synthPage->createTopBar(synthPage->subpageGroup, (String("Oscillator ") + String(id + 1)).c_str());
     // create itemMenuArea
-    lv_obj_t *menuArea = synthPage->createItemMenuArea(synthPage->subpageGroup);
+    lv_obj_t *menuArea = createSubPageItemArea(synthPage->subpageGroup);
 
     // *waveform selector
     lv_obj_t *label = lv_label_create(menuArea);
@@ -700,7 +690,7 @@ void SynthPage::SamplerPage::load()
     // create top bar
     synthPage->createTopBar(synthPage->subpageGroup, "Sampler");
     // create itemMenuArea
-    lv_obj_t *menuArea = synthPage->createItemMenuArea(synthPage->subpageGroup);
+    lv_obj_t *menuArea = createSubPageItemArea(synthPage->subpageGroup);
 
     // *sample waveform viewer
     waveformChart = Gui_CreateWaveformChart(menuArea, 305, 60, &serMax, &serMin, samplerWaveformPointsMax, samplerWaveformPointsMin);
@@ -826,7 +816,7 @@ void SynthPage::NoisePage::load()
     // create top bar
     synthPage->createTopBar(synthPage->subpageGroup, "Noise Generator");
     // create itemMenuArea
-    lv_obj_t *menuArea = synthPage->createItemMenuArea(synthPage->subpageGroup);
+    lv_obj_t *menuArea = createSubPageItemArea(synthPage->subpageGroup);
 
     // *level arc
     noiseArc = new ParamArc(menuArea, 1, "Level", "%");
@@ -859,7 +849,7 @@ void SynthPage::FilterPage::load()
     // create top bar
     synthPage->createTopBar(synthPage->subpageGroup, "Ladder Filter");
     // create itemMenuArea
-    lv_obj_t *menuArea = synthPage->createItemMenuArea(synthPage->subpageGroup);
+    lv_obj_t *menuArea = createSubPageItemArea(synthPage->subpageGroup);
     
     // *cutoff arc
     filterArc[0] = new ParamArc(menuArea, 1, "Cutoff", "Hz", false);
@@ -959,7 +949,7 @@ void SynthPage::ModPage::load()
     // create top bar
     synthPage->createTopBar(synthPage->subpageGroup, "Modulation");
     // create itemMenuArea
-    modMenuArea = synthPage->createItemMenuArea(synthPage->subpageGroup);
+    modMenuArea = createSubPageItemArea(synthPage->subpageGroup);
     
     // column flex layout
     lv_obj_set_flex_flow(modMenuArea, LV_FLEX_FLOW_COLUMN);
@@ -1114,7 +1104,7 @@ void SynthPage::EnvPage::load()
     else
         synthPage->createTopBar(synthPage->subpageGroup, (String("Envelope ") + String(id)).c_str());
     // create itemMenuArea
-    lv_obj_t *menuArea = synthPage->createItemMenuArea(synthPage->subpageGroup);
+    lv_obj_t *menuArea = createSubPageItemArea(synthPage->subpageGroup);
 
     // *envelope graph
     envGraph = new EnvelopeGraph(menuArea, 320, 90);
@@ -1244,7 +1234,7 @@ void SynthPage::LfoPage::load()
     // create top bar
     synthPage->createTopBar(synthPage->subpageGroup, (String("Low Frequency Oscillator ") + String(id + 1)).c_str());
     // create itemMenuArea
-    lv_obj_t *menuArea = synthPage->createItemMenuArea(synthPage->subpageGroup);
+    lv_obj_t *menuArea = createSubPageItemArea  (synthPage->subpageGroup);
 
     // *lfo waveform selector
     lv_obj_t *label = lv_label_create(menuArea);
