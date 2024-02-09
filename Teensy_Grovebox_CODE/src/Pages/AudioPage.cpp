@@ -60,6 +60,7 @@ void AudioPage::onEncTurnedDefault(uint8_t id, int value)
 
 void AudioPage::onJoyUpdateDefault(int joy_x, int joy_y)
 {
+    PageManager.PageArr[PageManager.getPrevPage()]->onJoyUpdate(joy_x, joy_y);
 }
 
 void AudioPage::onCCReceiveDefault(u_int8_t channel, u_int8_t control, u_int8_t value)
@@ -78,6 +79,7 @@ void AudioPage::configurePage()
         float gain = dBtoGain(mainPage->InVol[0] - VOL_MAX + 10);
         AudioIO.setInputVolume(InputTracks::LINEMIC_IN, gain);
     }
+    AudioIO.setMixerLevelMode(LevelMeterMode::POST_FADER);
 }
 
 void AudioPage::updateDefault()

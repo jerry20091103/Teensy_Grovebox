@@ -48,7 +48,7 @@ public:
     // Unload a page before switching to another page
     virtual void unload() = 0;
     // Load all pages, including the subpages, to load user data to GUI elements. This function should be called after HardwareSetup().
-    virtual void loadAll() {load();}
+    virtual void loadAll() {load(); unload();}
 
     uint8_t pageID;
     char pageName[MAX_PAGE_NAME];
