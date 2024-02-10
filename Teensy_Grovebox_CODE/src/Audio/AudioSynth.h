@@ -100,7 +100,7 @@ private:
     bool isSustain = false;
     bool useVelocity = true;
 
-    std::list<ModulationEntry> modList;
+    std::list<ModulationEntry> *modList = nullptr;
 
 public:
     PROGMEM AudioSynth_();
@@ -135,6 +135,7 @@ public:
     void setEnvSustain(uint8_t id, float sustain);
     void setEnvRelease(uint8_t id, float release);
     // *modulation
+    void setModulationListPtr(std::list<ModulationEntry> *list);
     int8_t addModulation(uint8_t source, uint8_t target);
     void setModulationAmount(uint8_t id, float amount);
     void setModulationSource(uint8_t id, uint8_t source);

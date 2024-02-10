@@ -136,6 +136,9 @@ void SynthPage::init()
     // set default subpage
     // TODO: maybe store curSubPage into user data?
     curSubPage = mainPage;
+
+    // set modulation list pointer
+    AudioSynth.setModulationListPtr(&modPage->modList);
 }
 
 void SynthPage::loadAll()
@@ -945,6 +948,7 @@ void SynthPage::ModPage::load()
     synthPage->createTopBar(synthPage->subpageGroup, "Modulation");
     // create itemMenuArea
     modMenuArea = createSubPageItemArea(synthPage->subpageGroup);
+    lv_obj_add_flag(modMenuArea, LV_OBJ_FLAG_SCROLLABLE);
     
     // column flex layout
     lv_obj_set_flex_flow(modMenuArea, LV_FLEX_FLOW_COLUMN);
@@ -953,7 +957,8 @@ void SynthPage::ModPage::load()
     // *"new modulation" button
     createNewModBtn(modMenuArea);
 
-    // TODO: Load the modulation list here
+    // load mod entries
+    loadModList();
 }
 
 void SynthPage::ModPage::unload()
@@ -969,7 +974,7 @@ void SynthPage::ModPage::onNewModBtnPressed(lv_event_t *e)
     if (id != -1)
     {
         // create a new mod entry
-        instance->createModEntry(instance->modMenuArea, id);
+        instance->createModEntry(instance->modMenuArea, id, MOD_SRC_NONE, MOD_TGT_NONE, 0.0f);
         // scroll down
         lv_obj_scroll_by_bounded(instance->modMenuArea, 0, -55, LV_ANIM_ON);
     }
@@ -977,6 +982,7 @@ void SynthPage::ModPage::onNewModBtnPressed(lv_event_t *e)
 
 void SynthPage::ModPage::onDelModBtnPressed(lv_event_t *e)
 {
+    ModPage *instance = (ModPage *)lv_event_get_user_data(e);
     // get the to be deleted entry
     lv_obj_t *entry = lv_obj_get_parent(lv_event_get_target(e));
     if (entry == NULL)
@@ -985,6 +991,18 @@ void SynthPage::ModPage::onDelModBtnPressed(lv_event_t *e)
     AudioSynth.removeModulation(lv_obj_get_child_id(entry));
     // remove the entry
     lv_obj_del_async(entry); // use async because we are still in a callback
+    // schedule a callback to update the id of all mod entries
+    auto updateModIdTask = new ExecWithParameter<lv_obj_t *>([](lv_obj_t * data) {
+        lv_obj_t *modMenuArea = (lv_obj_t *)data;
+        for (uint8_t i = 0; i < lv_obj_get_child_cnt(modMenuArea) - 1; i++) // -1 to exclude the "new modulation" button
+        {
+            lv_obj_t *entry = lv_obj_get_child(modMenuArea, i);
+            lv_obj_t *label = lv_obj_get_child(entry, 5);
+            if (label != nullptr)
+                lv_label_set_text_fmt(label, "%d", i);
+        }
+    }, instance->modMenuArea);
+    taskManager.scheduleOnce(10, updateModIdTask, TIME_MILLIS, true);
 }
 
 void SynthPage::ModPage::onModSourceChange(lv_event_t *e)
@@ -1012,7 +1030,7 @@ void SynthPage::ModPage::onModAmountChange(lv_event_t *e)
     AudioSynth.setModulationAmount(id, float(amount) / 100.0f);
 }
 
-lv_obj_t *SynthPage::ModPage::createModEntry(lv_obj_t *parent, int8_t id)
+lv_obj_t *SynthPage::ModPage::createModEntry(lv_obj_t* parent, int8_t id, modSource source, modTarget target, float amount)
 {
     // delete "new modulation" button
     lv_obj_del(lv_obj_get_child(parent, -1));
@@ -1027,6 +1045,7 @@ lv_obj_t *SynthPage::ModPage::createModEntry(lv_obj_t *parent, int8_t id)
     lv_obj_t *dropdown = lv_dropdown_create(entry);
     lv_obj_set_style_text_font(dropdown, font_small, 0);
     lv_dropdown_set_options_static(dropdown, modSourceStr);
+    lv_dropdown_set_selected(dropdown, source);
     lv_obj_set_size(dropdown, 105, 32);
     lv_obj_set_pos(dropdown, 0, 0);
     lv_obj_add_event_cb(dropdown, onModSourceChange, LV_EVENT_VALUE_CHANGED, this);
@@ -1041,6 +1060,7 @@ lv_obj_t *SynthPage::ModPage::createModEntry(lv_obj_t *parent, int8_t id)
     dropdown = lv_dropdown_create(entry);
     lv_obj_set_style_text_font(dropdown, font_small, 0);
     lv_dropdown_set_options_static(dropdown, modTargetStr);
+    lv_dropdown_set_selected(dropdown, target);
     lv_obj_set_size(dropdown, 140, 32);
     lv_obj_set_pos(dropdown, 125, 0);
     lv_obj_add_event_cb(dropdown, onModTargetChange, LV_EVENT_VALUE_CHANGED, this);
@@ -1056,6 +1076,7 @@ lv_obj_t *SynthPage::ModPage::createModEntry(lv_obj_t *parent, int8_t id)
     lv_obj_set_pos(slider, 0, 40);
     lv_slider_set_mode(slider, LV_SLIDER_MODE_SYMMETRICAL);
     lv_slider_set_range(slider, -100, 100);
+    lv_slider_set_value(slider, map(amount, -1.0f, 1.0f, -100, 100), LV_ANIM_OFF);
     lv_obj_set_style_bg_color(slider, color_Grey, 0);
     lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
@@ -1087,6 +1108,20 @@ lv_obj_t *SynthPage::ModPage::createNewModBtn(lv_obj_t *parent)
     lv_obj_add_event_cb(Btn, onNewModBtnPressed, LV_EVENT_CLICKED, this);
 
     return Btn;
+}
+
+void SynthPage::ModPage::loadModList()
+{
+    // iterate through the modList and create entries
+    std::list<ModulationEntry>::iterator it = modList.begin();
+    uint8_t id = 0;
+    while (it != modList.end())
+    {
+        ModulationEntry entry = *it;
+        createModEntry(modMenuArea, id, entry.source, entry.target, entry.amount);
+        it++;
+        id++;
+    }
 }
 
 void SynthPage::EnvPage::load()

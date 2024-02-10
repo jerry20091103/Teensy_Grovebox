@@ -1,8 +1,10 @@
 #ifndef SYNTH_PAGE_H
 #define SYNTH_PAGE_H
 
+#include <list>
 #include "Pages.h"
 #include "Audio/AudioFX.h"
+#include "Audio/AudioVoice.h"
 #include "GuiObjects/ParamArc.h"
 #include "GuiObjects/Buttons.h"
 #include "GuiObjects/Spinbox.h"
@@ -214,6 +216,7 @@ private:
     private:
         // user data
         // TODO: save modulation list here
+        std::list<ModulationEntry> modList;
         // gui objects
         // lvgl object refs
         lv_obj_t* modMenuArea = nullptr; // this object is used with column flex layout
@@ -231,8 +234,9 @@ private:
         static void onModTargetChange(lv_event_t *e);
         static void onModAmountChange(lv_event_t *e);
         // helper functions
-        lv_obj_t* createModEntry(lv_obj_t* parent, int8_t id);
+        lv_obj_t* createModEntry(lv_obj_t* parent, int8_t id, modSource source, modTarget target, float amount);
         lv_obj_t* createNewModBtn(lv_obj_t* parent);
+        void loadModList();
         // modulation dropdown option string
         const char* modSourceStr = {"------\n"
         "LFO1\n"
