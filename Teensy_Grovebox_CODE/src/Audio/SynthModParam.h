@@ -210,5 +210,17 @@ public:
     void setVoice(uint8_t voiceId, float value_ms) override;
 };
 
+/*
+    A child class of SynthModParam.
+    This class is for the level of the clip player (sample player).
+*/
+class ClipLevel : public SynthModParam
+{
+public:
+    ClipLevel(AudioVoice *voiceArr) : SynthModParam(voiceArr) {}
+    void setVoice(uint8_t voiceId, float value) override;
+    void modulate(uint8_t voiceId, float amount) override;
+};
+
 
 #endif

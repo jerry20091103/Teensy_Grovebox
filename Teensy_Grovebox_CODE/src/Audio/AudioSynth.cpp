@@ -17,7 +17,8 @@ AudioSynth_::ModParamList::ModParamList(AudioVoice *voiceArr) : oscPitchOffset{O
                                                                 envAttack{EnvAttack(voiceArr, 0), EnvAttack(voiceArr, 1), EnvAttack(voiceArr, 2)},
                                                                 envDecay{EnvDecay(voiceArr, 0), EnvDecay(voiceArr, 1), EnvDecay(voiceArr, 2)},
                                                                 envSustain{EnvSustain(voiceArr, 0), EnvSustain(voiceArr, 1), EnvSustain(voiceArr, 2)},
-                                                                envRelease{EnvRelease(voiceArr, 0), EnvRelease(voiceArr, 1), EnvRelease(voiceArr, 2)}
+                                                                envRelease{EnvRelease(voiceArr, 0), EnvRelease(voiceArr, 1), EnvRelease(voiceArr, 2)},
+                                                                clipLevel(voiceArr)
 {
 }
 
@@ -283,7 +284,7 @@ void AudioSynth_::noteOn(uint8_t note)
     else
         voiceArr[voiceFound].noteOn(note, 0.8);
 
-    // todo: ugly fix here to apply oscPitchOffset to synth OSCs
+    // apply oscPitchOffset to synth OSCs
     if (curVoiceMode == VOICE_MODE_SYNTH)
     {
         calAndSetOscPitchOffset(0);
@@ -551,13 +552,20 @@ void AudioSynth_::setEnvRelease(uint8_t id, float release)
     modParamList.envRelease[id].set(release);
 }
 
+void AudioSynth_::setModulationListPtr(std::list<ModulationEntry> *list)
+{
+    modList = list;
+}
+
 // add a modulation to the modList and returns id. Returns -1 if not valid.
 int8_t AudioSynth_::addModulation(uint8_t source, uint8_t dest)
 {
-    if (source < MOD_SRC_MAX && dest < MOD_TGT_MAX && modList.size() < MAX_MODULATION_COUNT)
+    if (modList == nullptr)
+        return -1;
+    if (source < MOD_SRC_MAX && dest < MOD_TGT_MAX && modList->size() < MAX_MODULATION_COUNT)
     {
-        modList.push_back(ModulationEntry((modSource)source, (modTarget)dest, 0));
-        return modList.size() - 1;
+        modList->push_back(ModulationEntry((modSource)source, (modTarget)dest, 0));
+        return modList->size() - 1;
     }
     return -1;
 }
@@ -565,10 +573,12 @@ int8_t AudioSynth_::addModulation(uint8_t source, uint8_t dest)
 // set the id-th modulation amount of the modList
 void AudioSynth_::setModulationAmount(uint8_t id, float amount)
 {
-    if (id < modList.size())
+    if (modList == nullptr)
+        return;
+    if (id < modList->size())
     {
         // get the modulation entry in list
-        std::list<ModulationEntry>::iterator it = modList.begin();
+        std::list<ModulationEntry>::iterator it = modList->begin();
         for (int i = 0; i < id; i++)
         {
             it++;
@@ -581,10 +591,12 @@ void AudioSynth_::setModulationAmount(uint8_t id, float amount)
 // set the id-th modulation source of the modList
 void AudioSynth_::setModulationSource(uint8_t id, uint8_t source)
 {
-    if (id < modList.size())
+    if (modList == nullptr)
+        return;
+    if (id < modList->size())
     {
         // get the modulation entry in list
-        std::list<ModulationEntry>::iterator it = modList.begin();
+        std::list<ModulationEntry>::iterator it = modList->begin();
         for (int i = 0; i < id; i++)
         {
             it++;
@@ -597,10 +609,12 @@ void AudioSynth_::setModulationSource(uint8_t id, uint8_t source)
 // set the id-th modulation target of the modList
 void AudioSynth_::setModulationTarget(uint8_t id, uint8_t target)
 {
-    if (id < modList.size())
+    if (modList == nullptr)
+        return;
+    if (id < modList->size())
     {
         // get the modulation entry in list
-        std::list<ModulationEntry>::iterator it = modList.begin();
+        std::list<ModulationEntry>::iterator it = modList->begin();
         for (int i = 0; i < id; i++)
         {
             it++;
@@ -622,10 +636,12 @@ void AudioSynth_::resetModulation(uint8_t id)
 // remove the id-th modulation of the modList
 void AudioSynth_::removeModulation(uint8_t id)
 {
-    if (id < modList.size())
+    if (modList == nullptr)
+        return;
+    if (id < modList->size())
     {
         // get the modulation entry in list
-        std::list<ModulationEntry>::iterator it = modList.begin();
+        std::list<ModulationEntry>::iterator it = modList->begin();
         for (int i = 0; i < id; i++)
         {
             it++;
@@ -633,13 +649,16 @@ void AudioSynth_::removeModulation(uint8_t id)
         // reset the modulated target value
         resetModulation(it->target);
         // remove the entry
-        modList.erase(it);
+        modList->erase(it);
     }
 }
 
 void AudioSynth_::updateModulation()
 {
     if (curVoiceMode != VOICE_MODE_SYNTH)
+        return;
+
+    if (modList == nullptr)
         return;
 
     for (uint8_t voiceId = 0; voiceId < MAX_VOICE; voiceId++)
@@ -684,7 +703,7 @@ void AudioSynth_::updateModulation()
         }
 
         // process all the modulations in modList, store the result value in modTgtValue
-        for (std::list<ModulationEntry>::iterator it = modList.begin(); it != modList.end(); it++)
+        for (std::list<ModulationEntry>::iterator it = modList->begin(); it != modList->end(); it++)
         {
             float value = modSrcValue[it->source];
             // calculate amount
@@ -771,7 +790,6 @@ void AudioSynth_::setClipLoopCrossfade(float crossfade)
     }
 }
 
-// todo: change to SynthModParam for modulation function.
 void AudioSynth_::setClipLevel(uint8_t amount)
 {
     float gain;
@@ -780,10 +798,7 @@ void AudioSynth_::setClipLevel(uint8_t amount)
     else
         gain = 0;
 
-    for (uint8_t i = 0; i < MAX_VOICE; i++)
-    {
-        voiceArr[i].clipAmp->gain(gain);   
-    }
+    modParamList.clipLevel.set(gain);
 }
 
 void AudioSynth_::setClipBaseNote(uint8_t note)

@@ -13,7 +13,9 @@ void UpdateJoystick()
         joyY = 510;
     }
     PageManager.PageArr[PageManager.getCurPage()]->onJoyUpdate(joyX, joyY);
+#ifndef DEBUG
     usbMIDI.read();
+#endif
 }
 
 void BtnPressCallback(pinid_t pin, bool isHeld)

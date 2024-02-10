@@ -6,6 +6,8 @@
 #include "SynthPage.h"
 #include "SampleEditorPage.h"
 // #include "ReverbPopup.h"
+#include "GuiObjects/Colors.h"
+#include "Pages.h"
 
 PageManager_ &PageManager_::getInstance()
 {
@@ -31,7 +33,6 @@ uint8_t PageManager_::getPrevPage()
 
 void PageManager_::Init()
 {
-    Gui_InitStyles();
     PageArr[PG_HOME] = new HomePage();
     PageArr[PG_MIDI] = new MidiPage();
     PageArr[PG_AUDIO] = new AudioPage();
@@ -73,22 +74,27 @@ void PageManager_::Init()
     }
 }
 
-void PageManager_::setUserData()
+void PageManager_::loadAll()
 {
     for(auto i : PageArr)
     {
         if(i == nullptr)
             continue;
-        i->setUserData();
-        Serial.println("Page setUserData" + String(i->pageID));
+        i->loadAll();
+        Serial.println("Page loadAll(): " + String(i->pageID));
     }
 }
 
-void PageManager_::switchPage(uint8_t pageID)
+void PageManager_::switchPage(uint8_t pageID, bool isGoBack)
 {
-    navStack.push(pageID);
+    PageArr[getCurPage()]->unload();
+    if (isGoBack)
+        navStack.pop();
+    else
+        navStack.push(pageID);
     // set title text
     lv_label_set_text(title, PageArr[pageID]->pageName);
+    PageArr[pageID]->load();
     PageArr[pageID]->configurePage();
     // change back button icon if previous page is home page
     lv_obj_t *label = lv_obj_get_child(backBtn, 0);
@@ -141,11 +147,80 @@ void PageManager_::onBackBtnPressed(lv_event_t *e)
 {
     if(PageManager.navStack.size() > 1)
     {
-        PageManager.navStack.pop();
-        PageManager.switchPage(PageManager.navStack.pop());
+        // go back to previous page
+        PageManager.switchPage(PageManager.getPrevPage(), true);
     }
 }
 
 // common data shared by all pages
 int16_t samplerWaveformPointsMax[1000]; // todo: ugly?
 int16_t samplerWaveformPointsMin[1000];
+
+void PageWithSubPage::onBtnPressed(uint8_t pin)
+{
+    curSubPage->onBtnPressed(pin);
+}
+
+void PageWithSubPage::onBtnHold(uint8_t pin)
+{
+    curSubPage->onBtnHold(pin);
+}
+
+void PageWithSubPage::onBtnReleased(uint8_t pin)
+{
+    curSubPage->onBtnReleased(pin);
+}
+
+void PageWithSubPage::onEncTurned(uint8_t id, int value)
+{
+    curSubPage->onEncTurned(id, value);
+}
+
+void PageWithSubPage::onJoyUpdate(int joy_x, int joy_y)
+{
+    curSubPage->onJoyUpdate(joy_x, joy_y);
+}
+
+void PageWithSubPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value)
+{
+    curSubPage->onCCReceive(channel, control, value);
+}
+
+void PageWithSubPage::update()
+{
+    curSubPage->update();
+}
+
+void PageWithSubPage::load()
+{
+    curSubPage->load();
+}
+
+void PageWithSubPage::unload()
+{
+    curSubPage->unload();
+}
+
+void PageWithSubPage::switchSubPage(SubPage *subPage)
+{
+    if(subPage == nullptr)
+    {
+        Serial.println("subPage is null");
+        return;
+    }
+    curSubPage->unload();
+    subPage->load();
+    curSubPage = subPage;
+}
+
+lv_obj_t *SubPage::createSubPageItemArea(lv_obj_t *parent)
+{
+    lv_obj_t *itemArea = lv_obj_create(parent);
+    lv_obj_remove_style_all(itemArea);
+    lv_obj_set_style_pad_all(itemArea, 5, 0);
+    lv_obj_set_size(itemArea, 320, 178);
+    lv_obj_clear_flag(itemArea, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_y(itemArea, 27);
+
+    return itemArea;
+}

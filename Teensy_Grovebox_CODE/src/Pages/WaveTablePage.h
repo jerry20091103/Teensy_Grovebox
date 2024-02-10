@@ -3,9 +3,10 @@
 
 #include "Pages.h"
 #include "Audio/AudioFX.h"
-
-#define PEAK_AVG_TIME 2
-#define VOL_OFFSET 15
+#include "GuiObjects/ParamArc.h"
+#include "GuiObjects/Spinbox.h"
+#include "GuiObjects/Buttons.h"
+#include "GuiObjects/VolumeBar.h"
 
 // sf2 Wave table synth page
 class WaveTablePage : public Pages
@@ -19,30 +20,26 @@ private:
     bool useVelocity = true;
     bool usePitchbend = false;
 
-
-    // *class variables
-    // gslc_tsElemRef *peakBox;
-    float peakAvg = 0;
-    uint8_t peakHold = 0;
-
     // *lvgl object refs
-    lv_obj_t* sf2SelectDropdown;
-    lv_obj_t* volArc;
-    lv_obj_t* volBar;
-    lv_obj_t* peakLed;
-    lv_obj_t* octaveSpinbox;
-    lv_obj_t* pitchDropdown;
-    lv_obj_t* pitchText;
-    lv_obj_t* pitchBtn;
-    lv_obj_t* velocityBtn;
+    lv_obj_t* selectGroup = nullptr;
+    lv_obj_t* sf2SelectDropdown = nullptr;
+    lv_obj_t* pitchDropdown = nullptr;
 
+    // *GUI object refs
+    ParamArc* volArc = nullptr;
+    Spinbox* octaveSpinbox = nullptr;
+    Button* velocityBtn = nullptr;
+    Button* pitchBtn = nullptr;
+    VolumeBar* volBar = nullptr;
+
+    // Gui object callbacks
+    static void onVolArcTurned(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
+    static void onOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value);
+    static void onVelocityBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled);
+    static void onPitchBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled);
+    static void onPitchBtnHolded(void *targetPointer, lv_obj_t *labelObj);
     // lvgl gui callbacks
-    static void onVelocityBtnPressed(lv_event_t* e);
-    static void onPitchBtnPressed(lv_event_t* e);
-    static void onPitchBtnHolded(lv_event_t* e);
     static void onPitchDropdownSelect(lv_event_t *e);
-    static void onOctaveSelect(lv_event_t* e);
-    static void onVolArcPressed(lv_event_t *e);
     static void onSF2DropdownSelect(lv_event_t *e);
     // helper functions
     void setVolume(int8_t value);
@@ -55,10 +52,11 @@ public:
     void onJoyUpdate(int joy_x, int joy_y);
     void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value);
     void configurePage();
-    void setUserData();
 
     void update();
     PROGMEM void init();
+    PROGMEM void load();
+    PROGMEM void unload();
     
     // *user data
     FXFreeverb_Mem reverbMem;

@@ -1,3 +1,7 @@
+#ifdef DEBUG
+#pragma GCC optimize ("O0")
+#endif
+
 #include "Hardware.h"
 #include "font_Arial.h"
 #include "Controls.h"
@@ -5,6 +9,10 @@
 #include "Audio/AudioObjects.h"
 #include "Audio/AudioIO.h"
 #include "Audio/AudioSynth.h"
+
+#ifdef DEBUG
+#include "TeensyDebug.h"
+#endif
 
 int bar_test;
 int batt_level;
@@ -38,7 +46,7 @@ void checkAudioUsage()
 
     lv_mem_monitor_t mon;
     lv_mem_monitor(&mon);
-    Serial.println("lvgl mem free: " + String(mon.free_size) + " kB");
+    Serial.println("lvgl mem free: " + String(mon.free_size) + " B");
     Serial.println("lvgl mem used: " + String(mon.used_pct) + " %");
     Serial.println("lvgl mem frag: " + String(mon.frag_pct) + " %");
 }
@@ -56,6 +64,14 @@ void setup()
     pinMode(0, OUTPUT);
     digitalWrite(0, LOW);
 
+#ifdef DEBUG
+    /*
+    Somehow if we comment out the reset_PFD() on line 101 of cores/teensy4/startup.c, the debugging works.
+    */
+    while (!SerialUSB1) {}
+    debug.begin(SerialUSB1);
+    halt_cpu();
+#endif
     Serial.begin(9600);
 #if LV_USE_LOG != 0
     while (!Serial)
@@ -80,7 +96,7 @@ void setup()
     // Initialize hardware
     HardwareSetup();
     // set GUI data and switch to first page
-    PageManager.setUserData();
+    PageManager.loadAll();
     PageManager.switchPage(PG_HOME);
     // Schedule regular tasks
     taskManager.scheduleFixedRate(3, updateSynthModulation);

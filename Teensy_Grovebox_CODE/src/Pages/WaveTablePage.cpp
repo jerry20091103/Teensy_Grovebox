@@ -6,24 +6,24 @@
 #include "Audio/AudioUtility.h"
 #include "SF2_Samples/SF2_Samples.h"
 
-void WaveTablePage::onVelocityBtnPressed(lv_event_t *e)
+void WaveTablePage::onVelocityBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
-    instance->useVelocity = !instance->useVelocity;
+    WaveTablePage *instance = (WaveTablePage *)targetPointer;
+    instance->useVelocity = isToggled;
     AudioSynth.setUseVelocity(instance->useVelocity);
 }
 
-void WaveTablePage::onPitchBtnPressed(lv_event_t *e)
+void WaveTablePage::onPitchBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
-    instance->usePitchbend = !instance->usePitchbend;
+    WaveTablePage *instance = (WaveTablePage *)targetPointer;
+    instance->usePitchbend = isToggled;
     if(!instance->usePitchbend)
         AudioSynth.pitchbend(0, 0);
 }
 
-void WaveTablePage::onPitchBtnHolded(lv_event_t *e)
+void WaveTablePage::onPitchBtnHolded(void *targetPointer, lv_obj_t *labelObj)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
+    WaveTablePage *instance = (WaveTablePage *)targetPointer;
     lv_dropdown_open(instance->pitchDropdown);
 }
 
@@ -33,23 +33,14 @@ void WaveTablePage::onPitchDropdownSelect(lv_event_t *e)
     lv_obj_t * dropdown = lv_event_get_target(e);
     uint8_t id = lv_dropdown_get_selected(dropdown);
     instance->pitchbendRange = id + 1;
-    lv_label_set_text_fmt(instance->pitchText, "Pitch: %d", instance->pitchbendRange);
+    lv_label_set_text_fmt(instance->pitchBtn->getLabelObject(), "Pitch: %d", instance->pitchbendRange);
 }
 
-void WaveTablePage::onOctaveSelect(lv_event_t *e)
+void WaveTablePage::onOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
-    lv_obj_t *btn = lv_event_get_target(e);
-    if (Gui_getObjIdFlag(btn)== 1)
-    {
-        // increase
-        instance->onBtnPressed(BTN_FN1);
-    }
-    else
-    {
-        // decrease
-        instance->onBtnPressed(BTN_FN0);
-    }
+    WaveTablePage *instance = (WaveTablePage *)targetPointer;
+    lv_label_set_text_fmt(valueTextObj, "%d", value);
+    instance->octave = value;
 }
 
 void WaveTablePage::onSF2DropdownSelect(lv_event_t *e)
@@ -61,12 +52,10 @@ void WaveTablePage::onSF2DropdownSelect(lv_event_t *e)
     instance->curInstrument = id;
 }
 
-void WaveTablePage::onVolArcPressed(lv_event_t *e)
+void WaveTablePage::onVolArcTurned(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
 {
-    WaveTablePage *instance = (WaveTablePage *)lv_event_get_user_data(e);
-    lv_obj_t *arc = lv_event_get_target(e);
-    uint8_t value = lv_arc_get_value(arc);
-    enc[3]->setCurrentReading(value - VOL_OFFSET);
+    WaveTablePage *instance = (WaveTablePage *)targetPointer;
+    lv_label_set_text_fmt(valueTextObj, "%d", value);
     instance->setVolume(value);
 }
 
@@ -90,20 +79,10 @@ void WaveTablePage::onBtnPressed(uint8_t pin)
             AudioSynth.sustainOn();
             break;
         case BTN_FN0:
-            octave--;
-            if (octave < 1)
-            {
-                octave = 1;
-            }
-            Gui_SpinboxSetValue(octaveSpinbox, octave);
+            octaveSpinbox->pressButtonMinus();
             break;
         case BTN_FN1:
-            octave++;
-            if (octave > 8)
-            {
-                octave = 8;
-            }
-            Gui_SpinboxSetValue(octaveSpinbox, octave);
+            octaveSpinbox->pressButtonPlus();
             break;
         }
     }
@@ -141,13 +120,7 @@ void WaveTablePage::onBtnReleased(uint8_t pin)
 
 void WaveTablePage::onEncTurned(uint8_t id, int value)
 {
-    switch (id)
-    {
-    case 3: // master out volume
-        setVolume(value - VOL_OFFSET);
-        lv_arc_set_value(volArc, value - VOL_OFFSET);
-        break;
-    }
+    encoderBindCallback(id, value);
 }
 
 void WaveTablePage::onJoyUpdate(int joy_x, int joy_y)
@@ -164,14 +137,13 @@ void WaveTablePage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t val
 
 void WaveTablePage::configurePage()
 {
+    // todo: maybe move this to load()?
     // setup micorphone for velocity sensing
     sgtl5000_1.inputSelect(AUDIO_INPUT_MIC);
     sgtl5000_1.micGain(40);
     AudioIO.setInputVolume(InputTracks::LINEMIC_IN, 0);
     // setup peak module for level meter
     AudioIO.setMixerLevelMode(LevelMeterMode::PRE_FADER);
-    setVolume(volume);
-    enc[3]->changePrecision(30, volume + VOL_OFFSET, false);
     // update current velocity settings
     AudioSynth.setUseVelocity(useVelocity);
     // set reverb FX
@@ -180,51 +152,11 @@ void WaveTablePage::configurePage()
     AudioSynth.setVoiceMode(VOICE_MODE_WAVETABLE);
 }
 
-void WaveTablePage::setUserData()
-{
-    // select area
-    Gui_SpinboxSetValue(octaveSpinbox, octave);
-    setVolume(volume);
-    lv_arc_set_value(volArc, volume);
-    lv_dropdown_set_selected(pitchDropdown, pitchbendRange - 1);
-    lv_label_set_text_fmt(pitchText, "Pitch: %d", pitchbendRange);
-    lv_dropdown_set_selected(sf2SelectDropdown, curInstrument);
-    AudioSynth.setSF2Instrument(curInstrument);
-    AudioSynth.setUseVelocity(useVelocity);
-    if (useVelocity)
-        lv_obj_add_state(velocityBtn, LV_STATE_CHECKED);
-    else
-        lv_obj_clear_state(velocityBtn, LV_STATE_CHECKED);
-    if (usePitchbend)
-        lv_obj_add_state(pitchBtn, LV_STATE_CHECKED);
-    else
-        lv_obj_clear_state(pitchBtn, LV_STATE_CHECKED);
-}
-
 void WaveTablePage::update()
 {
     float temp_peak = AudioIO.getMixerPeak(MasterTracks::ANALOG_OUT, MixerTracks::INSTRUMENTS).l;
     if (temp_peak >= 0)
-    {
-        // convert to dB
-        float temp_dB = gaintodB(temp_peak);
-        if (temp_dB >= -0.1)
-            peakHold = PEAK_HOLD_TIME;
-        // calulate running average
-        temp_peak = (temp_peak + peakAvg * PEAK_AVG_TIME) / (PEAK_AVG_TIME + 1);
-        peakAvg = temp_peak;
-        lv_bar_set_value(volBar, temp_dB, LV_ANIM_ON);
-    }
-    // peak indicator
-    if (peakHold > 0)
-    {
-        Gui_PeakLedOn(peakLed);
-        peakHold--;
-    }
-    else
-    {
-        Gui_PeakLedOff(peakLed);
-    }
+        volBar->setVolume(temp_peak);
 }
 
 void WaveTablePage::init()
@@ -234,18 +166,21 @@ void WaveTablePage::init()
     // create screen
     screen = lv_obj_create(NULL);
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
-    // create lvgl objects
-    // *SELECT AREA-----------------------------------------------------------------
-    lv_obj_t *selectArea = lv_obj_create(screen);
-    // lv_obj_remove_style_all(selectArea);
-    lv_obj_set_style_bg_color(selectArea, lv_color_black(), 0);
-    lv_obj_set_style_pad_all(selectArea, 5, 0);
-    lv_obj_set_size(selectArea, 320, 100);
-    lv_obj_set_y(selectArea, 35);
+}
+
+void WaveTablePage::load()
+{
+    // Group the objects in the select area
+    selectGroup = lv_obj_create(screen);
+    lv_obj_set_style_bg_color(selectGroup, lv_color_black(), 0);
+    lv_obj_set_style_pad_all(selectGroup, 5, 0);
+    lv_obj_set_size(selectGroup, 320, 100);
+    lv_obj_set_y(selectGroup, 35);
+
     lv_obj_t *label;
-    lv_obj_t *btn;
+
     // *drop down menu for sound selection
-    sf2SelectDropdown = lv_dropdown_create(selectArea);
+    sf2SelectDropdown = lv_dropdown_create(selectGroup);
     lv_obj_set_x(sf2SelectDropdown, 60);
     lv_obj_set_width(sf2SelectDropdown, 170);
     lv_obj_add_flag(sf2SelectDropdown, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
@@ -254,55 +189,78 @@ void WaveTablePage::init()
     label = lv_label_create(sf2SelectDropdown);
     lv_label_set_text(label, "Sound:");
     lv_obj_align(label, LV_ALIGN_LEFT_MID, -70, 0);
+    // set dropdown value
+    lv_dropdown_set_selected(sf2SelectDropdown, curInstrument);
+    lv_event_send(sf2SelectDropdown, LV_EVENT_VALUE_CHANGED, NULL);
 
     // *volume arc
-    volArc = Gui_CreateParamArc(selectArea, 4, "Gain", "dB", false);
-    lv_obj_align(volArc, LV_ALIGN_TOP_RIGHT, -5, 20);
-    // set value
-    lv_arc_set_range(volArc, -15, 15);
-    lv_obj_add_event_cb(volArc, onVolArcPressed, LV_EVENT_VALUE_CHANGED, this);
+    volArc = new ParamArc(selectGroup, 4, "Gain", "dB", false);
+    volArc->setRange(-15, 15);
+    volArc->bindEncoder(3);
+    volArc->setCallback(onVolArcTurned, this);
+    volArc->setValue(volume);
+    lv_obj_align(volArc->getLvglObject(), LV_ALIGN_TOP_RIGHT, -5, 20);
 
     // *octave select
-    label = lv_label_create(selectArea);
+    label = lv_label_create(selectGroup);
     lv_label_set_text(label, "Octave");
     lv_obj_set_style_text_font(label, font_small, 0);
     lv_obj_set_pos(label, 23, 38);
-    octaveSpinbox = Gui_CreateSpinbox(selectArea, onOctaveSelect, this, 1);
-    lv_obj_align(octaveSpinbox, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+    octaveSpinbox = new Spinbox(selectGroup, 1);
+    octaveSpinbox->setRange(1, 8);
+    octaveSpinbox->setCallback(onOctaveSelect, this);
+    octaveSpinbox->setValue(octave);
+    lv_obj_align(octaveSpinbox->getLvglObject(), LV_ALIGN_BOTTOM_LEFT, 0, 0);
 
     // *velocity button
-    velocityBtn = Gui_CreateButton(selectArea, 60, 30, NULL, true);
-    lv_obj_align(velocityBtn, LV_ALIGN_BOTTOM_LEFT, 100, 0);
-    lv_obj_add_event_cb(velocityBtn, onVelocityBtnPressed, LV_EVENT_CLICKED, this);
-    label = lv_label_create(velocityBtn);
-    lv_label_set_text(label, "Velocity");
-    lv_obj_set_style_text_font(label, font_small, 0);
-    lv_obj_center(label);
+    velocityBtn = new Button(selectGroup, 60, 30, "Velocity", true);
+    velocityBtn->setPressedCallback(onVelocityBtnPressed, this);
+    velocityBtn->setToggle(useVelocity);
+    lv_obj_align(velocityBtn->getLvglObject(), LV_ALIGN_BOTTOM_LEFT, 100, 0);
+    lv_obj_set_style_text_font(velocityBtn->getLabelObject(), font_small, 0);
+
     // *pitch bend button
     // add a dropdown right under it
-    pitchDropdown = lv_dropdown_create(selectArea);
+    pitchDropdown = lv_dropdown_create(selectGroup);
     lv_obj_set_size(pitchDropdown, 60, 30);
     lv_obj_align(pitchDropdown, LV_ALIGN_BOTTOM_LEFT, 170, 0);
     lv_dropdown_set_options(pitchDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12");
     lv_obj_add_event_cb(pitchDropdown, onPitchDropdownSelect, LV_EVENT_VALUE_CHANGED, this);
-    pitchBtn = Gui_CreateButton(selectArea, 60, 30, NULL, true);
-    lv_obj_align(pitchBtn, LV_ALIGN_BOTTOM_LEFT, 170, 0);
-    lv_obj_add_event_cb(pitchBtn, onPitchBtnPressed, LV_EVENT_CLICKED, this);
-    lv_obj_add_event_cb(pitchBtn, onPitchBtnHolded, LV_EVENT_LONG_PRESSED, this);
-    pitchText = lv_label_create(pitchBtn);
-    lv_obj_set_style_text_font(pitchText, font_small, 0);
-    lv_obj_center(pitchText);
+    pitchBtn = new Button(selectGroup, 60, 30, "Pitch", true);
+    pitchBtn->setPressedCallback(onPitchBtnPressed, this);
+    pitchBtn->setHoldCallback(onPitchBtnHolded, this);
+    pitchBtn->setToggle(usePitchbend);
+    lv_obj_align(pitchBtn->getLvglObject(), LV_ALIGN_BOTTOM_LEFT, 170, 0);
+    lv_obj_set_style_text_font(pitchBtn->getLabelObject(), font_small, 0);
+    // set dropdown value
+    lv_dropdown_set_selected(pitchDropdown, pitchbendRange - 1);
+    lv_event_send(pitchDropdown, LV_EVENT_VALUE_CHANGED, NULL);
 
-    //  *volume bar
-    volBar = Gui_CreateVolumeMeter(selectArea, 115, 10);
-    lv_obj_align(volBar, LV_ALIGN_BOTTOM_LEFT, 100, -35);
-    peakLed = Gui_CreatePeakLed(volBar, 10, 10);
-    lv_obj_align(peakLed, LV_ALIGN_RIGHT_MID, 15, 0);
+    // *volume bar
+    volBar = new VolumeBar(selectGroup, 130, 10);
+    volBar->setRange(-50, 0);
+    volBar->setSmoothing(2);
+    lv_obj_align(volBar->getBarObject(), LV_ALIGN_BOTTOM_LEFT, 100, -35);
+}
+
+void WaveTablePage::unload()
+{
+    delete volArc;
+    delete octaveSpinbox;
+    delete velocityBtn;
+    delete pitchBtn;
+    delete volBar;
+    lv_obj_clean(screen);
+    volArc = NULL;
+    octaveSpinbox = NULL;
+    velocityBtn = NULL;
+    pitchBtn = NULL;
+    volBar = NULL;
+    selectGroup = NULL;
 }
 
 void WaveTablePage::setVolume(int8_t value)
 {
     volume = value;
     AudioSynth.setMasterVol(value);
-    lv_label_set_text_fmt(Gui_ParamArcGetValueText(volArc), "%d", value);
 }

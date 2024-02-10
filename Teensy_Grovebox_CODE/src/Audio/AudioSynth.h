@@ -40,6 +40,7 @@ private:
         EnvDecay envDecay[3];
         EnvSustain envSustain[3];
         EnvRelease envRelease[3];
+        ClipLevel clipLevel;
         
         // overload the [] operator, so we can access the parameters by index in the UI.
         SynthModParam& operator[] (uint8_t index)
@@ -74,6 +75,7 @@ private:
             case MOD_TGT_ENV2_DECAY: return envDecay[2];
             case MOD_TGT_ENV2_SUSTAIN: return envSustain[2];
             case MOD_TGT_ENV2_RELEASE: return envRelease[2];
+            case MOD_TGT_CLIP_LEVEL: return clipLevel;
             default:
                 Serial.println("ERROR: ModParamList::operator[], index out of range.");
                 return oscPitchOffset[0];
@@ -98,7 +100,7 @@ private:
     bool isSustain = false;
     bool useVelocity = true;
 
-    std::list<ModulationEntry> modList;
+    std::list<ModulationEntry> *modList = nullptr;
 
 public:
     PROGMEM AudioSynth_();
@@ -133,6 +135,7 @@ public:
     void setEnvSustain(uint8_t id, float sustain);
     void setEnvRelease(uint8_t id, float release);
     // *modulation
+    void setModulationListPtr(std::list<ModulationEntry> *list);
     int8_t addModulation(uint8_t source, uint8_t target);
     void setModulationAmount(uint8_t id, float amount);
     void setModulationSource(uint8_t id, uint8_t source);

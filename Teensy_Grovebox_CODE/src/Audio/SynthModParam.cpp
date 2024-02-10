@@ -179,3 +179,15 @@ void EnvRelease::setVoice(uint8_t voiceId, float value_ms)
     // time in ms
     voiceArr[voiceId].env[instanceId]->release(value_ms);
 }
+
+void ClipLevel::setVoice(uint8_t voiceId, float value)
+{
+    // 0~1
+    voiceArr[voiceId].clipAmp->gain(value);
+}
+
+void ClipLevel::modulate(uint8_t voiceId, float amount)
+{
+    // mod = original value + amount
+    setVoice(voiceId, constrain(value + amount, 0.0f, 1.0f));
+}

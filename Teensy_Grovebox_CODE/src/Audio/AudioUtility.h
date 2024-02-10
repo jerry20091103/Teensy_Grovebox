@@ -2,6 +2,7 @@
 #define AUDIO_UTILITY_H
 
 #include "Arduino.h"
+#include <Audio.h>
 
 // * Data types
 

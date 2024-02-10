@@ -21,6 +21,7 @@
  *----------------*/
 
 /*Store the image of the glyphs*/
+PROGMEM
 static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
     /* U+0020 " " */
 

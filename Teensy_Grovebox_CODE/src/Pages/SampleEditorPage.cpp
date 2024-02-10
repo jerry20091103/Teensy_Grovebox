@@ -2,6 +2,7 @@
 #include "Controls.h"
 #include "Audio/AudioSynth.h"
 #include "Audio/AudioObjects.h"
+#include "GuiObjects/Colors.h"
 
 #define CURSOR_INCREMENT 0.002f
 
@@ -9,8 +10,7 @@
 void toggleRecordButton(SampleEditorPage *instance)
 {
     // toggle record button
-    lv_obj_has_state(instance->recordBtn, LV_STATE_CHECKED) ? lv_obj_clear_state(instance->recordBtn, LV_STATE_CHECKED) : lv_obj_add_state(instance->recordBtn, LV_STATE_CHECKED);
-    lv_event_send(instance->recordBtn, LV_EVENT_CLICKED, NULL);
+    instance->recordBtn->pressButton();
 }
 
 lv_obj_t *SampleEditorPage::createCursor(lv_obj_t *parent, lv_color_t color, const char *text, bool reverse)
@@ -52,15 +52,31 @@ void SampleEditorPage::setCursorPos(uint8_t id, float pos)
     float upperBound = 1.0f;
     if (id - 1 >= 0)
     {
-        lowerBound = cursorPos[id - 1].get();
+        lowerBound = cursorPos[id - 1];
     }
     if (id + 1 <= 3)
     {
-        upperBound = cursorPos[id + 1].get();
+        upperBound = cursorPos[id + 1];
     }
     // set cursor position
     pos = constrain(pos, lowerBound, upperBound);
-    cursorPos[id].set(pos);
+    cursorPos[id] = pos;
+    // set parameters in AudioSynth
+    switch (id)
+    {
+    case 0:
+        AudioSynth.setClipStartPoint(pos);
+        break;
+    case 1:
+        AudioSynth.setClipLoopStartPoint(pos);
+        break;
+    case 2:
+        AudioSynth.setClipLoopEndPoint(pos);
+        break;
+    case 3:
+        AudioSynth.setClipEndPoint(pos);
+        break;
+    }
     // set cursor position in GUI
     lv_obj_t *cursor = lv_obj_get_child(cursorGroup, id);
     lv_obj_set_x(cursor, pos * 300 + 10);
@@ -68,20 +84,16 @@ void SampleEditorPage::setCursorPos(uint8_t id, float pos)
     lv_obj_invalidate(lv_obj_get_child(cursor, 0));
 }
     
-void SampleEditorPage::onRecordButtonPressed(lv_event_t *event)
+void SampleEditorPage::onRecordButtonPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
 {
-    // get the button
-    lv_obj_t *btn = lv_event_get_target(event);
-    // get label
-    lv_obj_t *label = lv_obj_get_child(btn, 0);
     // get instance
-    SampleEditorPage *instance = (SampleEditorPage *)lv_event_get_user_data(event);
+    SampleEditorPage *instance = (SampleEditorPage *)targetPointer;
 
-    if (lv_obj_has_state(btn, LV_STATE_CHECKED))
+    if (isToggled)
     {
         // start recording
         clip1.startRecording();
-        lv_label_set_text(label, "STOP");
+        lv_label_set_text(labelObj, "STOP");
         // cancel recording after 6 seconds (memory full)
         auto cancelRecordTask = new ExecWithParameter<SampleEditorPage *>(toggleRecordButton, instance);
         instance->cancelRecordTaskId = taskManager.scheduleOnce(6000, cancelRecordTask, TIME_MILLIS, true);
@@ -93,41 +105,38 @@ void SampleEditorPage::onRecordButtonPressed(lv_event_t *event)
         // stop recording
         clip1.stopRecording();
         AudioSynth.setClip(clip1.getClip(), clip1.getClipLength());
+        // re calculate new cursor positions
+        for (int i = 0; i < 4; i++)
+        {
+            instance->setCursorPos(i, instance->cursorPos[i]);
+        }
         // load to chart display
         Gui_WaveFormChartSetPoints(instance->waveformChart, instance->serMax, instance->serMin, (int16_t *)clip1.getClip(), clip1.getClipLength() * AUDIO_BLOCK_SAMPLES);
-        lv_label_set_text(label, "RECORD");
+        lv_label_set_text(labelObj, "RECORD");
     }
 }
-void SampleEditorPage::onPlayButtonPressed(lv_event_t *event)
+void SampleEditorPage::onPlayButtonPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
 {
-    // get the button
-    lv_obj_t *btn = lv_event_get_target(event);
-    // get label
-    lv_obj_t *label = lv_obj_get_child(btn, 0);
-
-    if (lv_obj_has_state(btn, LV_STATE_CHECKED))
+    if (isToggled)
     {
         // start playing
         AudioSynth.playClip();
-        lv_label_set_text(label, "STOP");
+        lv_label_set_text(labelObj, "STOP");
     }
     else
     {
         // stop playing
         AudioSynth.stopClip();
-        lv_label_set_text(label, "PLAY");
+        lv_label_set_text(labelObj, "PLAY");
     }
 }
-void SampleEditorPage::onLoopButtonPressed(lv_event_t *event)
+void SampleEditorPage::onLoopButtonPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
 {
-    // get the button
-    lv_obj_t *btn = lv_event_get_target(event);
     // get instance
-    SampleEditorPage *instance = (SampleEditorPage *)lv_event_get_user_data(event);
-
-    if (lv_obj_has_state(btn, LV_STATE_CHECKED))
+    SampleEditorPage *instance = (SampleEditorPage *)targetPointer;
+    instance->isLooping = isToggled;
+    if (isToggled)
     {
-        // start playing
         AudioSynth.setClipLoop(true);
         // set loop cursors to bright color
         setCursorColor(lv_obj_get_child(instance->cursorGroup, 1), color_Yellow);
@@ -135,7 +144,6 @@ void SampleEditorPage::onLoopButtonPressed(lv_event_t *event)
     }
     else
     {
-        // stop playing
         AudioSynth.setClipLoop(false);
         // set loop cursors to dark color
         setCursorColor(lv_obj_get_child(instance->cursorGroup, 1), color_YellowDark);
@@ -143,12 +151,13 @@ void SampleEditorPage::onLoopButtonPressed(lv_event_t *event)
     }
 }
 
-void SampleEditorPage::onNormailzeButtonPressed(lv_event_t *event)
+void SampleEditorPage::onNormailzeButtonPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
 {
     // get instance
-    SampleEditorPage *instance = (SampleEditorPage *)lv_event_get_user_data(event);
-
-    if (lv_obj_has_state(instance->recordBtn, LV_STATE_CHECKED) || lv_obj_has_state(instance->playBtn, LV_STATE_CHECKED))
+    SampleEditorPage *instance = (SampleEditorPage *)targetPointer;
+    
+    // check if recording or playing
+    if (instance->recordBtn->getIsToggled() || instance->playBtn->getIsToggled())
         return;
 
     // find max in clip
@@ -170,13 +179,15 @@ void SampleEditorPage::onNormailzeButtonPressed(lv_event_t *event)
     Gui_WaveFormChartSetPoints(instance->waveformChart, instance->serMax, instance->serMin, clipPtr, length_samples);
 }
 
-void SampleEditorPage::onReverseButtonPressed(lv_event_t *event)
+void SampleEditorPage::onReverseButtonPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
 {
     // get instance
-    SampleEditorPage *instance = (SampleEditorPage *)lv_event_get_user_data(event);
+    SampleEditorPage *instance = (SampleEditorPage *)targetPointer;
 
-    if (lv_obj_has_state(instance->recordBtn, LV_STATE_CHECKED) || lv_obj_has_state(instance->playBtn, LV_STATE_CHECKED))
+    // check if recording or playing
+    if (instance->recordBtn->getIsToggled() || instance->playBtn->getIsToggled())
         return;
+
     // reverse the clip
     int16_t *clipPtr = (int16_t *)clip1.getClip();
     int length_samples = clip1.getClipLength() * AUDIO_BLOCK_SAMPLES;
@@ -203,17 +214,16 @@ void SampleEditorPage::onCursorDragged(lv_event_t *event)
     lv_obj_t *cursor = lv_obj_get_parent(lv_event_get_target(event));
     // get cursor index
     int cursorIndex = lv_obj_get_index(cursor);
-    Serial.println(point.x);
     
     instance->setCursorPos(cursorIndex, (point.x - 10) / 300.0f);
 }
 
-void SampleEditorPage::onCrossFadeSliderPressed(lv_event_t *event)
+void SampleEditorPage::onCrossFadeSliderPressed(void *targetPointer, int value)
 {
-    SampleEditorPage *instance = (SampleEditorPage *)lv_event_get_user_data(event);
-    lv_obj_t *slider = lv_event_get_target(event);
-    int amount = lv_slider_get_value(slider);
-    instance->crossFade.set(amount * 0.01f);
+    SampleEditorPage *instance = (SampleEditorPage *)targetPointer;
+    int amount = value;
+    instance->crossFade = amount * 0.01f;
+    AudioSynth.setClipLoopCrossfade(instance->crossFade);
 }
 
 void SampleEditorPage::onBtnPressed(uint8_t pin)
@@ -224,7 +234,7 @@ void SampleEditorPage::onBtnPressed(uint8_t pin)
         PageManager.switchPage(PG_AUDIO);
         break;
     case BTN_FN0:
-        toggleRecordButton(this);
+        recordBtn->pressButton();
         break;
     }
 }
@@ -243,7 +253,7 @@ void SampleEditorPage::onBtnReleased(uint8_t pin)
 }
 void SampleEditorPage::onEncTurned(uint8_t id, int value)
 {
-    setCursorPos(id, cursorPos[id].get() + value * CURSOR_INCREMENT);
+    setCursorPos(id, cursorPos[id] + value * CURSOR_INCREMENT);
     // todo: crossfade between loop cursors, input level meter
 }
 void SampleEditorPage::onJoyUpdate(int joy_x, int joy_y)
@@ -254,21 +264,13 @@ void SampleEditorPage::onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t 
 }
 void SampleEditorPage::configurePage()
 {
-    AudioSynth.setVoiceMode(VOICE_MODE_SAMPLE_EDITER);
-    // set encoders to direction mode
-    enc[0]->changePrecision(0, 0);
-    enc[1]->changePrecision(0, 0);
-    enc[2]->changePrecision(0, 0);
-    enc[3]->changePrecision(0, 0);
-}
-void SampleEditorPage::setUserData()
-{
+    
 }
 
 void SampleEditorPage::update()
 {
     // check clip playing state
-    if (lv_obj_has_state(playBtn, LV_STATE_CHECKED))
+    if (playBtn->getIsToggled())
     {
         // check play state of clip
         if (playClip0.playing())
@@ -281,32 +283,13 @@ void SampleEditorPage::update()
         else
         {
             // stop playing
-            lv_obj_clear_state(playBtn, LV_STATE_CHECKED);
-            lv_event_send(playBtn, LV_EVENT_CLICKED, NULL);
+            playBtn->setToggle(false);
         }
     }
     // update volume meter
     if (peakClip1.available())
     {
-        float peak = peakClip1.read();
-        // convert to dB
-        float temp_dB = gaintodB(peak);
-        if (temp_dB >= -0.1)
-            peakHold = PEAK_HOLD_TIME;
-        // calulate running average
-        peak = (peak + peakAvg * 3) / (3 + 1);
-        peakAvg = peak;
-        lv_bar_set_value(volBar, temp_dB, LV_ANIM_ON);
-    }
-    // peak indicator
-    if (peakHold > 0)
-    {
-        Gui_PeakLedOn(peakLed);
-        peakHold--;
-    }
-    else
-    {
-        Gui_PeakLedOff(peakLed);
+        volBar->setVolume(peakClip1.read());
     }
 }
 void SampleEditorPage::init()
@@ -315,9 +298,15 @@ void SampleEditorPage::init()
     strcpy(pageName, "Sample Editor");
     screen = lv_obj_create(NULL);
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
+}
+
+void SampleEditorPage::load()
+{
     // waveform display
     waveformChart = Gui_CreateWaveformChart(screen, 320, 110, &serMax, &serMin, samplerWaveformPointsMax, samplerWaveformPointsMin);
     lv_obj_set_pos(waveformChart, 0, 55);
+    if (clip1.getClip() != NULL)
+        Gui_WaveFormChartSetPoints(waveformChart, serMax, serMin, (int16_t *)clip1.getClip(), clip1.getClipLength() * AUDIO_BLOCK_SAMPLES);
 
     // cursorGroup for 4 cursors
     cursorGroup = lv_obj_create(screen);
@@ -330,6 +319,11 @@ void SampleEditorPage::init()
     createCursor(cursorGroup, color_Blue, LV_SYMBOL_LOOP, true);
     createCursor(cursorGroup, color_Green, LV_SYMBOL_STOP);
 
+    for (int i = 0; i < 4; i++)
+    {
+        setCursorPos(i, cursorPos[i]);
+    }
+
     // current position cursor
     currentPosCursor = lv_obj_create(cursorGroup);
     lv_obj_set_size(currentPosCursor, 1, 90);
@@ -338,45 +332,73 @@ void SampleEditorPage::init()
     lv_obj_set_pos(currentPosCursor, 10, 30);
 
     // create buttons
-    recordBtn = Gui_CreateButton(screen, 76, -1, "RECORD", true, 1);
-    lv_obj_align(recordBtn, LV_ALIGN_BOTTOM_MID, -120, -5);
-    lv_obj_add_event_cb(recordBtn, onRecordButtonPressed, LV_EVENT_CLICKED, this);
+    recordBtn = new Button(screen, 76, -1, "RECORD", true, 1);
+    lv_obj_align(recordBtn->getLvglObject(), LV_ALIGN_BOTTOM_MID, -120, -5);
+    recordBtn->setPressedCallback(onRecordButtonPressed, this);
 
-    playBtn = Gui_CreateButton(screen, 76, -1, "PLAY", true);
-    lv_obj_align(playBtn, LV_ALIGN_BOTTOM_MID, -40, -5);
-    lv_obj_add_event_cb(playBtn, onPlayButtonPressed, LV_EVENT_CLICKED, this);
+    playBtn = new Button(screen, 76, -1, "PLAY", true);
+    lv_obj_align(playBtn->getLvglObject(), LV_ALIGN_BOTTOM_MID, -40, -5);
+    playBtn->setPressedCallback(onPlayButtonPressed, this);
 
-    loopBtn = Gui_CreateButton(screen, 76, -1, "LOOP", true);
-    lv_obj_align(loopBtn, LV_ALIGN_BOTTOM_MID, 40, -5);
-    lv_obj_add_event_cb(loopBtn, onLoopButtonPressed, LV_EVENT_CLICKED, this);
+    loopBtn = new Button(screen, 76, -1, "LOOP", true);
+    lv_obj_align(loopBtn->getLvglObject(), LV_ALIGN_BOTTOM_MID, 40, -5);
+    loopBtn->setPressedCallback(onLoopButtonPressed, this);
+    loopBtn->setToggle(isLooping);
 
-    normalizeBtn = Gui_CreateButton(screen, 76, 25, "Normalize");
-    lv_obj_align(normalizeBtn, LV_ALIGN_BOTTOM_MID, 120, -30);
-    lv_obj_add_event_cb(normalizeBtn, onNormailzeButtonPressed, LV_EVENT_CLICKED, this);
-    lv_obj_set_style_text_font(lv_obj_get_child(normalizeBtn, 0), font_small, 0);
+    normalizeBtn = new Button(screen, 76, 25, "Normalize");
+    lv_obj_align(normalizeBtn->getLvglObject(), LV_ALIGN_BOTTOM_MID, 120, -30);
+    lv_obj_set_style_text_font(normalizeBtn->getLabelObject(), font_small, 0);
+    normalizeBtn->setPressedCallback(onNormailzeButtonPressed, this);
 
-    reverseBtn = Gui_CreateButton(screen, 76, 25, "Reverse");
-    lv_obj_align(reverseBtn, LV_ALIGN_BOTTOM_MID, 120, -2);
-    lv_obj_add_event_cb(reverseBtn, onReverseButtonPressed, LV_EVENT_CLICKED, this);
-    lv_obj_set_style_text_font(lv_obj_get_child(reverseBtn, 0), font_small, 0);
+    reverseBtn = new Button(screen, 76, 25, "Reverse");
+    lv_obj_align(reverseBtn->getLvglObject(), LV_ALIGN_BOTTOM_MID, 120, -2);
+    lv_obj_set_style_text_font(reverseBtn->getLabelObject(), font_small, 0);
+    reverseBtn->setPressedCallback(onReverseButtonPressed, this);
 
     // input volume bar
-    volBar = Gui_CreateVolumeMeter(screen, 60, 10);
-    lv_obj_align(volBar, LV_ALIGN_BOTTOM_MID, -126, -43);
-    peakLed = Gui_CreatePeakLed(volBar, 10, 10);
-    lv_obj_align(peakLed, LV_ALIGN_RIGHT_MID, 15, 0);
+    volBar = new VolumeBar(screen, 75, 10);
+    lv_obj_align(volBar->getBarObject(), LV_ALIGN_BOTTOM_MID, -126, -43);
+    volBar->setSmoothing(1);
+    volBar->setRange(-50, 0);
 
     // crossfade slider
-    lv_obj_t *label = lv_label_create(screen);
+    crossFadeSlider = new Slider(screen, 115, 10);
+    lv_obj_align(crossFadeSlider->getLvglObject(), LV_ALIGN_BOTTOM_MID, 10, -43);
+    crossFadeSlider->setRange(0, 100);
+    crossFadeSlider->setCallback(onCrossFadeSliderPressed, this);
+    crossFadeSlider->setValue(crossFade);
+    lv_obj_t *label = lv_label_create(crossFadeSlider->getLvglObject());
     lv_label_set_text(label, LV_SYMBOL_CLOSE);
-    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, -60, -40);
-    lv_obj_t *slider = lv_slider_create(screen);
-    lv_obj_set_size(slider, 115, 10);
-    lv_obj_align(slider, LV_ALIGN_BOTTOM_MID, 10, -43);
-    lv_slider_set_range(slider, 0, 100);
-    lv_obj_set_style_bg_color(slider, color_Grey, 0);
-    lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_INDICATOR);
-    lv_obj_set_style_bg_color(slider, lv_color_white(), LV_PART_KNOB);
-    lv_obj_set_style_pad_all(slider, 2, LV_PART_KNOB);
-    lv_obj_add_event_cb(slider, onCrossFadeSliderPressed, LV_EVENT_VALUE_CHANGED, this);
+    lv_obj_align(label, LV_ALIGN_BOTTOM_MID, -70, 3);
+
+    // set audio synth mode
+    AudioSynth.setVoiceMode(VOICE_MODE_SAMPLE_EDITER);
+
+    // set encoders to direction mode
+    enc[0]->changePrecision(0, 0);
+    enc[1]->changePrecision(0, 0);
+    enc[2]->changePrecision(0, 0);
+    enc[3]->changePrecision(0, 0);
+}
+
+void SampleEditorPage::unload()
+{
+    delete recordBtn;
+    delete playBtn;
+    delete loopBtn;
+    delete normalizeBtn;
+    delete reverseBtn;
+    delete volBar;
+    delete crossFadeSlider;
+    lv_obj_clean(screen);
+    recordBtn = NULL;
+    playBtn = NULL;
+    loopBtn = NULL;
+    normalizeBtn = NULL;
+    reverseBtn = NULL;
+    volBar = NULL;
+    crossFadeSlider = NULL;
+    waveformChart = NULL;
+    cursorGroup = NULL;
+    currentPosCursor = NULL;
 }

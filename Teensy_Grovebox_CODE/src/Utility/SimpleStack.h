@@ -50,7 +50,7 @@ public:
             Serial.print(data[ind]);
             Serial.print(" ");
         }
-        Serial.println();
+        Serial.println(" ");
         Serial.print("top: ");
         Serial.println(topInd);
     }

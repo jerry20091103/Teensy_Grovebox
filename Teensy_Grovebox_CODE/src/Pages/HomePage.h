@@ -8,7 +8,7 @@ class HomePage : public Pages
 {
 private:
     // lvgl object refs
-    lv_obj_t *btnMatrix;
+    lv_obj_t *btnMatrix = nullptr;
 
     // lvgl gui callbacks
     static void onBtnPressed(lv_event_t *e);
@@ -28,10 +28,11 @@ public:
     void onJoyUpdate(int joy_x, int joy_y);
     void onCCReceive(u_int8_t channel, u_int8_t control, u_int8_t value);
     void configurePage();
-    void setUserData();
 
     void update();
     PROGMEM void init();
+    void load();
+    void unload();
 };
 
 #endif
