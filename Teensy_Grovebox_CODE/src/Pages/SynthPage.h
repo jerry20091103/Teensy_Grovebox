@@ -93,6 +93,7 @@ private:
         void load() override;
         void unload() override;
         void update() override;
+        void onBtnPressed(uint8_t pin) override;
     private:
         // gui callback functions
         static void onVolArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);

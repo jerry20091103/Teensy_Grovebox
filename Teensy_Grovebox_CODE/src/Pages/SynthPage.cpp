@@ -25,12 +25,6 @@ void SynthPage::onBtnPressedDefault(uint8_t pin)
         case BTN_JOY:
             AudioSynth.sustainOn();
             break;
-        case BTN_FN0: // TODO: Maybe move these to the mainPage?
-            mainPage->octaveSpinbox->pressButtonMinus();
-            break;
-        case BTN_FN1:
-            mainPage->octaveSpinbox->pressButtonPlus();
-            break;
         }
     }
 }
@@ -448,6 +442,22 @@ void SynthPage::MainPage::update()
     float temp_peak = AudioIO.getMixerPeak(MasterTracks::ANALOG_OUT, MixerTracks::INSTRUMENTS).l;
     if (temp_peak >= 0)
         volBar->setVolume(temp_peak);
+}
+
+void SynthPage::MainPage::onBtnPressed(uint8_t pin)
+{
+    SynthPage *synthPage = (SynthPage *)parentPage;
+    switch (pin)
+    {
+    case BTN_FN0: // TODO: Maybe move these to the mainPage?
+        octaveSpinbox->pressButtonMinus();
+        break;
+    case BTN_FN1:
+        octaveSpinbox->pressButtonPlus();
+        break;
+    }
+
+    synthPage->onBtnPressedDefault(pin);
 }
 
 void SynthPage::MainPage::onVolArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
