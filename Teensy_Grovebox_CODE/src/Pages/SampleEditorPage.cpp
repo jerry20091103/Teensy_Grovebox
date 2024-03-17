@@ -402,3 +402,21 @@ void SampleEditorPage::unload()
     cursorGroup = NULL;
     currentPosCursor = NULL;
 }
+
+void SampleEditorPage::serialize(ofstream &stream)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        stream << cursorPos[i] << " ";
+    }
+    stream << crossFade << " " << isLooping << " ";
+}
+
+void SampleEditorPage::deserialize(ifstream &stream)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        stream >> cursorPos[i];
+    }
+    stream >> crossFade >> isLooping;
+}

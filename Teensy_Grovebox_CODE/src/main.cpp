@@ -96,6 +96,7 @@ void setup()
     // Initialize hardware
     HardwareSetup();
     // set GUI data and switch to first page
+    PageManager.loadDataFromSD();
     PageManager.loadAll();
     PageManager.switchPage(PG_HOME);
     // Schedule regular tasks

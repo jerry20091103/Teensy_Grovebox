@@ -1,3 +1,4 @@
+#include <SdFat.h>
 #include "Pages/Pages.h"
 #include "HomePage.h"
 #include "MidiPage.h"
@@ -42,8 +43,6 @@ void PageManager_::Init()
     // PageArr[E_PG_POPUP_REVERB] = new ReverbPopup();
     // PageArr[E_PG_POPUP_SF2_SELECT] = new Sf2SelectPopup();
 
-    Serial.println("Page constructor");
-
     // setup top layer (status bar)
     statusBar = lv_obj_create(lv_layer_top());
     lv_obj_set_size(statusBar, 320, 35);
@@ -72,6 +71,12 @@ void PageManager_::Init()
         i->init();
         Serial.println("Page init" + String(i->pageID));
     }
+
+    if (!SD.begin(BUILTIN_SDCARD))
+    {
+        Serial.println("SD card failed, or not present");
+        PageManager.showMessageBox("SD Card Error", "SD card failed, or not present");
+    }
 }
 
 void PageManager_::loadAll()
@@ -83,6 +88,85 @@ void PageManager_::loadAll()
         i->loadAll();
         Serial.println("Page loadAll(): " + String(i->pageID));
     }
+}
+
+void PageManager_::loadDataFromSD()
+{
+    String filePrefix = "USERDATA/";
+    if (!SD.mediaPresent())
+    {
+        Serial.println("SD card failed");
+        PageManager.showMessageBox("SD Card Error", "SD card not detected. default settings will be used.");
+    }
+    else
+    {
+        for(auto i : PageArr)
+        {
+            if(i == nullptr)
+                continue;
+            ifstream sdin((filePrefix + String(i->pageName) + ".txt").c_str(), ios::in);
+            if(sdin.is_open())
+            {
+                int versionNumber = 0;
+                sdin >> versionNumber;
+                if(versionNumber != userDataVersion)
+                {
+                    PageManager.showMessageBox("SD Card Error", ("User data version mismatch: " + String(i->pageName) + ".txt").c_str());
+                    sdin.close();
+                    continue;
+                }
+                i->deserialize(sdin);
+                sdin.close();
+            }
+            else
+            {
+                PageManager.showMessageBox("SD Card Error", ("SD file not found: " + String(i->pageName) + ".txt").c_str());
+            }
+        }
+    }
+}
+
+void PageManager_::saveDataToSD()
+{
+    String filePrefix = "USERDATA/";
+    if (!SD.mediaPresent())
+    {
+        Serial.println("SD card failed");
+        PageManager.showMessageBox("SD Card Error", "SD card not detected. Cannot save user data.");
+    }
+    else
+    {
+        for(auto i : PageArr)
+        {
+            if(i == nullptr)
+                continue;
+            ofstream sdout((filePrefix + String(i->pageName) + ".txt").c_str(), ios::out);
+            if(sdout.is_open())
+            {
+                sdout << userDataVersion << endl;
+                i->serialize(sdout);
+                sdout.close();
+            }
+            else
+            {
+                PageManager.showMessageBox("SD Card Error", ("Cannot create SD file: " + String(i->pageName) + ".txt").c_str());
+            }
+        }
+    }
+}
+
+void PageManager_::showMessageBox(const char *title, const char *message)
+{
+    lv_obj_t *msgbox = lv_msgbox_create(NULL, title, message, NULL, true);
+    lv_obj_center(msgbox);
+    lv_obj_set_style_bg_color(msgbox, lv_color_black(), 0);
+    lv_obj_t *label = lv_msgbox_get_title(msgbox);
+    lv_obj_set_style_text_font(label, font_large, 0);
+    label = lv_msgbox_get_text(msgbox);
+    lv_label_set_recolor(label, true);
+    lv_obj_t *btn = lv_msgbox_get_close_btn(msgbox);
+    lv_obj_set_style_bg_color(btn, color_RedDark, 0);
+    lv_obj_set_style_bg_color(btn, color_Red, LV_STATE_CHECKED);
 }
 
 void PageManager_::switchPage(uint8_t pageID, bool isGoBack)
@@ -127,6 +211,10 @@ void PageManager_::showPowerPopup()
     lv_label_set_recolor(temp, true);
     temp = lv_msgbox_get_btns(msgbox);
     lv_obj_set_style_text_font(temp, font_large, 0);
+
+    // save user data to SD card
+    // TODO: this is a temporary solution, should be moved to a better place
+    PageManager.saveDataToSD();
 }
 
 void PageManager_::onPowerBtnPressed(lv_event_t *e)

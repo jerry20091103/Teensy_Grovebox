@@ -27,11 +27,11 @@ private:
     Button *modBtn = nullptr;
 
     // user data
-    uint8_t curCC[4] = {11, 12, 13, 14}; // stores the current CC number each encoder is set to
-    uint8_t storeCC[109];                // stores all CC values, addressable CC starts from 11 to 119
+    uint16_t curCC[4] = {11, 12, 13, 14}; // stores the current CC number each encoder is set to
+    uint16_t storeCC[109];                // stores all CC values, addressable CC starts from 11 to 119
     bool encConfigure[4] = {false};       // true if an enc is in configure state, CC maping can be changed in this state
-    uint8_t octave = 4;
-    uint8_t midiChannel = 1;
+    uint16_t octave = 4;
+    uint16_t midiChannel = 1;
     bool usePitchbend = true;
     bool useModwheel = true;
 
@@ -59,6 +59,8 @@ public:
     PROGMEM void init(); 
     PROGMEM void load();
     PROGMEM void unload();
+    void serialize(ofstream& stream) override;
+    void deserialize(ifstream& stream) override;
 };
 
 #endif

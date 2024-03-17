@@ -46,6 +46,8 @@ public:
     void updateDefault();
     PROGMEM void init();
     void loadAll();
+    void serialize(ofstream& stream) override;
+    void deserialize(ifstream& stream) override;
 
 private:
     class MainPage : public SubPage
@@ -53,14 +55,14 @@ private:
         friend class AudioPage;
     private:
         // *user data
+        uint16_t curTab = 0;
         // output tab
-        uint8_t OutVol[2] = {51, 51};
-        uint8_t hpVol = 50;
+        uint16_t OutVol[2] = {51, 51};
+        uint16_t hpVol = 50;
         bool usePFL = false;
-        uint8_t curTab = 0;
         // input tab
-        uint8_t InVol[2] = {51, 51};
-        uint8_t gain[2] = {0, 20};
+        uint16_t InVol[2] = {51, 51};
+        uint16_t gain[2] = {0, 20};
         bool inputSource = false; // 0-> line; 1-> mic
         // *gui objects
         // output tab
@@ -83,6 +85,8 @@ private:
         void load() override;
         void unload() override;
         void update() override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
     private:
         // gui callback functions
         static void onOutputArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
@@ -104,8 +108,8 @@ private:
         // instance id
         uint8_t id;
         // user data
-        uint8_t mixerVol[4] = {51, 51, 51 ,51};
-        uint8_t mixerPan[4] = {0, 0, 0, 0};
+        uint16_t mixerVol[4] = {51, 51, 51 ,51};
+        uint16_t mixerPan[4] = {0, 0, 0, 0};
         // gui objects
         VolumeBar *mixerBar[4][2] = {{nullptr}};
         ParamArcMini *mixerPanArc[4] = {nullptr};
@@ -116,6 +120,8 @@ private:
         void load() override;
         void unload() override;
         void update() override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
     private:
         // gui callback functions
         static void onMixerVolArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);

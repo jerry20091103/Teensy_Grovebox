@@ -111,3 +111,13 @@ void HomePage::load()
 void HomePage::unload()
 {
 }
+
+void HomePage::serialize(ofstream &stream)
+{
+    // nothing to save
+}
+
+void HomePage::deserialize(ifstream &stream)
+{
+    // nothing to load
+}

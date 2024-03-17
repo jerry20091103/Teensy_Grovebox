@@ -259,6 +259,16 @@ void WaveTablePage::unload()
     selectGroup = NULL;
 }
 
+void WaveTablePage::serialize(ofstream &stream)
+{
+    stream << octave << " " << volume << " " << pitchbendRange << " " << curInstrument << " " << useVelocity << " " << usePitchbend << " ";
+}
+
+void WaveTablePage::deserialize(ifstream &stream)
+{
+    stream >> octave >> volume >> pitchbendRange >> curInstrument >> useVelocity >> usePitchbend;
+}
+
 void WaveTablePage::setVolume(int8_t value)
 {
     volume = value;

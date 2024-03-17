@@ -165,6 +165,50 @@ void SynthPage::loadAll()
     }
 }
 
+void SynthPage::serialize(ofstream &stream)
+{
+    // serialize all subpages
+    mainPage->serialize(stream);
+    for (uint8_t i=0; i<2; i++)
+    {
+        oscPage[i]->serialize(stream);
+    }
+    samplerPage->serialize(stream);
+    noisePage->serialize(stream);
+    filterPage->serialize(stream);
+    modPage->serialize(stream);
+    for (uint8_t i=0; i<3; i++)
+    {
+        envPage[i]->serialize(stream);
+    }
+    for (uint8_t i=0; i<2; i++)
+    {
+        lfoPage[i]->serialize(stream);
+    }
+}
+
+void SynthPage::deserialize(ifstream &stream)
+{
+    // deserialize all subpages
+    mainPage->deserialize(stream);
+    for (uint8_t i=0; i<2; i++)
+    {
+        oscPage[i]->deserialize(stream);
+    }
+    samplerPage->deserialize(stream);
+    noisePage->deserialize(stream);
+    filterPage->deserialize(stream);
+    modPage->deserialize(stream);
+    for (uint8_t i=0; i<3; i++)
+    {
+        envPage[i]->deserialize(stream);
+    }
+    for (uint8_t i=0; i<2; i++)
+    {
+        lfoPage[i]->deserialize(stream);
+    }
+}
+
 lv_obj_t *SynthPage::createTopBar(lv_obj_t *parent, const char *title)
 {
     lv_obj_t *topBar = lv_obj_create(parent);
@@ -460,6 +504,16 @@ void SynthPage::MainPage::onBtnPressed(uint8_t pin)
     synthPage->onBtnPressedDefault(pin);
 }
 
+void SynthPage::MainPage::serialize(ofstream &stream)
+{
+    stream << octave << " " << volume << " " << pitchbendRange << " " << useVelocity << " " << usePitchbend << " " << useModwheel << " ";
+}
+
+void SynthPage::MainPage::deserialize(ifstream &stream)
+{
+    stream >> octave >> volume >> pitchbendRange >> useVelocity >> usePitchbend >> useModwheel;
+}
+
 void SynthPage::MainPage::onVolArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
 {
     MainPage *instance = (MainPage *)targetPointer;
@@ -613,6 +667,16 @@ void SynthPage::OscPage::unload()
     lv_obj_clean(((SynthPage *)parentPage)->subpageGroup);
 }
 
+void SynthPage::OscPage::serialize(ofstream &stream)
+{
+    stream << oscWaveform << " " << oscOctave << " " << oscSemi << " " << oscPwm << " " << oscDetune << " " << oscLevel << " ";
+}
+
+void SynthPage::OscPage::deserialize(ifstream &stream)
+{
+    stream >> oscWaveform >> oscOctave >> oscSemi >> oscPwm >> oscDetune >> oscLevel;
+}
+
 void SynthPage::OscPage::onOscOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value)
 {
     OscPage *instance = (OscPage *)targetPointer;
@@ -715,6 +779,7 @@ void SynthPage::SamplerPage::load()
     rootKeyBtn = new Button(menuArea, -1, 25, "C4");
     lv_obj_align(rootKeyBtn->getLvglObject(), LV_ALIGN_LEFT_MID, 80, -10);
     rootKeyBtn->setPressedCallback(onSamplerRootKeyBtnPressed, this);
+    lv_label_set_text(rootKeyBtn->getLabelObject(), noteNumToNoteName(samplerRootKey).c_str());
 
     // *tune arc
     samplerArc[0] = new ParamArc(menuArea, 1, "Tune", "cent", false);
@@ -761,6 +826,16 @@ void SynthPage::SamplerPage::onBtnPressed(uint8_t pin)
     }
     // still need to call the parent's onBtnPressed
     synthPage->onBtnPressedDefault(pin);
+}
+
+void SynthPage::SamplerPage::serialize(ofstream &stream)
+{
+    stream << samplerTune << " " << samplerLevel << " " << samplerRootKey << " ";
+}
+
+void SynthPage::SamplerPage::deserialize(ifstream &stream)
+{
+    stream >> samplerTune >> samplerLevel >> samplerRootKey;
 }
 
 void SynthPage::SamplerPage::onSamplerArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
@@ -842,6 +917,16 @@ void SynthPage::NoisePage::unload()
     lv_obj_clean(((SynthPage *)parentPage)->subpageGroup);
 }
 
+void SynthPage::NoisePage::serialize(ofstream &stream)
+{
+    stream << noiseLevel << " ";
+}
+
+void SynthPage::NoisePage::deserialize(ifstream &stream)
+{
+    stream >> noiseLevel;
+}
+
 void SynthPage::NoisePage::onNoiseArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
 {
     NoisePage *instance = (NoisePage *)targetPointer;
@@ -900,6 +985,22 @@ void SynthPage::FilterPage::unload()
         filterArc[i] = nullptr;
     }
     lv_obj_clean(((SynthPage *)parentPage)->subpageGroup);
+}
+
+void SynthPage::FilterPage::serialize(ofstream &stream)
+{
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        stream << filterVal[i] << " ";
+    }
+}
+
+void SynthPage::FilterPage::deserialize(ifstream &stream)
+{
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        stream >> filterVal[i];
+    }
 }
 
 void SynthPage::FilterPage::onFilterArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
@@ -974,6 +1075,34 @@ void SynthPage::ModPage::load()
 void SynthPage::ModPage::unload()
 {
     lv_obj_clean(((SynthPage *)parentPage)->subpageGroup);
+}
+
+void SynthPage::ModPage::serialize(ofstream &stream)
+{
+    int modListSize = modList.size();
+    stream << modListSize << " ";
+
+    auto it = modList.begin();
+    while (it != modList.end())
+    {
+        stream << it->source << " " << it->target << " " << it->amount << " ";
+        it++;
+    }
+}
+
+void SynthPage::ModPage::deserialize(ifstream &stream)
+{
+    modList.clear();
+    int modListSize;
+    stream >> modListSize;
+    for (int i = 0; i < modListSize; i++)
+    {
+        int source;
+        int target;
+        float amount;
+        stream >> source >> target >> amount;
+        modList.push_back(ModulationEntry((modSource)source, (modTarget)target, amount));
+    }
 }
 
 void SynthPage::ModPage::onNewModBtnPressed(lv_event_t *e)
@@ -1201,6 +1330,22 @@ void SynthPage::EnvPage::unload()
     lv_obj_clean(((SynthPage *)parentPage)->subpageGroup);
 }
 
+void SynthPage::EnvPage::serialize(ofstream &stream)
+{
+    for (uint8_t i = 0; i < 5; i++)
+    {
+        stream << envVal[i] << " ";
+    }
+}
+
+void SynthPage::EnvPage::deserialize(ifstream &stream)
+{
+    for (uint8_t i = 0; i < 5; i++)
+    {
+        stream >> envVal[i];
+    }
+}
+
 void SynthPage::EnvPage::onEnvArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
 {
     EnvPage *instance = (EnvPage *)targetPointer;
@@ -1316,6 +1461,24 @@ void SynthPage::LfoPage::unload()
     lfoArc[0] = nullptr;
     lfoArc[1] = nullptr;
     lv_obj_clean(((SynthPage *)parentPage)->subpageGroup);
+}
+
+void SynthPage::LfoPage::serialize(ofstream &stream)
+{
+    stream << lfoWaveform << " ";
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        stream << lfoVal[i] << " ";
+    }
+}
+
+void SynthPage::LfoPage::deserialize(ifstream &stream)
+{
+    stream >> lfoWaveform;
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        stream >> lfoVal[i];
+    }
 }
 
 void SynthPage::LfoPage::onLfoArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)

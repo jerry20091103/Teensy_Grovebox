@@ -60,6 +60,8 @@ public:
     void updateDefault() override;
     PROGMEM void init() override;
     void loadAll() override;
+    void serialize(ofstream& stream) override;
+    void deserialize(ifstream& stream) override;
     
     // *user data
     FXFreeverb_Mem reverbMem;
@@ -72,9 +74,9 @@ private:
         friend class SynthPage;
     private:
         // user data
-        uint8_t octave = 4;
-        int8_t volume = 0;
-        uint8_t pitchbendRange = 2;
+        uint16_t octave = 4;
+        int16_t volume = 0;
+        uint16_t pitchbendRange = 2;
         bool useVelocity = false;
         bool usePitchbend = false;
         bool useModwheel = true; // TODO: Add modwheel enable button?
@@ -94,6 +96,9 @@ private:
         void unload() override;
         void update() override;
         void onBtnPressed(uint8_t pin) override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
+
     private:
         // gui callback functions
         static void onVolArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
@@ -115,12 +120,12 @@ private:
         // instance id
         uint8_t id;
         // user data
-        uint8_t oscWaveform = 0;
-        int8_t oscOctave = 0;
-        int8_t oscSemi = 0;
-        uint8_t oscPwm = 50;
-        int8_t oscDetune = 0;
-        uint8_t oscLevel = 90;
+        uint16_t oscWaveform = 0;
+        int16_t oscOctave = 0;
+        int16_t oscSemi = 0;
+        uint16_t oscPwm = 50;
+        int16_t oscDetune = 0;
+        uint16_t oscLevel = 90;
         // gui objects
         Spinbox* oscOctaveSpinbox = nullptr;
         Spinbox* oscSemiSpinbox = nullptr;
@@ -132,6 +137,9 @@ private:
         OscPage(PageWithSubPage* parent, uint8_t id) : SubPage(parent), id(id) {}
         void load() override;
         void unload() override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
+
     private:
         // gui callback functions
         static void onOscOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value);
@@ -148,9 +156,9 @@ private:
         friend class SynthPage;
     private:
         // user data
-        uint8_t samplerRootKey = 60; // C4
-        int8_t samplerTune = 0;
-        uint8_t samplerLevel = 90;
+        int16_t samplerTune = 0;
+        uint16_t samplerLevel = 90;
+        uint16_t samplerRootKey = 60; // C4
         // gui objects
         ParamArc* samplerArc[2] = {nullptr};
         Button* rootKeyBtn = nullptr;
@@ -167,6 +175,9 @@ private:
         void load() override;
         void unload() override;
         void onBtnPressed(uint8_t pin) override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
+
     private:
         // gui callback functions
         static void onSamplerArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
@@ -181,7 +192,7 @@ private:
         friend class SynthPage;
     private:
         // user data
-        uint8_t noiseLevel = 0;
+        uint16_t noiseLevel = 0;
         // gui objects
         ParamArc* noiseArc = nullptr;
         // lvgl object refs
@@ -189,6 +200,8 @@ private:
         NoisePage(PageWithSubPage* parent) : SubPage(parent) {}
         void load() override;
         void unload() override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
     private:
         // gui callback functions
         static void onNoiseArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
@@ -206,6 +219,8 @@ private:
         FilterPage(PageWithSubPage* parent) : SubPage(parent) {}
         void load() override;
         void unload() override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
     private:
         // gui callback functions
         static void onFilterArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
@@ -216,7 +231,6 @@ private:
         friend class SynthPage;
     private:
         // user data
-        // TODO: save modulation list here
         std::list<ModulationEntry> modList;
         // gui objects
         // lvgl object refs
@@ -226,6 +240,8 @@ private:
         ModPage(PageWithSubPage* parent) : SubPage(parent) {}
         void load() override;
         void unload() override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
     private:
         // gui callback functions
         // lvgl callback functions
@@ -288,7 +304,7 @@ private:
         // instance id
         uint8_t id;
         // user data
-        uint8_t envVal[5] = {0, 0, 0, 100, 0};
+        uint16_t envVal[5] = {0, 0, 0, 100, 0};
         // gui objects
         EnvelopeGraph* envGraph = nullptr;
         ParamArc* envArc[5] = {nullptr};
@@ -296,6 +312,8 @@ private:
         EnvPage(PageWithSubPage* parent, uint8_t id) : SubPage(parent), id(id) {}
         void load() override;
         void unload() override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
     private:
         // gui callback functions
         static void onEnvArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);
@@ -308,7 +326,7 @@ private:
         // instance id
         uint8_t id;
         // user data
-        uint8_t lfoWaveform = 0;
+        uint16_t lfoWaveform = 0;
         uint16_t lfoVal[2] = {0, 50};
         // gui objects
         ParamArc* lfoArc[2] = {nullptr};
@@ -319,6 +337,8 @@ private:
         LfoPage(PageWithSubPage* parent, uint8_t id) : SubPage(parent), id(id) {}
         void load() override;
         void unload() override;
+        void serialize(ofstream& stream) override;
+        void deserialize(ifstream& stream) override;
     private:
         // gui callback functions
         static void onLfoArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex);

@@ -60,6 +60,8 @@ public:
     PROGMEM void init();
     PROGMEM void load();
     PROGMEM void unload();
+    void serialize(ofstream& stream) override;
+    void deserialize(ifstream& stream) override;
 };
 
 #endif

@@ -119,6 +119,20 @@ void AudioPage::loadAll()
     mixerPage[1]->unload();
 }
 
+void AudioPage::serialize(ofstream &stream)
+{
+    mainPage->serialize(stream);
+    mixerPage[0]->serialize(stream);
+    mixerPage[1]->serialize(stream);
+}
+
+void AudioPage::deserialize(ifstream &stream)
+{
+    mainPage->deserialize(stream);
+    mixerPage[0]->deserialize(stream);
+    mixerPage[1]->deserialize(stream);
+}
+
 void AudioPage::createTrackGui(lv_obj_t *parent, ParamArc *&arcRef, VolumeBar **barArrRef, uint8_t color, const char *name)
 {
     lv_obj_t *label;
@@ -375,6 +389,46 @@ void AudioPage::MainPage::update()
     }
 }
 
+void AudioPage::MainPage::serialize(ofstream &stream)
+{
+    stream << curTab << " ";
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        stream << OutVol[i] << " ";
+    }
+    stream << hpVol << " ";
+    stream << usePFL << " ";
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        stream << InVol[i] << " ";
+    }
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        stream << gain[i] << " ";
+    }
+    stream << inputSource << " ";
+}
+
+void AudioPage::MainPage::deserialize(ifstream &stream)
+{
+    stream >> curTab;
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        stream >> OutVol[i];
+    }
+    stream >> hpVol;
+    stream >> usePFL;
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        stream >> InVol[i];
+    }
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        stream >> gain[i];
+    }
+    stream >> inputSource;
+}
+
 void AudioPage::MainPage::onOutputArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
 {
     MainPage *instance = (MainPage *)targetPointer;
@@ -567,6 +621,30 @@ void AudioPage::MixerPage::update()
         {
             mixerBar[i][1]->setVolume(value.r);
         }
+    }
+}
+
+void AudioPage::MixerPage::serialize(ofstream &stream)
+{
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        stream << mixerVol[i] << " ";
+    }
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        stream << mixerPan[i] << " ";
+    }
+}
+
+void AudioPage::MixerPage::deserialize(ifstream &stream)
+{
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        stream >> mixerVol[i];
+    }
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        stream >> mixerPan[i];
     }
 }
 

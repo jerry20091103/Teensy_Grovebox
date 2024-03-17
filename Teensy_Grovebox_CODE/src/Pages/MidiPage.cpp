@@ -272,9 +272,9 @@ void MidiPage::load()
 
     octaveSpinbox = new Spinbox(btnGroup);
     octaveSpinbox->setRange(1, 8);
-    octaveSpinbox->setValue(octave);
     octaveSpinbox->setCallback(onOctaveSelect, this);
     lv_obj_set_x(octaveSpinbox->getLvglObject(), 205);
+    octaveSpinbox->setValue(octave);
 
     // channel select
     label = lv_label_create(btnGroup);
@@ -283,7 +283,6 @@ void MidiPage::load()
 
     channelSpinbox = new Spinbox(btnGroup);
     channelSpinbox->setRange(1, 16);
-    channelSpinbox->setValue(midiChannel);
     channelSpinbox->setCallback(onChannelSelect, this);
     lv_obj_set_pos(channelSpinbox->getLvglObject(), 205, 45);
     channelSpinbox->setValue(midiChannel);
@@ -345,6 +344,32 @@ void MidiPage::unload()
     channelSpinbox = NULL;
     // delete all lvgl objects on screen
     lv_obj_clean(screen);
+}
+
+void MidiPage::serialize(ofstream &stream)
+{
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        stream << curCC[i] << " ";
+    }
+    for (uint8_t i = 0; i < 109; i++)
+    {
+        stream << storeCC[i] << " ";
+    }
+    stream << octave << " " << midiChannel << " " << usePitchbend << " " << useModwheel << " ";
+}
+
+void MidiPage::deserialize(ifstream &stream)
+{
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        stream >> curCC[i];
+    }
+    for (uint8_t i = 0; i < 109; i++)
+    {
+        stream >> storeCC[i];
+    }
+    stream >> octave >> midiChannel >> usePitchbend >> useModwheel;
 }
 
 void MidiPage::updateCC(uint8_t control, uint8_t value)

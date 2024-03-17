@@ -1,6 +1,7 @@
 #ifndef PAGE_H
 #define PAGE_H
 
+#include <sdios.h>
 #include "Hardware.h"
 #include "GuiUtility.h"
 #include "Utility/SimpleStack.h"
@@ -49,6 +50,11 @@ public:
     virtual void unload() = 0;
     // Load all pages, including the subpages, to load user data to GUI elements. This function should be called after HardwareSetup().
     virtual void loadAll() {load(); unload();}
+
+    // serialize the page data to output stream
+    virtual void serialize(ofstream &stream) = 0;
+    // deserialize the page data from input stream
+    virtual void deserialize(ifstream &stream) = 0;
 
     uint8_t pageID;
     char pageName[MAX_PAGE_NAME];
@@ -123,6 +129,8 @@ public:
     virtual void update() {parentPage->updateDefault();}
     virtual void load() = 0;
     virtual void unload() = 0;
+    virtual void serialize(ofstream &stream) = 0;
+    virtual void deserialize(ifstream &stream) = 0;
     
     PageWithSubPage* getParentPage() {return parentPage;}
     SubPage(PageWithSubPage *parentPage) : parentPage(parentPage) {}
@@ -152,8 +160,14 @@ public:
     void goBack();
     // set user data to GUI elements in all pages. This function should be called after HardwareSetup().
     void loadAll();
+    // load user data from SD cand to all pages.
+    void loadDataFromSD();
+    // save user data from all pages to SD card.
+    void saveDataToSD();
     // a global pointer variable for parameter passing when switching pages
     void *pageParam;
+    // show a message box with a title, a message, and a close button
+    void showMessageBox(const char *title, const char *message);
 private:
     bool inPopup = false;   // true if a popup is active
     int curPopupID;         // stores current acitve popup ID
@@ -161,6 +175,7 @@ private:
     lv_obj_t *backBtn = nullptr;
     lv_obj_t *title = nullptr;
     lv_obj_t *battLabel = nullptr;
+    int userDataVersion = 12;
 
     const char* powerBtns[3] = {"Yes", "No", NULL};
 

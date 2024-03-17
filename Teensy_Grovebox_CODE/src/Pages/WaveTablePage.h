@@ -13,10 +13,10 @@ class WaveTablePage : public Pages
 {
 private:
     // *user data
-    uint8_t octave = 4;
-    int8_t volume = 0;
-    uint8_t pitchbendRange = 2;
-    uint8_t curInstrument = 0;
+    uint16_t octave = 4;
+    int16_t volume = 0;
+    uint16_t pitchbendRange = 2;
+    uint16_t curInstrument = 0;
     bool useVelocity = true;
     bool usePitchbend = false;
 
@@ -57,6 +57,8 @@ public:
     PROGMEM void init();
     PROGMEM void load();
     PROGMEM void unload();
+    void serialize(ofstream& stream) override;
+    void deserialize(ifstream& stream) override;
     
     // *user data
     FXFreeverb_Mem reverbMem;
