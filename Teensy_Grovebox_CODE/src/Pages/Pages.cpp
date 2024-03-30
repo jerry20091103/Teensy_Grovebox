@@ -53,6 +53,23 @@ void PageManager_::Init()
     lv_label_set_text(title, "Tiltle");
     lv_obj_set_style_text_font(title, font_large, 0);
     lv_obj_align(title, LV_ALIGN_LEFT_MID, 10, 0);
+    // preset dropdown
+    presetDropdown = lv_dropdown_create(statusBar);
+    lv_obj_set_height(presetDropdown, lv_pct(100));
+    lv_obj_set_width(presetDropdown, 125);
+    lv_obj_align(presetDropdown, LV_ALIGN_RIGHT_MID, -80, 0);
+    lv_obj_set_style_pad_all(presetDropdown, 5, 0);
+    lv_obj_add_flag(presetDropdown, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+    lv_obj_set_style_bg_color(presetDropdown, lv_color_black(), 0);
+    lv_obj_set_style_text_font(presetDropdown, font_small, 0);
+    lv_obj_t *list = lv_dropdown_get_list(presetDropdown);
+    lv_obj_set_style_bg_color(list, lv_color_black(), 0);
+    lv_obj_set_style_text_font(list, font_small, 0);
+    lv_dropdown_set_options(presetDropdown, "Preset 1\nPreset 2\nPreset 3\nPreset 4\nPreset 5");
+    // add new and save button when preset dropdown is open
+    lv_obj_add_event_cb(presetDropdown, onPresetDropdownOpen, LV_EVENT_READY, this);
+    lv_obj_add_event_cb(presetDropdown, onPresetDropdownClose, LV_EVENT_CANCEL, this);
+
     // battery logo
     battLabel = lv_label_create(statusBar);
     lv_label_set_text(battLabel, LV_SYMBOL_BATTERY_1);
@@ -63,6 +80,16 @@ void PageManager_::Init()
     lv_obj_set_height(backBtn, lv_pct(100));
     lv_obj_align(backBtn, LV_ALIGN_RIGHT_MID, 0, 0);
     lv_obj_add_event_cb(backBtn, onBackBtnPressed, LV_EVENT_CLICKED, this);
+    // new preset button
+    newBtn = Gui_CreateButton(statusBar, -1, -1, LV_SYMBOL_PLUS);
+    lv_obj_set_height(newBtn, lv_pct(100));
+    lv_obj_align(newBtn, LV_ALIGN_RIGHT_MID, -40, 0);
+    lv_obj_add_flag(newBtn, LV_OBJ_FLAG_HIDDEN);
+    // save preset button
+    saveBtn = Gui_CreateButton(statusBar, -1, -1, LV_SYMBOL_SAVE);
+    lv_obj_set_height(saveBtn, lv_pct(100));
+    lv_obj_align(saveBtn, LV_ALIGN_RIGHT_MID, 0, 0);
+    lv_obj_add_flag(saveBtn, LV_OBJ_FLAG_HIDDEN);
 
     for(auto i : PageArr)
     {
@@ -238,6 +265,30 @@ void PageManager_::onBackBtnPressed(lv_event_t *e)
         // go back to previous page
         PageManager.switchPage(PageManager.getPrevPage(), true);
     }
+}
+
+void PageManager_::onPresetDropdownOpen(lv_event_t *e)
+{
+    lv_obj_t *dropdown = lv_event_get_current_target(e);
+    PageManager_ *pm = (PageManager_ *)lv_event_get_user_data(e);
+    // show new and save button
+    lv_obj_clear_flag(pm->newBtn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(pm->saveBtn, LV_OBJ_FLAG_HIDDEN);
+    // hide back button and battery logo
+    lv_obj_add_flag(pm->backBtn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(pm->battLabel, LV_OBJ_FLAG_HIDDEN);
+}
+
+void PageManager_::onPresetDropdownClose(lv_event_t *e)
+{
+    lv_obj_t *dropdown = lv_event_get_current_target(e);
+    PageManager_ *pm = (PageManager_ *)lv_event_get_user_data(e);
+    // hide new and save button
+    lv_obj_add_flag(pm->newBtn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(pm->saveBtn, LV_OBJ_FLAG_HIDDEN);
+    // show back button and battery logo
+    lv_obj_clear_flag(pm->backBtn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(pm->battLabel, LV_OBJ_FLAG_HIDDEN);
 }
 
 // common data shared by all pages

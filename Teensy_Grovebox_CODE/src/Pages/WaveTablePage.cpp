@@ -162,7 +162,7 @@ void WaveTablePage::update()
 void WaveTablePage::init()
 {
     pageID = PG_WAVE;
-    strcpy(pageName, "Wave Table Synth");
+    strcpy(pageName, "Wave Table");
     // create screen
     screen = lv_obj_create(NULL);
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);

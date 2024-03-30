@@ -6,7 +6,7 @@
 #include "GuiUtility.h"
 #include "Utility/SimpleStack.h"
 
-#define MAX_PAGE_NAME 20
+#define MAX_PAGE_NAME 15
 
 #define PEAK_HOLD_TIME 100
 
@@ -114,7 +114,7 @@ protected:
 // A virtual class for sub pages to inherit from (pages that are inside other pages)
 // This ensures that the sub page has a pointer to access its parent page
 // By default, the parentPage's default methods will be called when the sub page's methods are not overriden
-// However, the load() and unload() methods must be overriden
+// However, the load(), unload(), serialize(), and deserialize() methods must be overriden by the sub page
 class SubPage
 {
 protected:
@@ -168,6 +168,8 @@ public:
     void *pageParam;
     // show a message box with a title, a message, and a close button
     void showMessageBox(const char *title, const char *message);
+    // get the preset dropdown object to set the preset list by other pages?
+    lv_obj_t* getPresetDropdown() {return presetDropdown;}
 private:
     bool inPopup = false;   // true if a popup is active
     int curPopupID;         // stores current acitve popup ID
@@ -175,13 +177,18 @@ private:
     lv_obj_t *backBtn = nullptr;
     lv_obj_t *title = nullptr;
     lv_obj_t *battLabel = nullptr;
+    lv_obj_t *newBtn = nullptr;
+    lv_obj_t *saveBtn = nullptr;
     int userDataVersion = 12;
+    lv_obj_t *presetDropdown = nullptr;
 
     const char* powerBtns[3] = {"Yes", "No", NULL};
 
     // lvgl callback functions
     static void onPowerBtnPressed(lv_event_t *e);
     static void onBackBtnPressed(lv_event_t *e);
+    static void onPresetDropdownOpen(lv_event_t *e);
+    static void onPresetDropdownClose(lv_event_t *e);
 
     // navigation stack
     SimpleStack<uint8_t, MAX_PAGE> navStack;
