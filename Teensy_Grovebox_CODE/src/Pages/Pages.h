@@ -7,8 +7,13 @@
 #include "Utility/SimpleStack.h"
 
 #define MAX_PAGE_NAME 15
+#define MAX_PRESET_NAME 12
+#define MAX_PRESET_NUM 64
 
 #define PEAK_HOLD_TIME 100
+
+#define USER_DATA_VERSION 12
+#define USER_DATA_FILE_PREFIX "USERDATA/"
 
 enum PageID : uint8_t{
     PG_HOME,
@@ -19,6 +24,18 @@ enum PageID : uint8_t{
     PG_SAMPLEEDITOR,
     MAX_PAGE
 };
+
+/*  Here is the class hierarchy for the pages:
+                Pages
+                /   \
+               /     \
+   PageWithSubPage  PageWithPreset
+                \     /
+                 \   /
+            "Actual Pages" (WaveTablePage, SynthPage, etc.)
+    
+    Hence, we need virtual base classes for PageWithSubPage and PageWithPreset
+*/
 
 // Pages class
 // A virtual class for other pages to inherit from
@@ -56,9 +73,19 @@ public:
     // deserialize the page data from input stream
     virtual void deserialize(ifstream &stream) = 0;
 
+    Pages() {address = this;}
+
+    // SD card
+    virtual void loadDataFromSD();
+    virtual void saveDataToSD();
+
     uint8_t pageID;
     char pageName[MAX_PAGE_NAME];
     lv_obj_t *screen = nullptr;
+    bool hasPresets = false;
+    // this stores the 2nd level derived class's address (PageWithSubPage or PageWithPreset)
+    // TODO: this is really ugly
+    void *address = nullptr;
 
 protected:
 };
@@ -71,7 +98,7 @@ class SubPage;
 // This makes the page keeps a default implementation of the sub page's methods, which is used if the sub page does not override the methods
 // The load() and unload() methods must be overriden by the sub page
 // The init() method should not be overriden by the sub page
-class PageWithSubPage : public Pages
+class PageWithSubPage : public virtual Pages
 {
     friend class SubPage;
 protected:
@@ -95,6 +122,8 @@ public:
     void unload() final;
     virtual void loadAll() = 0;
 
+    PageWithSubPage() {address = this;}
+
 protected:
     // default implementation of the callback functions
     virtual void onBtnPressedDefault(uint8_t pin) = 0;
@@ -108,6 +137,43 @@ protected:
     // Additional methods for sub page management
     // switch to a sub page
     void switchSubPage(SubPage* subPage);
+};
+
+// PageWithPreset class
+// A virtual class for pages that have presets function
+// It adds features to add/save/delete preset data in SD card
+class PageWithPreset : public virtual Pages
+{
+public:
+    // load the preset list and set the currently selected preset
+    void loadDataFromSD() override final;
+    // save the preset list and the currently selected preset
+    void saveDataToSD() override final;
+    // create a new preset and save it to SD card, also reload the preset list
+    void newPreset(String presetName);
+    // Delete the current preset from SD card and load the previous preset, also reload the preset list
+    void deletePreset(String presetName);
+    // load a certain preset from SD card
+    void loadPreset(String presetName);
+    // defualt constructor that sets the presetDropdown object
+    PageWithPreset();
+
+    // lvgl callback functions for preset dropdown
+    static void onPresetDropdownSelected(lv_event_t *e);
+    static void onPresetNewBtnPressed(lv_event_t *e);
+    static void onPresetSaveBtnPressed(lv_event_t *e);
+    static void onPresetDeleteBtnPressed(lv_event_t *e);
+    static void onKeyboardOkBtnPressed(lv_event_t *e);
+private:
+    // the preset dropdown object in the status bar
+    int curPreset = 0;
+
+    // load the current presst number from SD card
+    void loadCurPresetNum();
+    // save the current preset number to SD card
+    void saveCurPresetNum();
+    void createDefaultPreset();
+
 };
 
 // SubPage class
@@ -167,9 +233,15 @@ public:
     // a global pointer variable for parameter passing when switching pages
     void *pageParam;
     // show a message box with a title, a message, and a close button
-    void showMessageBox(const char *title, const char *message);
+    void showMessageBox(const char *title, const char *message, const char *btns[] = nullptr);
+    // show the keyboard and the preset name text area
+    void setShowKeyboardAndPresetName(bool enable, String text = "");
     // get the preset dropdown object to set the preset list by other pages?
     lv_obj_t* getPresetDropdown() {return presetDropdown;}
+    // other lvgl object getters
+    lv_obj_t* getTextArea() {return textArea;}
+    lv_obj_t* getKeyboard() {return keyboard;}
+    lv_obj_t* getBackdrop() {return backdrop;}
 private:
     bool inPopup = false;   // true if a popup is active
     int curPopupID;         // stores current acitve popup ID
@@ -179,8 +251,11 @@ private:
     lv_obj_t *battLabel = nullptr;
     lv_obj_t *newBtn = nullptr;
     lv_obj_t *saveBtn = nullptr;
-    int userDataVersion = 12;
+    lv_obj_t *deleteBtn = nullptr;
     lv_obj_t *presetDropdown = nullptr;
+    lv_obj_t *textArea = nullptr;
+    lv_obj_t *keyboard = nullptr;
+    lv_obj_t *backdrop = nullptr;
 
     const char* powerBtns[3] = {"Yes", "No", NULL};
 

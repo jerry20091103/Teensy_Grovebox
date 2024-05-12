@@ -65,10 +65,12 @@ void PageManager_::Init()
     lv_obj_t *list = lv_dropdown_get_list(presetDropdown);
     lv_obj_set_style_bg_color(list, lv_color_black(), 0);
     lv_obj_set_style_text_font(list, font_small, 0);
-    lv_dropdown_set_options(presetDropdown, "Preset 1\nPreset 2\nPreset 3\nPreset 4\nPreset 5");
-    // add new and save button when preset dropdown is open
+    lv_obj_add_flag(presetDropdown, LV_OBJ_FLAG_HIDDEN);
+    // show new, save and delete button when preset dropdown is open
     lv_obj_add_event_cb(presetDropdown, onPresetDropdownOpen, LV_EVENT_READY, this);
     lv_obj_add_event_cb(presetDropdown, onPresetDropdownClose, LV_EVENT_CANCEL, this);
+    // on preset change
+    lv_obj_add_event_cb(presetDropdown, PageWithPreset::onPresetDropdownSelected, LV_EVENT_VALUE_CHANGED, nullptr);
 
     // battery logo
     battLabel = lv_label_create(statusBar);
@@ -85,11 +87,47 @@ void PageManager_::Init()
     lv_obj_set_height(newBtn, lv_pct(100));
     lv_obj_align(newBtn, LV_ALIGN_RIGHT_MID, -40, 0);
     lv_obj_add_flag(newBtn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(newBtn, PageWithPreset::onPresetNewBtnPressed, LV_EVENT_CLICKED, nullptr);
     // save preset button
     saveBtn = Gui_CreateButton(statusBar, -1, -1, LV_SYMBOL_SAVE);
     lv_obj_set_height(saveBtn, lv_pct(100));
     lv_obj_align(saveBtn, LV_ALIGN_RIGHT_MID, 0, 0);
     lv_obj_add_flag(saveBtn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(saveBtn, PageWithPreset::onPresetSaveBtnPressed, LV_EVENT_CLICKED, nullptr);
+    // delete preset button
+    deleteBtn = Gui_CreateButton(statusBar, -1, -1, LV_SYMBOL_TRASH, false, 1);
+    lv_obj_set_height(deleteBtn, lv_pct(100));
+    lv_obj_align(deleteBtn, LV_ALIGN_RIGHT_MID, -207, 0);
+    lv_obj_add_flag(deleteBtn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(deleteBtn, PageWithPreset::onPresetDeleteBtnPressed, LV_EVENT_CLICKED, nullptr);
+
+    // the backdrop to block the screen when entering preset name
+    backdrop = lv_obj_create(lv_layer_top());
+    lv_obj_remove_style_all(backdrop);
+    lv_obj_set_size(backdrop, 320, 240);
+    lv_obj_set_style_bg_color(backdrop, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(backdrop, LV_OPA_50, 0);
+    lv_obj_add_flag(backdrop, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(backdrop, LV_OBJ_FLAG_CLICK_FOCUSABLE);
+
+    // text area for preset name
+    textArea = lv_textarea_create(backdrop);
+    lv_obj_set_height(textArea, 33);
+    lv_obj_set_width(textArea, 125);
+    lv_obj_set_pos(textArea, 115, 3);
+    lv_obj_set_style_pad_all(textArea, 5, 0);
+    lv_obj_set_style_bg_color(textArea, lv_color_black(), 0);
+    lv_obj_set_style_text_font(textArea, font_small, 0);
+    lv_obj_add_flag(textArea, LV_OBJ_FLAG_HIDDEN);
+    lv_textarea_set_max_length(textArea, MAX_PRESET_NAME);
+    lv_textarea_set_one_line(textArea, true);
+
+    // on screen keyboard
+    keyboard = lv_keyboard_create(lv_layer_top());
+    lv_obj_set_y(keyboard, -35);
+    lv_keyboard_set_popovers(keyboard, true);
+    lv_obj_add_flag(keyboard, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(keyboard, PageWithPreset::onKeyboardOkBtnPressed, LV_EVENT_READY, nullptr);
 
     for(auto i : PageArr)
     {
@@ -119,7 +157,6 @@ void PageManager_::loadAll()
 
 void PageManager_::loadDataFromSD()
 {
-    String filePrefix = "USERDATA/";
     if (!SD.mediaPresent())
     {
         Serial.println("SD card failed");
@@ -131,31 +168,13 @@ void PageManager_::loadDataFromSD()
         {
             if(i == nullptr)
                 continue;
-            ifstream sdin((filePrefix + String(i->pageName) + ".txt").c_str(), ios::in);
-            if(sdin.is_open())
-            {
-                int versionNumber = 0;
-                sdin >> versionNumber;
-                if(versionNumber != userDataVersion)
-                {
-                    PageManager.showMessageBox("SD Card Error", ("User data version mismatch: " + String(i->pageName) + ".txt").c_str());
-                    sdin.close();
-                    continue;
-                }
-                i->deserialize(sdin);
-                sdin.close();
-            }
-            else
-            {
-                PageManager.showMessageBox("SD Card Error", ("SD file not found: " + String(i->pageName) + ".txt").c_str());
-            }
+            i->loadDataFromSD();
         }
     }
 }
 
 void PageManager_::saveDataToSD()
 {
-    String filePrefix = "USERDATA/";
     if (!SD.mediaPresent())
     {
         Serial.println("SD card failed");
@@ -167,24 +186,21 @@ void PageManager_::saveDataToSD()
         {
             if(i == nullptr)
                 continue;
-            ofstream sdout((filePrefix + String(i->pageName) + ".txt").c_str(), ios::out);
-            if(sdout.is_open())
-            {
-                sdout << userDataVersion << endl;
-                i->serialize(sdout);
-                sdout.close();
-            }
-            else
-            {
-                PageManager.showMessageBox("SD Card Error", ("Cannot create SD file: " + String(i->pageName) + ".txt").c_str());
-            }
+            i->saveDataToSD();
         }
     }
 }
 
-void PageManager_::showMessageBox(const char *title, const char *message)
+void PageManager_::showMessageBox(const char *title, const char *message, const char *btns[])
 {
-    lv_obj_t *msgbox = lv_msgbox_create(NULL, title, message, NULL, true);
+    // TODO: the "btns" parameter cause a crash when it's not nullptr
+    bool addCloseBtn = false;
+    if (btns == nullptr)
+    {
+        addCloseBtn = true;
+    }
+    
+    lv_obj_t *msgbox = lv_msgbox_create(NULL, title, message, btns, addCloseBtn);
     lv_obj_center(msgbox);
     lv_obj_set_style_bg_color(msgbox, lv_color_black(), 0);
     lv_obj_t *label = lv_msgbox_get_title(msgbox);
@@ -196,8 +212,43 @@ void PageManager_::showMessageBox(const char *title, const char *message)
     lv_obj_set_style_bg_color(btn, color_Red, LV_STATE_CHECKED);
 }
 
+void PageManager_::setShowKeyboardAndPresetName(bool enable, String text)
+{
+    if (enable)
+    {
+        if (text == "")
+        {
+            text = "Preset " + String(lv_dropdown_get_option_cnt(presetDropdown));
+        }
+        // show on screen keyboard and text area to enter the preset name
+        lv_obj_clear_flag(backdrop, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(textArea, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(keyboard, LV_OBJ_FLAG_HIDDEN);
+        lv_textarea_set_text(textArea, text.c_str());
+        lv_textarea_set_cursor_pos(textArea, LV_TEXTAREA_CURSOR_LAST);
+        lv_keyboard_set_textarea(keyboard, textArea);
+        lv_event_send(textArea, LV_EVENT_FOCUSED, NULL);
+        // make the rest of the screen unclickable
+        lv_obj_add_flag(lv_layer_top(), LV_OBJ_FLAG_CLICKABLE);
+    }
+    else
+    {
+        // reverse the above
+        lv_obj_add_flag(backdrop, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(textArea, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(keyboard, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(lv_layer_top(), LV_OBJ_FLAG_CLICKABLE);
+    }
+}
+
 void PageManager_::switchPage(uint8_t pageID, bool isGoBack)
 {
+    // check if we are saving a preset
+    if (!lv_obj_has_flag(textArea, LV_OBJ_FLAG_HIDDEN))
+    {
+        // do nothing
+        return;
+    }
     PageArr[getCurPage()]->unload();
     if (isGoBack)
         navStack.pop();
@@ -216,6 +267,17 @@ void PageManager_::switchPage(uint8_t pageID, bool isGoBack)
     else
     {
         lv_label_set_text(label, LV_SYMBOL_LEFT);
+    }
+    // show preset dropdown if the page has preset
+    if(PageArr[pageID]->hasPresets)
+    {
+        lv_obj_clear_flag(presetDropdown, LV_OBJ_FLAG_HIDDEN);
+        // load the preset data
+        PageArr[pageID]->loadDataFromSD();
+    }
+    else
+    {
+        lv_obj_add_flag(presetDropdown, LV_OBJ_FLAG_HIDDEN);
     }
     // load screen in lvgl
     lv_scr_load(PageArr[pageID]->screen);
@@ -269,11 +331,11 @@ void PageManager_::onBackBtnPressed(lv_event_t *e)
 
 void PageManager_::onPresetDropdownOpen(lv_event_t *e)
 {
-    lv_obj_t *dropdown = lv_event_get_current_target(e);
     PageManager_ *pm = (PageManager_ *)lv_event_get_user_data(e);
-    // show new and save button
+    // show new, save and delete button
     lv_obj_clear_flag(pm->newBtn, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(pm->saveBtn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(pm->deleteBtn, LV_OBJ_FLAG_HIDDEN);
     // hide back button and battery logo
     lv_obj_add_flag(pm->backBtn, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(pm->battLabel, LV_OBJ_FLAG_HIDDEN);
@@ -281,11 +343,11 @@ void PageManager_::onPresetDropdownOpen(lv_event_t *e)
 
 void PageManager_::onPresetDropdownClose(lv_event_t *e)
 {
-    lv_obj_t *dropdown = lv_event_get_current_target(e);
     PageManager_ *pm = (PageManager_ *)lv_event_get_user_data(e);
-    // hide new and save button
+    // hide new, save and delete button
     lv_obj_add_flag(pm->newBtn, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(pm->saveBtn, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(pm->deleteBtn, LV_OBJ_FLAG_HIDDEN);
     // show back button and battery logo
     lv_obj_clear_flag(pm->backBtn, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(pm->battLabel, LV_OBJ_FLAG_HIDDEN);
@@ -340,6 +402,43 @@ void PageWithSubPage::unload()
     curSubPage->unload();
 }
 
+void Pages::loadDataFromSD()
+{
+    ifstream sdin((USER_DATA_FILE_PREFIX + String(pageName) + ".txt").c_str(), ios::in);
+    if(sdin.is_open())
+    {
+        int versionNumber = 0;
+        sdin >> versionNumber;
+        if(versionNumber != USER_DATA_VERSION)
+        {
+            PageManager.showMessageBox("SD Card Error", ("User data version mismatch: " + String(pageName) + ".txt").c_str());
+            sdin.close();
+            return;
+        }
+        deserialize(sdin);
+        sdin.close();
+    }
+    else
+    {
+        PageManager.showMessageBox("SD Card Error", ("SD file not found: " + String(pageName) + ".txt").c_str());
+    }
+}
+
+void Pages::saveDataToSD()
+{
+    ofstream sdout((USER_DATA_FILE_PREFIX + String(pageName) + ".txt").c_str(), ios::out);
+    if(sdout.is_open())
+    {
+        sdout << USER_DATA_VERSION << endl;
+        serialize(sdout);
+        sdout.close();
+    }
+    else
+    {
+        PageManager.showMessageBox("SD Card Error", ("Cannot create SD file: " + String(pageName) + ".txt").c_str());
+    }
+}
+
 void PageWithSubPage::switchSubPage(SubPage *subPage)
 {
     if(subPage == nullptr)
@@ -350,6 +449,309 @@ void PageWithSubPage::switchSubPage(SubPage *subPage)
     curSubPage->unload();
     subPage->load();
     curSubPage = subPage;
+}
+
+void PageWithPreset::loadDataFromSD()
+{
+    // check page folder
+    if (!SD.exists((USER_DATA_FILE_PREFIX + String(pageName)).c_str()))
+    {
+        Serial.println("Page folder does not exist, creating a new one");
+        SD.mkdir((USER_DATA_FILE_PREFIX + String(pageName)).c_str());
+    }
+    // read currnet preset number
+    loadCurPresetNum();
+    // read preset list
+    File presetDir = SD.open((USER_DATA_FILE_PREFIX + String(pageName) + "/presets").c_str());
+    if (!presetDir)
+    {
+        Serial.println("Preset directory does not exist, creating a new one");
+        SD.mkdir((USER_DATA_FILE_PREFIX + String(pageName) + "/presets").c_str());
+        // save the default preset
+        createDefaultPreset();
+    }
+    std::list<String> files;
+    while (true)
+    {
+        File entry = presetDir.openNextFile();
+        if (!entry)
+        {
+            break;
+        }
+        // store them to string
+        files.push_back(entry.name());
+        entry.close();
+    }
+    presetDir.close();
+    if (files.size() == 0)
+    {
+        Serial.println("No preset files found, creating default preset");
+        createDefaultPreset();
+        files.push_back(".default");
+    }
+    files.sort();
+    // convert to string for the dropdown
+    String PresetListStr = "";
+    for (auto &f : files)
+    {
+        // don't add \n to the last item
+        if (f == files.back())
+            PresetListStr += f;
+        else
+            PresetListStr += (f + "\n");
+    }
+    lv_dropdown_set_options(PageManager.getPresetDropdown(), PresetListStr.c_str());
+    // load the current preset
+    auto it = files.begin();
+    std::advance(it, curPreset);
+    loadPreset(*it);
+}
+
+void PageWithPreset::saveDataToSD()
+{
+    // save current preset number
+    saveCurPresetNum();
+    
+    // get current preset name
+    char temp[MAX_PRESET_NAME + 1];
+    lv_dropdown_get_selected_str(PageManager.getPresetDropdown(), temp, MAX_PRESET_NAME + 1);
+    Serial.println("Saving preset: " + String(temp));
+    // save the current preset data
+    ofstream presetFile((USER_DATA_FILE_PREFIX + String(pageName) + "/presets" + "/" + String(temp)).c_str(), ios::out);
+    if(presetFile.is_open())
+    {
+        presetFile << USER_DATA_VERSION << endl;
+        serialize(presetFile);
+        presetFile.close();
+    }
+    else
+    {
+        Serial.println("Cannot create current preset file");
+    }
+}
+
+void PageWithPreset::newPreset(String presetName)
+{
+    // TODO: check if the currnet preset needs to be saved (modified)
+
+    // create a new preset file
+    ofstream presetFile((USER_DATA_FILE_PREFIX + String(pageName) + "/presets" + "/" + presetName).c_str(), ios::out);
+    if(presetFile.is_open())
+    {
+        presetFile << USER_DATA_VERSION << endl;
+        serialize(presetFile);
+        presetFile.close();
+        Serial.println("New preset created: " + presetName);
+    }
+    else
+    {
+        Serial.println("Cannot create new preset file");
+        return;
+    }
+    // reload the preset list
+    loadDataFromSD();
+    // find the new preset by name
+    for(int i = 0; i < lv_dropdown_get_option_cnt(PageManager.getPresetDropdown()); i++)
+    {
+        char temp[MAX_PRESET_NAME + 1];
+        lv_dropdown_set_selected(PageManager.getPresetDropdown(), i);
+        lv_dropdown_get_selected_str(PageManager.getPresetDropdown(), temp, MAX_PRESET_NAME + 1);
+        if(strcmp(temp, presetName.c_str()) == 0)
+        {
+            curPreset = i;
+            break;
+        }
+    }
+    // save the current preset number
+    saveCurPresetNum();
+    // load the new preset
+    loadPreset(presetName);
+}
+
+void PageWithPreset::deletePreset(String presetName)
+{
+    Serial.println("Deleting preset: " + presetName);
+    // cannot delete the first preset (default)
+    if(curPreset == 0)
+    {
+        Serial.println("Cannot delete the default preset");
+        return;
+    }
+    // delete the preset file
+    if(SD.remove((USER_DATA_FILE_PREFIX + String(pageName) + "/presets" + "/" + presetName).c_str()))
+    {
+        Serial.println("Preset deleted");
+    }
+    else
+    {
+        Serial.println("Cannot delete preset file");
+        return;
+    }
+    // set the current preset to the previous one
+    (curPreset > 0) ? curPreset-- : curPreset = 0;
+    saveCurPresetNum();
+    // reload the preset list
+    loadDataFromSD();
+}
+
+void PageWithPreset::loadPreset(String presetName)
+{
+    // TODO: check if the currnet preset needs to be saved (modified)
+    // TODO: check version number
+
+    // load the preset file
+    Serial.println("Loading preset: " + presetName);
+    ifstream presetFile((USER_DATA_FILE_PREFIX + String(pageName) + "/presets" + "/" + presetName).c_str(), ios::in);
+    if(presetFile.is_open())
+    {
+        // check version number
+        int versionNumber = 0;
+        presetFile >> versionNumber;
+        if(versionNumber != USER_DATA_VERSION)
+        {
+            PageManager.showMessageBox("SD Card Error", ("User data version mismatch: " + presetName).c_str());
+            presetFile.close();
+            return;
+        }
+        deserialize(presetFile);
+        presetFile.close();
+        // save the current preset number
+        saveCurPresetNum();
+        // set the dropdown to the current preset
+        lv_dropdown_set_selected(PageManager.getPresetDropdown(), curPreset);
+        // reload the page
+        this->unload();
+        this->load();
+    }
+    else
+    {
+        Serial.println("Cannot open preset file");
+    }
+}
+
+PageWithPreset::PageWithPreset()
+{
+    hasPresets = true;
+    address = this;
+}
+
+void PageWithPreset::onPresetDropdownSelected(lv_event_t *e)
+{
+    // TODO: Here we use the stored address to essentially downcast to get the derived PageWithPreset class, this is ugly.
+    void *pageaddr = PageManager.PageArr[PageManager.getCurPage()]->address;
+    PageWithPreset *instance = (PageWithPreset *)pageaddr;
+    
+    lv_obj_t * dropdown = lv_event_get_target(e);
+    int id = lv_dropdown_get_selected(dropdown);
+    char temp[MAX_PRESET_NAME + 1];
+    lv_dropdown_get_selected_str(dropdown, temp, MAX_PRESET_NAME + 1);
+    instance->curPreset = id;
+    instance->loadPreset(String(temp));
+}
+
+void PageWithPreset::onPresetNewBtnPressed(lv_event_t *e)
+{
+    // show the on screen keyboard and text area to enter the preset name
+    PageManager.setShowKeyboardAndPresetName(true);
+}
+
+void PageWithPreset::onPresetSaveBtnPressed(lv_event_t *e)
+{
+    // TODO: Here we use the stored address to essentially downcast to get the derived PageWithPreset class, this is ugly.
+    void *pageaddr = PageManager.PageArr[PageManager.getCurPage()]->address;
+    PageWithPreset *instance = (PageWithPreset *)pageaddr;
+    lv_obj_t *dropdown = PageManager.getPresetDropdown();
+    // check if the current preset is the default one
+    if (lv_dropdown_get_selected(dropdown) == 0)
+    {
+        PageManager.showMessageBox("Error", "Cannot overwrite the default preset. Press \"+\" to create a new one.");
+        return;
+    }
+    // delete the current preset
+    char temp[MAX_PRESET_NAME + 1];
+    lv_dropdown_get_selected_str(dropdown, temp, MAX_PRESET_NAME + 1);
+    // delete the preset file
+    if(SD.remove((USER_DATA_FILE_PREFIX + String(instance->pageName) + "/presets" + "/" + temp).c_str()))
+    {
+        Serial.println("Preset deleted");
+    }
+    else
+    {
+        Serial.println("Cannot delete preset file");
+        return;
+    }
+    // show the on screen keyboard and text area to enter the preset name
+    PageManager.setShowKeyboardAndPresetName(true, temp);
+}
+
+void PageWithPreset::onPresetDeleteBtnPressed(lv_event_t *e)
+{
+    // TODO: Here we use the stored address to essentially downcast to get the derived PageWithPreset class, this is ugly.
+    void *pageaddr = PageManager.PageArr[PageManager.getCurPage()]->address;
+    PageWithPreset *instance = (PageWithPreset *)pageaddr;
+    lv_obj_t *dropdown = PageManager.getPresetDropdown();
+    char temp[MAX_PRESET_NAME + 1];
+    lv_dropdown_get_selected_str(dropdown, temp, MAX_PRESET_NAME + 1);
+    instance->deletePreset(temp);
+    // reopen the dropdown
+    lv_dropdown_open(dropdown);
+}
+
+void PageWithPreset::onKeyboardOkBtnPressed(lv_event_t *e)
+{
+    // TODO: Here we use the stored address to essentially downcast to get the derived PageWithPreset class, this is ugly.
+    void *pageaddr = PageManager.PageArr[PageManager.getCurPage()]->address;
+    PageWithPreset *instance = (PageWithPreset *)pageaddr;
+    lv_obj_t *textArea = PageManager.getTextArea();
+    instance->newPreset(lv_textarea_get_text(textArea));
+    // hide the on screen keyboard and text area
+    PageManager.setShowKeyboardAndPresetName(false);
+}
+
+void PageWithPreset::loadCurPresetNum()
+{
+    ifstream curPresetFile((USER_DATA_FILE_PREFIX + String(pageName) + "/cur.txt").c_str(), ios::in);
+    if(curPresetFile.is_open())
+    {
+        curPresetFile >> curPreset;
+        curPresetFile.close();
+    }
+    else
+    {
+        curPreset = 0;
+        Serial.println("Current preset file does not exist, creating a new one");
+        saveCurPresetNum();
+    }
+}
+
+void PageWithPreset::saveCurPresetNum()
+{
+    ofstream curPresetFile((USER_DATA_FILE_PREFIX + String(pageName) + "/cur.txt").c_str(), ios::out);
+    if(curPresetFile.is_open())
+    {
+        curPresetFile << curPreset;
+        curPresetFile.close();
+    }
+    else
+    {
+        Serial.println("Cannot create current preset file");
+    }
+}
+
+void PageWithPreset::createDefaultPreset()
+{
+    // save the default preset
+    ofstream presetFile((USER_DATA_FILE_PREFIX + String(pageName) + "/presets" + "/.default").c_str(), ios::out);
+    if(presetFile.is_open())
+    {
+        presetFile << USER_DATA_VERSION << endl;
+        serialize(presetFile);
+        presetFile.close();
+    }
+    else
+    {
+        Serial.println("Cannot create default preset file");
+    }
 }
 
 lv_obj_t *SubPage::createSubPageItemArea(lv_obj_t *parent)
