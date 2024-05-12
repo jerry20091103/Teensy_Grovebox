@@ -9,7 +9,7 @@
 #include "GuiObjects/VolumeBar.h"
 
 // sf2 Wave table synth page
-class WaveTablePage : public Pages
+class WaveTablePage : public PageWithPreset
 {
 private:
     // *user data

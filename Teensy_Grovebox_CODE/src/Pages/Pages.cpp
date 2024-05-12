@@ -61,6 +61,7 @@ void PageManager_::Init()
     lv_obj_set_style_pad_all(presetDropdown, 5, 0);
     lv_obj_add_flag(presetDropdown, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
     lv_obj_set_style_bg_color(presetDropdown, lv_color_black(), 0);
+    lv_obj_set_style_border_color(presetDropdown, color_Grey, 0);
     lv_obj_set_style_text_font(presetDropdown, font_small, 0);
     lv_obj_t *list = lv_dropdown_get_list(presetDropdown);
     lv_obj_set_style_bg_color(list, lv_color_black(), 0);
@@ -114,9 +115,10 @@ void PageManager_::Init()
     textArea = lv_textarea_create(backdrop);
     lv_obj_set_height(textArea, 33);
     lv_obj_set_width(textArea, 125);
-    lv_obj_set_pos(textArea, 115, 3);
+    lv_obj_set_pos(textArea, 112, 3);
     lv_obj_set_style_pad_all(textArea, 5, 0);
     lv_obj_set_style_bg_color(textArea, lv_color_black(), 0);
+    lv_obj_set_style_border_color(textArea, color_Grey, 0);
     lv_obj_set_style_text_font(textArea, font_small, 0);
     lv_obj_add_flag(textArea, LV_OBJ_FLAG_HIDDEN);
     lv_textarea_set_max_length(textArea, MAX_PRESET_NAME);
@@ -532,8 +534,6 @@ void PageWithPreset::saveDataToSD()
 
 void PageWithPreset::newPreset(String presetName)
 {
-    // TODO: check if the currnet preset needs to be saved (modified)
-
     // create a new preset file
     ofstream presetFile((USER_DATA_FILE_PREFIX + String(pageName) + "/presets" + "/" + presetName).c_str(), ios::out);
     if(presetFile.is_open())
@@ -622,6 +622,7 @@ void PageWithPreset::loadPreset(String presetName)
         // reload the page
         this->unload();
         this->load();
+        setPresetModified(false);
     }
     else
     {
@@ -633,6 +634,23 @@ PageWithPreset::PageWithPreset()
 {
     hasPresets = true;
     address = this;
+}
+
+void PageWithPreset::setPresetModified(bool modified)
+{
+    if (curPreset == 0)
+        modified = false;
+    presetModified = modified;
+    if (modified)
+    {
+        // make the preset dropdown border red
+        lv_obj_set_style_border_color(PageManager.getPresetDropdown(), color_RedDark, 0);
+    }
+    else
+    {
+        // make the preset dropdown border grey
+        lv_obj_set_style_border_color(PageManager.getPresetDropdown(), color_Grey, 0);
+    }
 }
 
 void PageWithPreset::onPresetDropdownSelected(lv_event_t *e)
@@ -695,6 +713,7 @@ void PageWithPreset::onPresetDeleteBtnPressed(lv_event_t *e)
     instance->deletePreset(temp);
     // reopen the dropdown
     lv_dropdown_open(dropdown);
+    instance->setPresetModified(false);
 }
 
 void PageWithPreset::onKeyboardOkBtnPressed(lv_event_t *e)
@@ -703,7 +722,20 @@ void PageWithPreset::onKeyboardOkBtnPressed(lv_event_t *e)
     void *pageaddr = PageManager.PageArr[PageManager.getCurPage()]->address;
     PageWithPreset *instance = (PageWithPreset *)pageaddr;
     lv_obj_t *textArea = PageManager.getTextArea();
-    instance->newPreset(lv_textarea_get_text(textArea));
+    // check if the text is empty
+    String text = lv_textarea_get_text(textArea);
+    if (text == "")
+    {
+        return;
+    }
+    // remove all invalid characters
+    const char* invalidChars = "/\\:*?\"<>|";
+    for (int i = 0; i < strlen(invalidChars); i++)
+    {
+        text.replace(invalidChars[i], '_');
+    }
+    // create a new preset
+    instance->newPreset(text);
     // hide the on screen keyboard and text area
     PageManager.setShowKeyboardAndPresetName(false);
 }

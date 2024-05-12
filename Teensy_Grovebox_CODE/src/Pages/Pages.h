@@ -157,6 +157,8 @@ public:
     void loadPreset(String presetName);
     // defualt constructor that sets the presetDropdown object
     PageWithPreset();
+    // set the preset state to modified
+    void setPresetModified(bool modified);
 
     // lvgl callback functions for preset dropdown
     static void onPresetDropdownSelected(lv_event_t *e);
@@ -167,6 +169,8 @@ public:
 private:
     // the preset dropdown object in the status bar
     int curPreset = 0;
+
+    bool presetModified = false;
 
     // load the current presst number from SD card
     void loadCurPresetNum();

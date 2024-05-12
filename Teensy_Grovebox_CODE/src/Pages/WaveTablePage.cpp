@@ -11,6 +11,7 @@ void WaveTablePage::onVelocityBtnPressed(void *targetPointer, lv_obj_t *labelObj
     WaveTablePage *instance = (WaveTablePage *)targetPointer;
     instance->useVelocity = isToggled;
     AudioSynth.setUseVelocity(instance->useVelocity);
+    instance->setPresetModified(true);
 }
 
 void WaveTablePage::onPitchBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
@@ -19,6 +20,7 @@ void WaveTablePage::onPitchBtnPressed(void *targetPointer, lv_obj_t *labelObj, b
     instance->usePitchbend = isToggled;
     if(!instance->usePitchbend)
         AudioSynth.pitchbend(0, 0);
+    instance->setPresetModified(true);
 }
 
 void WaveTablePage::onPitchBtnHolded(void *targetPointer, lv_obj_t *labelObj)
@@ -34,6 +36,7 @@ void WaveTablePage::onPitchDropdownSelect(lv_event_t *e)
     uint8_t id = lv_dropdown_get_selected(dropdown);
     instance->pitchbendRange = id + 1;
     lv_label_set_text_fmt(instance->pitchBtn->getLabelObject(), "Pitch: %d", instance->pitchbendRange);
+    instance->setPresetModified(true);
 }
 
 void WaveTablePage::onOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value)
@@ -41,6 +44,7 @@ void WaveTablePage::onOctaveSelect(void *targetPointer, lv_obj_t *valueTextObj, 
     WaveTablePage *instance = (WaveTablePage *)targetPointer;
     lv_label_set_text_fmt(valueTextObj, "%d", value);
     instance->octave = value;
+    instance->setPresetModified(true);
 }
 
 void WaveTablePage::onSF2DropdownSelect(lv_event_t *e)
@@ -50,6 +54,7 @@ void WaveTablePage::onSF2DropdownSelect(lv_event_t *e)
     uint8_t id = lv_dropdown_get_selected(dropdown);
     AudioSynth.setSF2Instrument(id);
     instance->curInstrument = id;
+    instance->setPresetModified(true);
 }
 
 void WaveTablePage::onVolArcTurned(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
@@ -57,6 +62,7 @@ void WaveTablePage::onVolArcTurned(void *targetPointer, lv_obj_t *valueTextObj, 
     WaveTablePage *instance = (WaveTablePage *)targetPointer;
     lv_label_set_text_fmt(valueTextObj, "%d", value);
     instance->setVolume(value);
+    instance->setPresetModified(true);
 }
 
 void WaveTablePage::onBtnPressed(uint8_t pin)
