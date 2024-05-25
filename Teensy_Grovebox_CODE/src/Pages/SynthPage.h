@@ -16,7 +16,7 @@
 #define ENV_VAL_INCREMENT 1.05f
 
 // Substractive synth page
-class SynthPage : public PageWithSubPage
+class SynthPage : public PageWithSubPage, public PageWithPreset
 {
 private:
     // forward declaration of subpages

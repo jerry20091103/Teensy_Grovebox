@@ -159,6 +159,8 @@ public:
     PageWithPreset();
     // set the preset state to modified
     void setPresetModified(bool modified);
+    // get the preset state
+    bool getPresetModified() {return presetModified;}
 
     // lvgl callback functions for preset dropdown
     static void onPresetDropdownSelected(lv_event_t *e);

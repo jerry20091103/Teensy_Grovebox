@@ -520,6 +520,8 @@ void SynthPage::MainPage::onVolArcPressed(void *targetPointer, lv_obj_t *valueTe
     instance->volume = value;
     AudioSynth.setMasterVol(value);
     lv_label_set_text_fmt(valueTextObj, "%d", value);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::MainPage::onVelocityBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
@@ -527,6 +529,8 @@ void SynthPage::MainPage::onVelocityBtnPressed(void *targetPointer, lv_obj_t *la
     MainPage *instance = (MainPage *)targetPointer;
     instance->useVelocity = isToggled;
     AudioSynth.setUseVelocity(isToggled);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::MainPage::onPitchBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
@@ -535,6 +539,8 @@ void SynthPage::MainPage::onPitchBtnPressed(void *targetPointer, lv_obj_t *label
     instance->usePitchbend = isToggled;
     if (!isToggled)
         AudioSynth.pitchbend(0, 0);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::MainPage::onPitchBtnHolded(void *targetPointer, lv_obj_t *labelObj)
@@ -550,6 +556,8 @@ void SynthPage::MainPage::onOctaveSelect(void *targetPointer, lv_obj_t *valueTex
     lv_label_set_text_fmt(valueTextObj, "%d", value);
     // set octave
     instance->octave = value;
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::MainPage::onPitchDropdownSelect(lv_event_t *e)
@@ -559,6 +567,8 @@ void SynthPage::MainPage::onPitchDropdownSelect(lv_event_t *e)
     uint8_t id = lv_dropdown_get_selected(dropdown);
     instance->pitchbendRange = id + 1;
     lv_label_set_text_fmt(instance->pitchBtn->getLabelObject(), "Pitch: %d", instance->pitchbendRange);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 lv_obj_t *SynthPage::MainPage::createItemBtn(lv_obj_t *parent, const char *text)
@@ -685,6 +695,8 @@ void SynthPage::OscPage::onOscOctaveSelect(void *targetPointer, lv_obj_t *valueT
     // set octave
     instance->oscOctave = value;
     AudioSynth.setOscOctave(instance->id, value);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::OscPage::onOscSemiSelect(void *targetPointer, lv_obj_t *valueTextObj, int16_t value)
@@ -695,6 +707,8 @@ void SynthPage::OscPage::onOscSemiSelect(void *targetPointer, lv_obj_t *valueTex
     // set semi
     instance->oscSemi = value;
     AudioSynth.setOscSemi(instance->id, value);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::OscPage::onOscArcPressed(void *targetPointer, lv_obj_t *valueTextObj, int16_t value, int8_t encoderIndex)
@@ -719,6 +733,8 @@ void SynthPage::OscPage::onOscArcPressed(void *targetPointer, lv_obj_t *valueTex
         break;
     }
     lv_label_set_text_fmt(valueTextObj, "%d", value);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::OscPage::onOscWaveSelect(lv_event_t *e)
@@ -732,6 +748,8 @@ void SynthPage::OscPage::onOscWaveSelect(lv_event_t *e)
     // set waveform image
     const lv_img_dsc_t *img = instance->getOscWaveImg();
     lv_img_set_src(instance->oscWaveImg, img);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 const lv_img_dsc_t *SynthPage::OscPage::getOscWaveImg()
@@ -856,6 +874,8 @@ void SynthPage::SamplerPage::onSamplerArcPressed(void *targetPointer, lv_obj_t *
         break;
     }
     lv_label_set_text_fmt(valueTextObj, "%d", value);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::SamplerPage::onSamplerRootKeyBtnPressed(void *targetPointer, lv_obj_t *labelObj, bool isToggled)
@@ -877,6 +897,8 @@ void SynthPage::SamplerPage::onSamplerRootKeyBtnPressed(void *targetPointer, lv_
 void SynthPage::SamplerPage::onSamplerWaveformChartPressed(lv_event_t *e)
 {
     PageManager.switchPage(PG_SAMPLEEDITOR);
+    // TODO: May need to move the SamplerEditorPage into a subpage of the SynthPage?
+    // Or check preset modified state before switching
 }
 
 void SynthPage::SamplerPage::onSamplerRootKeySelectSetPressed(lv_event_t *e)
@@ -889,6 +911,8 @@ void SynthPage::SamplerPage::onSamplerRootKeySelectSetPressed(lv_event_t *e)
         instance->seletctingRootKey = false;
         // close msgbox
         lv_msgbox_close(msgbox);
+        SynthPage *synthPage = (SynthPage *)instance->parentPage;
+        synthPage->setPresetModified(true);
     }
 }
 
@@ -933,6 +957,8 @@ void SynthPage::NoisePage::onNoiseArcPressed(void *targetPointer, lv_obj_t *valu
     instance->noiseLevel = value;
     AudioSynth.setNoiseLevel(value);
     lv_label_set_text_fmt(valueTextObj, "%d", value);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::FilterPage::load()
@@ -1049,6 +1075,8 @@ void SynthPage::FilterPage::onFilterArcPressed(void *targetPointer, lv_obj_t *va
         lv_label_set_text_fmt(valueTextObj, "%d", value);
         break;
     }
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::ModPage::load()
@@ -1116,6 +1144,8 @@ void SynthPage::ModPage::onNewModBtnPressed(lv_event_t *e)
         instance->createModEntry(instance->modMenuArea, id, MOD_SRC_NONE, MOD_TGT_NONE, 0.0f);
         // scroll down
         lv_obj_scroll_by_bounded(instance->modMenuArea, 0, -55, LV_ANIM_ON);
+        SynthPage *synthPage = (SynthPage *)instance->parentPage;
+        synthPage->setPresetModified(true);
     }
 }
 
@@ -1142,6 +1172,8 @@ void SynthPage::ModPage::onDelModBtnPressed(lv_event_t *e)
         }
     }, instance->modMenuArea);
     taskManager.scheduleOnce(10, updateModIdTask, TIME_MILLIS, true);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::ModPage::onModSourceChange(lv_event_t *e)
@@ -1150,7 +1182,9 @@ void SynthPage::ModPage::onModSourceChange(lv_event_t *e)
     uint8_t src = lv_dropdown_get_selected(dropdown);
     uint8_t id = lv_obj_get_child_id(lv_obj_get_parent(dropdown));
     AudioSynth.setModulationSource(id, src);
-    // todo: memory?
+    ModPage *instance = (ModPage *)lv_event_get_user_data(e);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::ModPage::onModTargetChange(lv_event_t *e)
@@ -1159,6 +1193,9 @@ void SynthPage::ModPage::onModTargetChange(lv_event_t *e)
     uint8_t tgt = lv_dropdown_get_selected(dropdown);
     uint8_t id = lv_obj_get_child_id(lv_obj_get_parent(dropdown));
     AudioSynth.setModulationTarget(id, tgt);
+    ModPage *instance = (ModPage *)lv_event_get_user_data(e);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::ModPage::onModAmountChange(lv_event_t *e)
@@ -1167,6 +1204,9 @@ void SynthPage::ModPage::onModAmountChange(lv_event_t *e)
     int8_t amount = lv_slider_get_value(slider);
     uint8_t id = lv_obj_get_child_id(lv_obj_get_parent(slider));
     AudioSynth.setModulationAmount(id, float(amount) / 100.0f);
+    ModPage *instance = (ModPage *)lv_event_get_user_data(e);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 lv_obj_t *SynthPage::ModPage::createModEntry(lv_obj_t* parent, int8_t id, modSource source, modTarget target, float amount)
@@ -1410,6 +1450,8 @@ void SynthPage::EnvPage::onEnvArcPressed(void *targetPointer, lv_obj_t *valueTex
     {
         lv_label_set_text_fmt(valueTextObj, "%d", value);
     }
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::LfoPage::load()
@@ -1509,6 +1551,8 @@ void SynthPage::LfoPage::onLfoArcPressed(void *targetPointer, lv_obj_t *valueTex
         lv_label_set_text_fmt(valueTextObj, "%d", value);
         break;
     }
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 void SynthPage::LfoPage::onLfoWaveSelect(lv_event_t *e)
@@ -1522,6 +1566,8 @@ void SynthPage::LfoPage::onLfoWaveSelect(lv_event_t *e)
     instance->lfoWaveform = wave;
     const lv_img_dsc_t *img = instance->getLfoWaveImg();
     lv_img_set_src(instance->lfoWaveImg, img);
+    SynthPage *synthPage = (SynthPage *)instance->parentPage;
+    synthPage->setPresetModified(true);
 }
 
 const lv_img_dsc_t *SynthPage::LfoPage::getLfoWaveImg()

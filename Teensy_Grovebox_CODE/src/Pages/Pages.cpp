@@ -448,9 +448,32 @@ void PageWithSubPage::switchSubPage(SubPage *subPage)
         Serial.println("subPage is null");
         return;
     }
+    // get current prest modified status
+    bool presetModified = false;
+    if (curSubPage->getParentPage()->hasPresets)
+    {
+        // determine the current page type
+        switch (curSubPage->getParentPage()->pageID)
+        {
+            case PG_SYNTH:
+                presetModified = ((SynthPage *)curSubPage->getParentPage())->getPresetModified();
+                break;
+        }
+    }
     curSubPage->unload();
     subPage->load();
     curSubPage = subPage;
+    // set the prest modified status back if the preset was unmodified before
+    if (curSubPage->getParentPage()->hasPresets && !presetModified)
+    {
+        // determine the current page type
+        switch (curSubPage->getParentPage()->pageID)
+        {
+            case PG_SYNTH:
+                ((SynthPage *)curSubPage->getParentPage())->setPresetModified(false);
+                break;
+        }
+    }
 }
 
 void PageWithPreset::loadDataFromSD()
@@ -597,7 +620,6 @@ void PageWithPreset::deletePreset(String presetName)
 void PageWithPreset::loadPreset(String presetName)
 {
     // TODO: check if the currnet preset needs to be saved (modified)
-    // TODO: check version number
 
     // load the preset file
     Serial.println("Loading preset: " + presetName);
@@ -621,6 +643,7 @@ void PageWithPreset::loadPreset(String presetName)
         lv_dropdown_set_selected(PageManager.getPresetDropdown(), curPreset);
         // reload the page
         this->unload();
+        this->loadAll(); // need to make sure all user data are applied to subpages
         this->load();
         setPresetModified(false);
     }
@@ -638,8 +661,8 @@ PageWithPreset::PageWithPreset()
 
 void PageWithPreset::setPresetModified(bool modified)
 {
-    if (curPreset == 0)
-        modified = false;
+    // if (curPreset == 0)
+    //     modified = false;
     presetModified = modified;
     if (modified)
     {
